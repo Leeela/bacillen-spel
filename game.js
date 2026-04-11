@@ -114,16 +114,39 @@ function drawInstruction() {
 // ==========================================
 //  STARTSKÄRM — startar loop-videon
 // ==========================================
-const startBtn = document.querySelector('.start-btn');
+const startBtn  = document.querySelector('.start-btn');
+const startBug  = document.getElementById('start-bug');
 let gameStarted = false;
+
+// Dela bug_loop.mp4 mellan startskärm och spel — laddas bara en gång
+bugLoop.addEventListener('canplay', () => {
+  if (!startBug.src) {
+    startBug.src = 'bug_loop.mp4';
+    startBug.play().catch(() => {});
+  }
+}, { once: true });
+bugLoop.src = 'bug_loop.mp4';
 function handleStart() {
   if (gameStarted) return;
   gameStarted = true;
+
+  // 🔑 iOS-trick: lås upp video-elementet direkt i gesture-kontexten
+  // Utan detta blockerar Safari alla framtida video.play()-anrop
+  video.muted = true;
+  video.src = VIDEOS.chomp;
+  video.play().then(() => {
+    video.pause();
+    video.muted = false;
+    video.src = '';
+  }).catch(() => {
+    video.muted = false;
+    video.src = '';
+  });
+
   bugLoop.play().catch(() => {});
   startMusic();
   startScreen.style.display = 'none';
-  // Ladda videor i bakgrunden först efter att spelaren tryckt start
-  setTimeout(preloadVideos, 500);
+  setTimeout(preloadVideos, 1000);
 }
 startBtn?.addEventListener('click', e => { e.stopPropagation(); handleStart(); });
 startScreen.addEventListener('click', handleStart);
