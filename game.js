@@ -18,15 +18,25 @@ window.addEventListener('resize', () => {
 });
 
 // ==========================================
-//  VIDEOFILER
+//  VIDEOFILER — lazy loading
 // ==========================================
 const VIDEOS = {
   chomp:   'Mmm_Godis!.mp4',
-  merMore: 'Mer_Godis!.mp4',
+  merMore: 'Mer_godis!.mp4',
   wow:     'Wow!_Tack!.mp4',
   win:     'Win_star_Perfekt!.mp4',
   yuck:    'NEj_jag_vill_ha_godis.mp4'
 };
+
+// Förladda videor i bakgrunden efter att spelet startat
+function preloadVideos() {
+  Object.values(VIDEOS).concat(['Somnar.mp4']).forEach(src => {
+    const v = document.createElement('video');
+    v.preload = 'auto';
+    v.src = src;
+    v.load();
+  });
+}
 
 let isShowingVideo = false;
 let candyEaten = 0;
@@ -112,6 +122,8 @@ function handleStart() {
   bugLoop.play().catch(() => {});
   startMusic();
   startScreen.style.display = 'none';
+  // Ladda videor i bakgrunden först efter att spelaren tryckt start
+  setTimeout(preloadVideos, 500);
 }
 startBtn?.addEventListener('click', e => { e.stopPropagation(); handleStart(); });
 startScreen.addEventListener('click', handleStart);
