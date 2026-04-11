@@ -488,8 +488,9 @@ function drawYuckOverlay() {
   ctx.globalAlpha = Math.min(yuckAnim, 1) * 0.88;
   ctx.fillStyle = '#dfffdf'; ctx.fillRect(0, 0, W, H);
   ctx.globalAlpha = Math.min(yuckAnim, 1);
-  ctx.font = `${70 + Math.sin(yuckAnim*10)*8}px serif`;
+  ctx.font = `bold ${70 + Math.sin(yuckAnim*10)*8}px serif`;
   ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  ctx.fillStyle = '#2e7d32';
   ctx.fillText('🥕 Nej! Det är inte godis! 🥦', W/2, H/2);
   ctx.restore();
   if (yuckAnim <= 0) { isShowingVideo = false; candies = candies.filter(c => !c.eaten); }
