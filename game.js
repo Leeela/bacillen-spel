@@ -536,15 +536,19 @@ function eatCandy(candy) {
 // ==========================================
 function playVideo(filename, isYuck, onDone = null) {
   isShowingVideo = true;
-  video.src = filename;
-  video.load();
-  video.oncanplay = () => { overlay.classList.add('active'); video.play().catch(() => finishVideo(onDone)); };
-  video.onerror   = () => {
+  video.onended = () => finishVideo(onDone);
+  video.onerror = () => {
     overlay.classList.remove('active');
     if (isYuck) { yuckAnim = 3.5; isShowingVideo = false; }
     else        { finishVideo(onDone); }
   };
-  video.onended = () => finishVideo(onDone);
+  video.src = filename;
+  // Spela direkt (iOS kräver play() inom user gesture-kontexten)
+  overlay.classList.add('active');
+  video.play().catch(() => {
+    // Fallback: vänta på canplay om direkt play misslyckades
+    video.oncanplay = () => { video.play().catch(() => finishVideo(onDone)); };
+  });
 }
 function finishVideo(onDone = null) {
   overlay.classList.remove('active');
