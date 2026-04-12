@@ -340,8 +340,8 @@ const YUCKY_IMGS = [
 const SALIM_IMG  = loadImg('Salim.png');
 
 const CHANCE_GOLD  = 0.10;
-const CHANCE_YUCKY = 0.30;
-const CHANCE_SALIM = 0.15; // 15% chans — Salim ramlar ofta!
+const CHANCE_YUCKY = 0.20;
+const CHANCE_SALIM = 0.50; // 50% chans — Salim är ÖVERALLT!
 
 class Candy {
   constructor(startOnScreen = false) { this.init(startOnScreen); }
