@@ -276,7 +276,30 @@
   </div>
 
   <script>
-    const IMAGES = [
+    // Lätt (6 par) — original godisar
+    const IMAGES_EASY = [
+      '../Godisar och veggies/Godis1.png',
+      '../Godisar och veggies/Godis2.png',
+      '../Godisar och veggies/Godis3.png',
+      '../Godisar och veggies/Godis4.png',
+      '../Godisar och veggies/Godis5.png',
+      '../Salim.png',
+    ];
+
+    // Medel (8 par) — fler godisar
+    const IMAGES_MEDIUM = [
+      '../Godisar och veggies/Godis1.png',
+      '../Godisar och veggies/Godis2.png',
+      '../Godisar och veggies/Godis3.png',
+      '../Godisar och veggies/Godis4.png',
+      '../Godisar och veggies/Godis5.png',
+      '../Godisar och veggies/Godis6.png',
+      'Godisar till memoryspel/Skärmavbild 2026-04-12 kl. 18.34.21.png',
+      '../Salim.png',
+    ];
+
+    // Svårt (12 par) — alla godisar
+    const IMAGES_HARD = [
       '../Godisar och veggies/Godis1.png',
       '../Godisar och veggies/Godis2.png',
       '../Godisar och veggies/Godis3.png',
@@ -284,8 +307,14 @@
       '../Godisar och veggies/Godis5.png',
       '../Godisar och veggies/Godis6.png',
       '../Godisar och veggies/Broccoli.png',
-      '../Salim.png',  // 🕷️ Easter egg!
+      '../Godisar och veggies/Morot.png',
+      'Godisar till memoryspel/Skärmavbild 2026-04-12 kl. 18.34.21.png',
+      'Godisar till memoryspel/Skärmavbild 2026-04-12 kl. 18.34.39.png',
+      'Godisar till memoryspel/Skärmavbild 2026-04-12 kl. 18.34.55.png',
+      '../Salim.png',
     ];
+
+    const IMAGES = IMAGES_EASY; // standard, byts nedan
 
     const DIFFICULTIES = {
       easy:   { pairs: 6,  cols: 3, label: 'Lätt' },
@@ -303,6 +332,12 @@
     let seconds = 0;
     let gameStarted = false;
 
+    function getImages() {
+      if (difficulty === 'hard')   return IMAGES_HARD;
+      if (difficulty === 'medium') return IMAGES_MEDIUM;
+      return IMAGES_EASY;
+    }
+
     function setDifficulty(d) {
       difficulty = d;
       document.querySelectorAll('.diff-btn').forEach(b => b.classList.remove('active'));
@@ -316,9 +351,9 @@
 
     function buildDeck() {
       const { pairs } = DIFFICULTIES[difficulty];
-      // Repeat images if needed (hard mode has 12 pairs but only 8 images)
-      const pool = [...IMAGES, ...IMAGES].slice(0, pairs);
-      const deck = [...pool, ...pool]; // each image appears twice
+      const imgs = getImages();
+      const pool = [...imgs, ...imgs].slice(0, pairs);
+      const deck = [...pool, ...pool];
       return shuffle(deck);
     }
 
