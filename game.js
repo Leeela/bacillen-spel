@@ -25,7 +25,8 @@ const VIDEOS = {
   merMore: 'Mer_godis!.mp4',
   wow:     'Wow!_Tack!.mp4',
   win:     'Win_star_Perfekt!.mp4',
-  yuck:    'NEj_jag_vill_ha_godis.mp4'
+  yuck:    'NEj_jag_vill_ha_godis.mp4',
+  salim:   'Nej jag kan inte äta Salim.mp4'
 };
 
 // Förladda videor i bakgrunden efter att spelet startat
@@ -334,9 +335,11 @@ const YUCKY_IMGS = [
   loadImg('Morot.png'),
   loadImg('Broccoli.png'),
 ];
+const SALIM_IMG  = loadImg('Salim.png');
 
 const CHANCE_GOLD  = 0.10;
 const CHANCE_YUCKY = 0.35;
+const CHANCE_SALIM = 0.04; // 4% chans — sällsynt easter egg!
 
 class Candy {
   constructor(startOnScreen = false) { this.init(startOnScreen); }
@@ -349,10 +352,14 @@ class Candy {
     this.wobble = Math.random() * Math.PI * 2;
     this.wobbleDir = (Math.random() - 0.5) * 0.7;
     const r = Math.random();
-    if (r < CHANCE_GOLD) {
+    if (r < CHANCE_SALIM) {
+      this.kind = 'salim';
+      this.imgObj = SALIM_IMG;
+      this.size = 90 + Math.random() * 20; // lite större så man ser ansiktet
+    } else if (r < CHANCE_SALIM + CHANCE_GOLD) {
       this.kind = 'gold';
       this.imgObj = GOLD_IMG;
-    } else if (r < CHANCE_GOLD + CHANCE_YUCKY) {
+    } else if (r < CHANCE_SALIM + CHANCE_GOLD + CHANCE_YUCKY) {
       this.kind = 'yucky';
       this.imgObj = YUCKY_IMGS[Math.floor(Math.random() * YUCKY_IMGS.length)];
     } else {
@@ -376,6 +383,7 @@ class Candy {
     // Glöd-effekter
     if (this.kind === 'gold')  { ctx.shadowColor = '#ffd700'; ctx.shadowBlur = 30; }
     if (this.kind === 'yucky') { ctx.shadowColor = '#88cc44'; ctx.shadowBlur = 16; }
+    if (this.kind === 'salim') { ctx.shadowColor = '#ff4444'; ctx.shadowBlur = 24; }
 
     const s = this.size;
     const drawable = getImg(this.imgObj);
@@ -540,6 +548,7 @@ function eatCandy(candy) {
   candy.eaten = candy.dragging = false;
   spawnParticles(candy.x, candy.y, candy.kind);
 
+  if (candy.kind === 'salim') { playVideo(VIDEOS.salim, true); return; }
   if (candy.kind === 'yucky') { playVideo(VIDEOS.yuck, true); return; }
 
   candyEaten++; stars = Math.min(stars + 1, 99);
@@ -606,7 +615,7 @@ function loop() {
   candies.forEach(c => c.update());
   candies.forEach(c => c.draw());
 
-  bug.draw(draggingNear('yummy') || draggingNear('gold'), draggingNear('yucky'));
+  bug.draw(draggingNear('yummy') || draggingNear('gold'), draggingNear('yucky') || draggingNear('salim'));
 
   crash.update();
   crash.drawEffects();
