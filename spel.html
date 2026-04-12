@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Bacillernas Spelportal 🎮</title>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-GJG476R480"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-GJG476R480');
+  </script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: linear-gradient(160deg, #fff8e1 0%, #fce4ec 50%, #e8f5e9 100%);
+      min-height: 100vh;
+      font-family: 'Arial Rounded MT Bold', Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px 16px 40px;
+      overflow-x: hidden;
+    }
+
+    /* ── Fallande godis ── */
+    .bg-candy {
+      position: fixed; top: -80px;
+      font-size: 40px;
+      animation: fall linear infinite;
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.5;
+    }
+    @keyframes fall {
+      from { transform: translateY(0) rotate(0deg); }
+      to   { transform: translateY(110vh) rotate(360deg); }
+    }
+
+    /* ── Header ── */
+    .header {
+      position: relative; z-index: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: 32px;
+    }
+
+    .header img {
+      width: min(140px, 30vw);
+      mix-blend-mode: multiply;
+      animation: bounce 1.8s ease-in-out infinite;
+    }
+    @keyframes bounce {
+      0%,100% { transform: translateY(0); }
+      50%      { transform: translateY(-12px); }
+    }
+
+    .header h1 {
+      font-size: clamp(26px, 7vw, 48px);
+      font-weight: 900;
+      color: #fff;
+      text-shadow:
+        3px 3px 0 #e91e63,
+        -1px -1px 0 #e91e63,
+        1px -1px 0 #e91e63,
+        -1px 1px 0 #e91e63;
+      letter-spacing: 2px;
+      text-align: center;
+      margin-top: 8px;
+    }
+
+    .header p {
+      font-size: clamp(14px, 3.5vw, 20px);
+      color: #5d4037;
+      margin-top: 6px;
+    }
+
+    /* ── Spelgrid ── */
+    .games-grid {
+      position: relative; z-index: 1;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+      width: 100%;
+      max-width: 700px;
+    }
+
+    /* ── Spelkort ── */
+    .game-card {
+      background: white;
+      border-radius: 28px;
+      padding: 24px 20px;
+      text-align: center;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+      text-decoration: none;
+      transition: transform 0.2s, box-shadow 0.2s;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      cursor: pointer;
+    }
+    .game-card:hover, .game-card:active {
+      transform: translateY(-6px) scale(1.02);
+      box-shadow: 0 14px 32px rgba(0,0,0,0.18);
+    }
+
+    .game-card .emoji {
+      font-size: 64px;
+      line-height: 1;
+    }
+
+    .game-card h2 {
+      font-size: clamp(20px, 5vw, 26px);
+      font-weight: 900;
+      color: #333;
+    }
+
+    .game-card p {
+      font-size: clamp(13px, 3vw, 16px);
+      color: #888;
+      line-height: 1.4;
+    }
+
+    .age-badge {
+      background: #fce4ec;
+      color: #e91e63;
+      border-radius: 50px;
+      padding: 4px 14px;
+      font-size: 13px;
+      font-weight: 900;
+    }
+
+    .play-btn {
+      background: linear-gradient(135deg, #66bb6a, #43a047);
+      color: white;
+      border: none;
+      border-radius: 50px;
+      padding: 12px 32px;
+      font-size: clamp(16px, 4vw, 20px);
+      font-weight: 900;
+      cursor: pointer;
+      box-shadow: 0 4px 0 #2e7d32;
+      transition: transform 0.1s, box-shadow 0.1s;
+      width: 100%;
+      letter-spacing: 1px;
+    }
+    .play-btn:active {
+      transform: translateY(2px);
+      box-shadow: 0 2px 0 #2e7d32;
+    }
+
+    /* Kommande spel */
+    .game-card.coming-soon {
+      opacity: 0.65;
+      cursor: default;
+    }
+    .game-card.coming-soon:hover {
+      transform: none;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+    }
+    .game-card.coming-soon .play-btn {
+      background: linear-gradient(135deg, #bdbdbd, #9e9e9e);
+      box-shadow: 0 4px 0 #757575;
+      cursor: default;
+    }
+
+    .coming-badge {
+      background: #fff3e0;
+      color: #f57c00;
+      border-radius: 50px;
+      padding: 4px 14px;
+      font-size: 13px;
+      font-weight: 900;
+    }
+
+    /* ── YouTube-knapp ── */
+    .yt-btn {
+      position: relative; z-index: 1;
+      margin-top: 36px;
+      background: #ff0000;
+      color: white;
+      border-radius: 50px;
+      padding: 12px 28px;
+      font-size: 16px;
+      font-weight: 900;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      transition: transform 0.2s;
+    }
+    .yt-btn:hover { transform: scale(1.05); }
+  </style>
+</head>
+<body>
+
+  <!-- Fallande godis bakgrund -->
+  <span class="bg-candy" style="left:5%;  animation-duration:3.2s; animation-delay:0s;">🍭</span>
+  <span class="bg-candy" style="left:20%; animation-duration:4.1s; animation-delay:0.7s;">🍫</span>
+  <span class="bg-candy" style="left:40%; animation-duration:2.9s; animation-delay:1.3s;">🍬</span>
+  <span class="bg-candy" style="left:60%; animation-duration:3.7s; animation-delay:0.4s;">🧁</span>
+  <span class="bg-candy" style="left:78%; animation-duration:4.4s; animation-delay:0.9s;">🍩</span>
+  <span class="bg-candy" style="left:92%; animation-duration:3.1s; animation-delay:1.7s;">🍪</span>
+
+  <!-- Header -->
+  <div class="header">
+    <img src="godisbacillen.png" alt="Godisbacillen">
+    <h1>BACILLERNAS<br>SPELPORTAL 🎮</h1>
+    <p>🍬 Välj ett spel och ha kul! 🍬</p>
+  </div>
+
+  <!-- Spel -->
+  <div class="games-grid">
+
+    <!-- Spel 1: Mata Godisbacillen -->
+    <a class="game-card" href="index.html">
+      <div class="emoji">🍬</div>
+      <span class="age-badge">👶 2–5 år</span>
+      <h2>Mata Godisbacillen!</h2>
+      <p>Dra godis till Godisbacillens mun och mata honom! Passa dig för broccoli! 🥦</p>
+      <button class="play-btn">▶ &nbsp;SPELA!</button>
+    </a>
+
+    <!-- Spel 2: Memory -->
+    <a class="game-card" href="Memory/index.html">
+      <div class="emoji">🃏</div>
+      <span class="age-badge">🧒 4–8 år</span>
+      <h2>Godisbacillens Memory!</h2>
+      <p>Para ihop godisar! Tre svårighetsgrader — kan du hitta alla par? 🌟</p>
+      <button class="play-btn">▶ &nbsp;SPELA!</button>
+    </a>
+
+    <!-- Spel 3: Coming soon — Runner -->
+    <div class="game-card coming-soon">
+      <div class="emoji">🏃</div>
+      <span class="coming-badge">🔜 Kommer snart!</span>
+      <h2>Rymmer från Tandläkaren!</h2>
+      <p>Hoppa över tandborstar och samla godis! Hur långt kan du komma? 🦷</p>
+      <button class="play-btn" disabled>🔒 &nbsp;Kommer snart</button>
+    </div>
+
+  </div>
+
+  <!-- YouTube-knapp -->
+  <a class="yt-btn" href="https://www.youtube.com/@LuvbugsBacillerna/playlists" target="_blank" rel="noopener">
+    <svg width="22" height="16" viewBox="0 0 22 16" fill="white">
+      <path d="M21.5 2.5s-.2-1.5-.9-2.1C19.8-.3 18.9-.3 18.5-.3 15.5-.5 11-.5 11-.5S6.5-.5 3.5-.3C3.1-.3 2.2-.3 1.4.4.7 1 .5 2.5.5 2.5S.3 4.2.3 6v1.7c0 1.7.2 3.5.2 3.5s.2 1.5.9 2.1c.8.7 1.9.7 2.4.7C5.3 14.2 11 14.2 11 14.2s4.5 0 7.5-.3c.4 0 1.3-.1 2.1-.8.7-.6.9-2.1.9-2.1s.2-1.8.2-3.5V6C21.7 4.2 21.5 2.5 21.5 2.5zM8.8 9.7V4.5l6 2.6-6 2.6z"/>
+    </svg>
+    Se Godisbacillen på YouTube!
+  </a>
+
+</body>
+</html>
