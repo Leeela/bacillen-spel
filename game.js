@@ -302,7 +302,7 @@ window.restartGame = function() {
   particles = [];
   stars = 0;
   // Spawna lite godis direkt så det inte är tomt
-  for (let i = 0; i < 6; i++) candies.push(new Candy(true));
+  for (let i = 0; i < 5; i++) candies.push(new Candy(true));
 };
 
 // ==========================================
@@ -442,8 +442,8 @@ function spawnParticles(x, y, kind) {
 // ==========================================
 let candies = [];
 let spawnTimer = 0;
-const SPAWN_INTERVAL = 55, MAX_CANDY = 10;
-for (let i = 0; i < 6; i++) candies.push(new Candy(true));
+const SPAWN_INTERVAL = 75, MAX_CANDY = 7;
+for (let i = 0; i < 5; i++) candies.push(new Candy(true));
 function spawnCandy() {
   if (candies.filter(c => !c.eaten).length < MAX_CANDY) candies.push(new Candy());
 }
