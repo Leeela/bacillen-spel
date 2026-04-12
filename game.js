@@ -302,7 +302,7 @@ window.restartGame = function() {
   particles = [];
   stars = 0;
   // Spawna lite godis direkt så det inte är tomt
-  for (let i = 0; i < 4; i++) candies.push(new Candy(true));
+  for (let i = 0; i < 6; i++) candies.push(new Candy(true));
 };
 
 // ==========================================
@@ -334,12 +334,14 @@ const GOLD_IMG   = loadImg('Godis1.png');
 const YUCKY_IMGS = [
   loadImg('Morot.png'),
   loadImg('Broccoli.png'),
+  loadImg('Morot.png'),   // dubbel chans på morot
+  loadImg('Broccoli.png'), // dubbel chans på broccoli
 ];
 const SALIM_IMG  = loadImg('Salim.png');
 
 const CHANCE_GOLD  = 0.10;
-const CHANCE_YUCKY = 0.35;
-const CHANCE_SALIM = 0.04; // 4% chans — sällsynt easter egg!
+const CHANCE_YUCKY = 0.30;
+const CHANCE_SALIM = 0.15; // 15% chans — Salim ramlar ofta!
 
 class Candy {
   constructor(startOnScreen = false) { this.init(startOnScreen); }
@@ -440,8 +442,8 @@ function spawnParticles(x, y, kind) {
 // ==========================================
 let candies = [];
 let spawnTimer = 0;
-const SPAWN_INTERVAL = 95, MAX_CANDY = 6;
-for (let i = 0; i < 4; i++) candies.push(new Candy(true));
+const SPAWN_INTERVAL = 55, MAX_CANDY = 10;
+for (let i = 0; i < 6; i++) candies.push(new Candy(true));
 function spawnCandy() {
   if (candies.filter(c => !c.eaten).length < MAX_CANDY) candies.push(new Candy());
 }
