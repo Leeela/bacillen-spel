@@ -317,10 +317,15 @@ const YUCKY_IMGS = [
   loadImg('Broccoli.png'), // dubbel chans på broccoli
 ];
 const SALIM_IMG  = loadImg('Salim.png');
+// Selma.png ligger i rotmappen, inte i Godisar och veggies/
+const SELMA_IMG  = { raw: new Image(), processed: null };
+SELMA_IMG.raw.onload = () => { SELMA_IMG.processed = processImage(SELMA_IMG.raw); };
+SELMA_IMG.raw.src = 'Selma.png';
 
 const CHANCE_GOLD  = 0.10;
 const CHANCE_YUCKY = 0.20;
-const CHANCE_SALIM = 0.30; // 30% chans
+const CHANCE_SALIM = 0.15; // 15% chans
+const CHANCE_SELMA = 0.15; // 15% chans
 
 class Candy {
   constructor(startOnScreen = false) { this.init(startOnScreen); }
@@ -336,11 +341,15 @@ class Candy {
     if (r < CHANCE_SALIM) {
       this.kind = 'salim';
       this.imgObj = SALIM_IMG;
-      this.size = 90 + Math.random() * 20; // lite större så man ser ansiktet
-    } else if (r < CHANCE_SALIM + CHANCE_GOLD) {
+      this.size = 90 + Math.random() * 20;
+    } else if (r < CHANCE_SALIM + CHANCE_SELMA) {
+      this.kind = 'selma';
+      this.imgObj = SELMA_IMG;
+      this.size = 90 + Math.random() * 20;
+    } else if (r < CHANCE_SALIM + CHANCE_SELMA + CHANCE_GOLD) {
       this.kind = 'gold';
       this.imgObj = GOLD_IMG;
-    } else if (r < CHANCE_SALIM + CHANCE_GOLD + CHANCE_YUCKY) {
+    } else if (r < CHANCE_SALIM + CHANCE_SELMA + CHANCE_GOLD + CHANCE_YUCKY) {
       this.kind = 'yucky';
       this.imgObj = YUCKY_IMGS[Math.floor(Math.random() * YUCKY_IMGS.length)];
     } else {
@@ -364,7 +373,7 @@ class Candy {
     // Glöd-effekter
     if (this.kind === 'gold')  { ctx.shadowColor = '#ffd700'; ctx.shadowBlur = 30; }
     if (this.kind === 'yucky') { ctx.shadowColor = '#88cc44'; ctx.shadowBlur = 16; }
-    if (this.kind === 'salim') { ctx.shadowColor = '#ff4444'; ctx.shadowBlur = 24; }
+    if (this.kind === 'salim' || this.kind === 'selma') { ctx.shadowColor = '#ff4444'; ctx.shadowBlur = 24; }
 
     const s = this.size;
     const drawable = getImg(this.imgObj);
@@ -376,14 +385,14 @@ class Candy {
         // Säkerhetsfallback om bilden är trasig/saknas
         ctx.beginPath();
         ctx.arc(0, 0, s / 2, 0, Math.PI * 2);
-        ctx.fillStyle = this.kind === 'salim' ? '#ff4444' : this.kind === 'yucky' ? '#88cc44' : '#ffaacc';
+        ctx.fillStyle = (this.kind === 'salim' || this.kind === 'selma') ? '#ff4444' : this.kind === 'yucky' ? '#88cc44' : '#ffaacc';
         ctx.fill();
       }
     } else {
       // Laddas fortfarande — visa färgad cirkel
       ctx.beginPath();
       ctx.arc(0, 0, s / 2, 0, Math.PI * 2);
-      ctx.fillStyle = this.kind === 'salim' ? '#ff4444' : this.kind === 'yucky' ? '#88cc44' : '#ffaacc';
+      ctx.fillStyle = (this.kind === 'salim' || this.kind === 'selma') ? '#ff4444' : this.kind === 'yucky' ? '#88cc44' : '#ffaacc';
       ctx.fill();
     }
 
@@ -538,7 +547,7 @@ function eatCandy(candy) {
   candy.eaten = candy.dragging = false;
   spawnParticles(candy.x, candy.y, candy.kind);
 
-  if (candy.kind === 'salim') { playVideo(VIDEOS.salim, true); return; }
+  if (candy.kind === 'salim' || candy.kind === 'selma') { playVideo(VIDEOS.salim, true); return; }
   if (candy.kind === 'yucky') { playVideo(VIDEOS.yuck, true); return; }
 
   candyEaten++; stars = Math.min(stars + 1, 99);
@@ -605,7 +614,7 @@ function loop() {
   candies.forEach(c => c.update());
   candies.forEach(c => c.draw());
 
-  bug.draw(draggingNear('yummy') || draggingNear('gold'), draggingNear('yucky') || draggingNear('salim'));
+  bug.draw(draggingNear('yummy') || draggingNear('gold'), draggingNear('yucky') || draggingNear('salim') || draggingNear('selma'));
 
   crash.update();
   crash.drawEffects();
