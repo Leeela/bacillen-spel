@@ -131,14 +131,16 @@
       box-shadow: 0 4px 12px rgba(0,0,0,0.15);
     }
 
-    /* Back — framsida av kortet (frågetecken) */
+    /* Back — framsida av kortet (Godisbacillen) */
     .card-back {
       background: linear-gradient(135deg, #e91e63, #ff6090);
     }
 
-    .card-back::after {
-      content: '🍬';
-      font-size: clamp(28px, 8vw, 48px);
+    .card-back img {
+      width: 75%;
+      height: 75%;
+      object-fit: contain;
+      mix-blend-mode: multiply;
     }
 
     /* Front — bildsidan */
@@ -382,7 +384,7 @@
         card.dataset.index = i;
         card.innerHTML = `
           <div class="card-inner">
-            <div class="card-back"></div>
+            <div class="card-back"><img src="../godisbacillen.png" alt="Godisbacillen"></div>
             <div class="card-front"><img src="${img}" alt="godis"></div>
           </div>`;
         card.addEventListener('click', () => flipCard(card));
