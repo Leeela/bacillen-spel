@@ -368,13 +368,21 @@ class Candy {
 
     const s = this.size;
     const drawable = getImg(this.imgObj);
-    if (drawable) {
-      ctx.drawImage(drawable, -s / 2, -s / 2, s, s);
+    if (drawable && drawable.complete && drawable.naturalWidth > 0) {
+      try {
+        ctx.drawImage(drawable, -s / 2, -s / 2, s, s);
+      } catch(e) {
+        // Säkerhetsfallback om bilden är trasig
+        ctx.beginPath();
+        ctx.arc(0, 0, s / 2, 0, Math.PI * 2);
+        ctx.fillStyle = this.kind === 'salim' ? '#ff4444' : this.kind === 'yucky' ? '#88cc44' : '#ffaacc';
+        ctx.fill();
+      }
     } else {
-      // Laddas fortfarande — visa färgad cirkel
+      // Laddas fortfarande eller saknas — visa färgad cirkel
       ctx.beginPath();
       ctx.arc(0, 0, s / 2, 0, Math.PI * 2);
-      ctx.fillStyle = this.kind === 'yucky' ? '#88cc44' : '#ffaacc';
+      ctx.fillStyle = this.kind === 'salim' ? '#ff4444' : this.kind === 'yucky' ? '#88cc44' : '#ffaacc';
       ctx.fill();
     }
 
