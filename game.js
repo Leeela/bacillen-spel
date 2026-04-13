@@ -122,7 +122,12 @@ function startMusic() {
   musicPlaying = true;
   audioCtx = new (window.AudioContext || window.webkitAudioContext)();
   currentBPM = getLevelConfig().bpm;
-  playMelodyLoop();
+  // iOS Safari startar AudioContext i suspended-läge — vi måste resumea den
+  if (audioCtx.state === 'suspended') {
+    audioCtx.resume().then(() => playMelodyLoop());
+  } else {
+    playMelodyLoop();
+  }
 }
 
 function updateMusicTempo() {
@@ -243,12 +248,13 @@ const startBug  = document.getElementById('start-bug');
 let gameStarted = false;
 
 bugLoop.addEventListener('canplay', () => {
-  if (!startBug.src) {
+  if (!startBug.src && !startBug.currentSrc) {
     startBug.src = 'bug_loop.mp4';
     startBug.play().catch(() => {});
   }
 }, { once: true });
-bugLoop.src = 'bug_loop.mp4';
+// bug-loop har <source>-taggar i HTML — anropa bara load() för att starta
+bugLoop.load();
 function handleStart() {
   if (gameStarted) return;
   gameStarted = true;
@@ -316,14 +322,39 @@ function processImage(srcImg) {
   return c;
 }
 
+// Offscreen canvas för bakgrundsborttagning (använder befintlig offCanvas/offCtx)
+let vidFrameCount = 0;
+let lastVidW = 0, lastVidH = 0;
+
 function drawVideoFrameClean(src, dx, dy, dw, dh, tilt = 0) {
   if (!src || src.readyState < 2) return;
+  const w = Math.round(dw), h = Math.round(dh);
+
+  // Uppdatera offscreen var 3:e frame (sparar batteri/CPU)
+  vidFrameCount++;
+  if (vidFrameCount % 3 === 0 || lastVidW !== w || lastVidH !== h) {
+    lastVidW = w; lastVidH = h;
+    offCanvas.width  = w;
+    offCanvas.height = h;
+    offCtx.clearRect(0, 0, w, h);
+    offCtx.drawImage(src, 0, 0, w, h);
+    try {
+      const id = offCtx.getImageData(0, 0, w, h);
+      const d  = id.data;
+      for (let i = 0; i < d.length; i += 4) {
+        const r = d[i], g = d[i+1], b = d[i+2];
+        if (r > 230 && g > 230 && b > 230) {
+          d[i+3] = 0; // vit bakgrund → transparent
+        }
+      }
+      offCtx.putImageData(id, 0, 0);
+    } catch(e) {}
+  }
+
   const px = dx + dw/2, py = dy + dh;
   ctx.save();
   ctx.translate(px, py); ctx.rotate(tilt); ctx.translate(-px, -py);
-  ctx.globalCompositeOperation = 'multiply';
-  ctx.drawImage(src, dx, dy, dw, dh);
-  ctx.globalCompositeOperation = 'source-over';
+  ctx.drawImage(offCanvas, dx, dy, dw, dh);
   ctx.restore();
 }
 

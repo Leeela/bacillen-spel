@@ -123,8 +123,12 @@
   <canvas id="gameCanvas"></canvas>
 
   <!-- Loop-video — dold, ritas på canvas -->
+  <!-- WebM med alfa för Chrome, MOV med alfa för Safari (när de filerna finns) -->
   <video id="bug-loop"
-    muted loop playsinline webkit-playsinline style="display:none"></video>
+    muted loop playsinline webkit-playsinline style="display:none">
+    <source src="bug_loop.webm" type="video/webm">
+    <source src="bug_loop.mov"  type="video/quicktime">
+  </video>
 
   <!-- Reaktionsvideo -->
   <div id="video-overlay">
