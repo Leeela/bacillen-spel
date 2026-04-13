@@ -359,31 +359,36 @@ const bug = {
 //  SOCKERKRASCH — nu med nivå-övergång
 // ==========================================
 const crash = {
-  phase: 'idle',
+  phase: 'idle', // idle | pending | playing
 
   get isActive() { return this.phase !== 'idle'; },
 
   start() {
+    if (this.phase === 'playing') return;
     this.phase = 'playing';
-    playVideo('Somnar.mp4', false, () => {
-      this.phase = 'idle';
-      candyEaten = 0;
-      candies = candies.filter(c => !c.eaten);
+    const levelAtStart = level; // spara vilken nivå kraschen tillhör
 
-      // Spara highscore
+    // Spela Somnar-videon
+    playVideo('Somnar.mp4', false, () => {
+      // Kolla att vi fortfarande är på samma nivå (förhindra dubbel level-up)
+      if (level !== levelAtStart) { this.phase = 'idle'; isShowingVideo = false; return; }
+
       saveBest();
 
       if (level < 3) {
-        // Nästa nivå!
         level++;
         updateMusicTempo();
-        showLevelTransition(level);
+        candyEaten = 0;
         candies = [];
         for (let i = 0; i < 5; i++) candies.push(new Candy(true));
+        this.phase = 'idle';
         isShowingVideo = false;
+        showLevelTransition(level);
       } else {
-        // Nivå 3 klart → visa win + YouTube CTA
+        candyEaten = 0;
+        candies = candies.filter(c => !c.eaten);
         playVideo(VIDEOS.win, false, () => {
+          this.phase = 'idle';
           document.getElementById('yt-cta').style.display = 'flex';
           isShowingVideo = true;
         });
@@ -758,9 +763,11 @@ function eatCandy(candy) {
   stars = Math.min(stars + 1, 99);
   totalStars++;
 
-  if (candyEaten >= 5) {
-    setTimeout(() => crash.start(), 400);
-    playVideo(candy.kind === 'gold' ? VIDEOS.wow : VIDEOS.chomp, false);
+  if (candyEaten >= 5 && !crash.isActive) {
+    crash.phase = 'pending'; // blockera nya krascher direkt
+    playVideo(candy.kind === 'gold' ? VIDEOS.wow : VIDEOS.chomp, false, () => {
+      crash.start();
+    });
     return;
   }
 
