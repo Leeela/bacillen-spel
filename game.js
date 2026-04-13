@@ -322,39 +322,45 @@ function processImage(srcImg) {
   return c;
 }
 
-// Offscreen canvas för bakgrundsborttagning (använder befintlig offCanvas/offCtx)
+// Offscreen canvas för bakgrundsborttagning (fallback för MP4)
 let vidFrameCount = 0;
 let lastVidW = 0, lastVidH = 0;
 
 function drawVideoFrameClean(src, dx, dy, dw, dh, tilt = 0) {
   if (!src || src.readyState < 2) return;
-  const w = Math.round(dw), h = Math.round(dh);
-
-  // Uppdatera offscreen var 3:e frame (sparar batteri/CPU)
-  vidFrameCount++;
-  if (vidFrameCount % 3 === 0 || lastVidW !== w || lastVidH !== h) {
-    lastVidW = w; lastVidH = h;
-    offCanvas.width  = w;
-    offCanvas.height = h;
-    offCtx.clearRect(0, 0, w, h);
-    offCtx.drawImage(src, 0, 0, w, h);
-    try {
-      const id = offCtx.getImageData(0, 0, w, h);
-      const d  = id.data;
-      for (let i = 0; i < d.length; i += 4) {
-        const r = d[i], g = d[i+1], b = d[i+2];
-        if (r > 230 && g > 230 && b > 230) {
-          d[i+3] = 0; // vit bakgrund → transparent
-        }
-      }
-      offCtx.putImageData(id, 0, 0);
-    } catch(e) {}
-  }
 
   const px = dx + dw/2, py = dy + dh;
   ctx.save();
   ctx.translate(px, py); ctx.rotate(tilt); ctx.translate(-px, -py);
-  ctx.drawImage(offCanvas, dx, dy, dw, dh);
+
+  // Alpha-video (WebM/MOV) har inbyggd transparens — rita direkt, ingen getImageData
+  const cs = src.currentSrc || '';
+  const hasNativeAlpha = cs.endsWith('.webm') || cs.endsWith('.mov');
+
+  if (hasNativeAlpha) {
+    ctx.drawImage(src, dx, dy, dw, dh);
+  } else {
+    // Fallback: ta bort vit bakgrund via getImageData (för MP4)
+    const w = Math.round(dw), h = Math.round(dh);
+    vidFrameCount++;
+    if (vidFrameCount % 3 === 0 || lastVidW !== w || lastVidH !== h) {
+      lastVidW = w; lastVidH = h;
+      offCanvas.width  = w;
+      offCanvas.height = h;
+      offCtx.clearRect(0, 0, w, h);
+      offCtx.drawImage(src, 0, 0, w, h);
+      try {
+        const id = offCtx.getImageData(0, 0, w, h);
+        const d  = id.data;
+        for (let i = 0; i < d.length; i += 4) {
+          if (d[i] > 230 && d[i+1] > 230 && d[i+2] > 230) d[i+3] = 0;
+        }
+        offCtx.putImageData(id, 0, 0);
+      } catch(e) {}
+    }
+    ctx.drawImage(offCanvas, dx, dy, dw, dh);
+  }
+
   ctx.restore();
 }
 
