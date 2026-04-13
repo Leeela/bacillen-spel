@@ -1,5 +1,6 @@
 // ==========================================
 //  MATA GODISBACILLEN! 🍬
+//  Med nivåer, highscore och snabbare tempo!
 // ==========================================
 
 const canvas = document.getElementById('gameCanvas');
@@ -16,6 +17,71 @@ window.addEventListener('resize', () => {
   W = canvas.width  = window.innerWidth;
   H = canvas.height = window.innerHeight;
 });
+
+// ==========================================
+//  NIVÅ-SYSTEM
+// ==========================================
+let level = 1;
+const LEVELS = {
+  1: {
+    candySpeed:    [1.3, 1.7],   // min + random range
+    spawnInterval: 75,
+    maxCandy:      7,
+    chanceYucky:   0.15,
+    chanceSalim:   0.10,
+    chanceSelma:   0.10,
+    chanceGold:    0.10,
+    bgTop:    '#fffbe8',
+    bgBottom: '#ffe6f5',
+    grassColor: '#b8eeaa',
+    bpm: 160,
+  },
+  2: {
+    candySpeed:    [1.8, 2.2],
+    spawnInterval: 55,
+    maxCandy:      8,
+    chanceYucky:   0.25,
+    chanceSalim:   0.12,
+    chanceSelma:   0.12,
+    chanceGold:    0.10,
+    bgTop:    '#f3e5f5',
+    bgBottom: '#e1f5fe',
+    grassColor: '#b2dfdb',
+    bpm: 190,
+  },
+  3: {
+    candySpeed:    [2.3, 2.7],
+    spawnInterval: 40,
+    maxCandy:      9,
+    chanceYucky:   0.20,
+    chanceSalim:   0.18,
+    chanceSelma:   0.18,
+    chanceGold:    0.12,
+    bgTop:    '#fff3e0',
+    bgBottom: '#ffebee',
+    grassColor: '#ffcc80',
+    bpm: 220,
+  },
+};
+
+function getLevelConfig() { return LEVELS[level] || LEVELS[3]; }
+
+// ==========================================
+//  HIGHSCORE (localStorage)
+// ==========================================
+let totalStars = 0;
+let bestStars  = parseInt(localStorage.getItem('godisbacillen-best') || '0', 10);
+let isNewRecord = false;
+let newRecordTimer = 0;
+
+function saveBest() {
+  if (totalStars > bestStars) {
+    bestStars = totalStars;
+    localStorage.setItem('godisbacillen-best', bestStars.toString());
+    isNewRecord = true;
+    newRecordTimer = 180; // visa i 3 sekunder
+  }
+}
 
 // ==========================================
 //  VIDEOFILER — lazy loading
@@ -48,51 +114,57 @@ let stars      = 0;
 // ==========================================
 let audioCtx = null;
 let musicPlaying = false;
+let currentBPM = 160;
+let musicTimeout = null;
 
 function startMusic() {
   if (musicPlaying) return;
   musicPlaying = true;
   audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  currentBPM = getLevelConfig().bpm;
+  playMelodyLoop();
+}
 
-  // Glad barnmelodi — "Snart är det Jul" / glad dur-melodi
-  const BPM   = 160;
-  const BEAT  = 60 / BPM;
+function updateMusicTempo() {
+  currentBPM = getLevelConfig().bpm;
+}
+
+function playMelodyLoop() {
+  if (!musicPlaying || !audioCtx) return;
+  const BPM  = currentBPM;
+  const BEAT = 60 / BPM;
   const notes = [
-    // C5  E5  G5  E5  F5  A5  G5  _   E5  G5  C6  _   G5  F5  E5  D5  C5
     [523, 1],[659,1],[784,1],[659,1],[698,1],[880,1],[784,2],
     [659,1],[784,1],[1047,2],[784,1],[698,1],[659,1],[587,1],[523,2],
     [523,1],[659,1],[784,1],[659,1],[698,1],[880,1],[784,2],
     [659,1],[784,1],[1047,2],[784,1],[698,1],[659,1],[587,1],[523,3],
   ];
 
-  function playMelody(startTime) {
-    let t = startTime;
-    notes.forEach(([freq, beats]) => {
-      const dur = beats * BEAT * 0.85;
-      const osc = audioCtx.createOscillator();
-      const env = audioCtx.createGain();
-      osc.connect(env); env.connect(audioCtx.destination);
-      osc.type = 'triangle';
-      osc.frequency.setValueAtTime(freq, t);
-      env.gain.setValueAtTime(0, t);
-      env.gain.linearRampToValueAtTime(0.05, t + 0.02);
-      env.gain.linearRampToValueAtTime(0.03, t + dur * 0.6);
-      env.gain.linearRampToValueAtTime(0, t + dur);
-      osc.start(t); osc.stop(t + dur);
-      t += beats * BEAT;
-    });
-    // Loopa
-    const totalTime = notes.reduce((s, [, b]) => s + b * BEAT, 0);
-    setTimeout(() => { if (musicPlaying) playMelody(audioCtx.currentTime); },
-      (totalTime - 0.3) * 1000);
-  }
-  playMelody(audioCtx.currentTime + 0.1);
+  let t = audioCtx.currentTime + 0.1;
+  notes.forEach(([freq, beats]) => {
+    const dur = beats * BEAT * 0.85;
+    const osc = audioCtx.createOscillator();
+    const env = audioCtx.createGain();
+    osc.connect(env); env.connect(audioCtx.destination);
+    osc.type = 'triangle';
+    osc.frequency.setValueAtTime(freq, t);
+    env.gain.setValueAtTime(0, t);
+    env.gain.linearRampToValueAtTime(0.05, t + 0.02);
+    env.gain.linearRampToValueAtTime(0.03, t + dur * 0.6);
+    env.gain.linearRampToValueAtTime(0, t + dur);
+    osc.start(t); osc.stop(t + dur);
+    t += beats * BEAT;
+  });
+  const totalTime = notes.reduce((s, [, b]) => s + b * BEAT, 0);
+  if (musicTimeout) clearTimeout(musicTimeout);
+  musicTimeout = setTimeout(() => { if (musicPlaying) playMelodyLoop(); },
+    (totalTime - 0.3) * 1000);
 }
 
 // ==========================================
 //  INSTRUKTIONSTEXT (visas i 4 sek vid start)
 // ==========================================
-let instrTimer = 180; // frames
+let instrTimer = 180;
 
 function drawInstruction() {
   if (instrTimer <= 0) return;
@@ -103,23 +175,73 @@ function drawInstruction() {
   ctx.font = `bold ${Math.min(W * 0.055, 36)}px Arial Rounded MT Bold, Arial`;
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
-  // Skugga
   ctx.fillStyle = 'rgba(0,0,0,0.15)';
   ctx.fillText('🍬 Dra godis till munnen! 🍬', W/2 + 2, H * 0.18 + 2);
-  // Text
   ctx.fillStyle = '#c62828';
   ctx.fillText('🍬 Dra godis till munnen! 🍬', W/2, H * 0.18);
   ctx.restore();
 }
 
 // ==========================================
-//  STARTSKÄRM — startar loop-videon
+//  NIVÅ-ÖVERGÅNG
+// ==========================================
+let levelTransition = 0; // 0 = ingen, >0 = countdown frames
+let levelTransitionText = '';
+
+function showLevelTransition(newLevel) {
+  levelTransitionText = newLevel <= 3
+    ? `⭐ Nivå ${newLevel}! ⭐`
+    : '🏆 MÄSTARE! 🏆';
+  levelTransition = 150; // 2.5 sekunder
+}
+
+function drawLevelTransition() {
+  if (levelTransition <= 0) return;
+  levelTransition--;
+  const alpha = levelTransition < 30 ? levelTransition / 30
+              : levelTransition > 120 ? (150 - levelTransition) / 30
+              : 1;
+  ctx.save();
+  ctx.globalAlpha = alpha * 0.95;
+
+  // Bakgrund
+  ctx.fillStyle = 'rgba(0,0,0,0.5)';
+  ctx.fillRect(0, 0, W, H);
+
+  // Text
+  const scale = 1 + Math.sin(levelTransition * 0.1) * 0.05;
+  ctx.translate(W/2, H/2);
+  ctx.scale(scale, scale);
+  ctx.font = `bold ${Math.min(W * 0.1, 64)}px Arial Rounded MT Bold, Arial`;
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+
+  // Skugga
+  ctx.fillStyle = 'rgba(0,0,0,0.3)';
+  ctx.fillText(levelTransitionText, 3, 3);
+
+  // Huvudtext
+  ctx.fillStyle = '#fff';
+  ctx.fillText(levelTransitionText, 0, 0);
+
+  // Undertitel
+  if (level <= 3) {
+    ctx.font = `bold ${Math.min(W * 0.045, 28)}px Arial Rounded MT Bold, Arial`;
+    ctx.fillStyle = '#ffeb3b';
+    const subText = level === 2 ? 'Snabbare! 💨' : level === 3 ? 'Snabbast! 🔥' : '';
+    ctx.fillText(subText, 0, 50);
+  }
+
+  ctx.restore();
+}
+
+// ==========================================
+//  STARTSKÄRM
 // ==========================================
 const startBtn  = document.querySelector('.start-btn');
 const startBug  = document.getElementById('start-bug');
 let gameStarted = false;
 
-// Dela bug_loop.mp4 mellan startskärm och spel — laddas bara en gång
 bugLoop.addEventListener('canplay', () => {
   if (!startBug.src) {
     startBug.src = 'bug_loop.mp4';
@@ -131,8 +253,6 @@ function handleStart() {
   if (gameStarted) return;
   gameStarted = true;
 
-  // 🔑 iOS-trick: lås upp video-elementet direkt i gesture-kontexten
-  // Utan detta blockerar Safari alla framtida video.play()-anrop
   video.muted = true;
   video.src = VIDEOS.chomp;
   video.play().then(() => {
@@ -158,7 +278,6 @@ startScreen.addEventListener('click', handleStart);
 const offCanvas = document.createElement('canvas');
 const offCtx    = offCanvas.getContext('2d', { willReadFrequently: true });
 
-// Ta bort grå schackrute-bakgrund från PNG — flood-fill från hörnen
 function processImage(srcImg) {
   const w = srcImg.naturalWidth, h = srcImg.naturalHeight;
   if (!w || !h) return null;
@@ -193,11 +312,10 @@ function processImage(srcImg) {
       q.push([x+1,y],[x-1,y],[x,y+1],[x,y-1]);
     }
     cx.putImageData(id, 0, 0);
-  } catch(e) { /* CORS — returnera obehandlad */ }
+  } catch(e) {}
   return c;
 }
 
-// Rita videobildruta med multiply-blend (GPU-accelererad, funkar på mobil)
 function drawVideoFrameClean(src, dx, dy, dw, dh, tilt = 0) {
   if (!src || src.readyState < 2) return;
   const px = dx + dw/2, py = dy + dh;
@@ -225,7 +343,6 @@ const bug = {
   draw(nearbyYummy, nearbyYucky) {
     drawVideoFrameClean(bugLoop, this.imgLeft, this.imgTop, this.imgW, this.imgH, 0);
 
-    // Munglöd när godis är nära
     if ((nearbyYummy || nearbyYucky) && !crash.isActive) {
       const m = this.getMouthPos();
       ctx.save();
@@ -239,26 +356,38 @@ const bug = {
 };
 
 // ==========================================
-//  SOCKERKRASCH
+//  SOCKERKRASCH — nu med nivå-övergång
 // ==========================================
 const crash = {
-  phase: 'idle', // idle | playing
+  phase: 'idle',
 
   get isActive() { return this.phase !== 'idle'; },
 
   start() {
     this.phase = 'playing';
-    // Spela Somnar-videon i samma fullskärms-overlay som övriga reaktioner
     playVideo('Somnar.mp4', false, () => {
       this.phase = 'idle';
       candyEaten = 0;
       candies = candies.filter(c => !c.eaten);
-      // Efter Win-videon → visa YouTube-CTA
-      playVideo(VIDEOS.win, false, () => {
-        document.getElementById('yt-cta').style.display = 'flex';
-        // isShowingVideo lämnas true tills spelaren trycker "Fortsätt spela"
-        isShowingVideo = true;
-      });
+
+      // Spara highscore
+      saveBest();
+
+      if (level < 3) {
+        // Nästa nivå!
+        level++;
+        updateMusicTempo();
+        showLevelTransition(level);
+        candies = [];
+        for (let i = 0; i < 5; i++) candies.push(new Candy(true));
+        isShowingVideo = false;
+      } else {
+        // Nivå 3 klart → visa win + YouTube CTA
+        playVideo(VIDEOS.win, false, () => {
+          document.getElementById('yt-cta').style.display = 'flex';
+          isShowingVideo = true;
+        });
+      }
     });
   },
 
@@ -268,7 +397,6 @@ const crash = {
 };
 
 window.restartGame = function() {
-  // Rensa video-handlers så inget gammalt callback kan köras
   video.oncanplay = null;
   video.onerror   = null;
   video.onended   = null;
@@ -280,7 +408,11 @@ window.restartGame = function() {
   candies = [];
   particles = [];
   stars = 0;
-  // Spawna lite godis direkt så det inte är tomt
+  totalStars = 0;
+  level = 1;
+  isNewRecord = false;
+  newRecordTimer = 0;
+  updateMusicTempo();
   for (let i = 0; i < 5; i++) candies.push(new Candy(true));
 };
 
@@ -289,14 +421,12 @@ window.restartGame = function() {
 // ==========================================
 const DIR = 'Godisar och veggies/';
 
-// Laddar bild och processar bort schackruta när den är redo
 function loadImg(file) {
   const obj = { raw: new Image(), processed: null };
   obj.raw.onload = () => { obj.processed = processImage(obj.raw); };
   obj.raw.src = DIR + file;
   return obj;
 }
-// Returnerar bästa tillgängliga version av bilden
 function getImg(obj) {
   return obj.processed || (obj.raw.complete ? obj.raw : null);
 }
@@ -313,8 +443,8 @@ const GOLD_IMG   = loadImg('Godis1.png');
 const YUCKY_IMGS = [
   loadImg('Morot.png'),
   loadImg('Broccoli.png'),
-  loadImg('Morot.png'),   // dubbel chans på morot
-  loadImg('Broccoli.png'), // dubbel chans på broccoli
+  loadImg('Morot.png'),
+  loadImg('Broccoli.png'),
 ];
 const SALIM_IMG  = loadImg('Salim.png');
 // Selma.png ligger i rotmappen, inte i Godisar och veggies/
@@ -322,34 +452,33 @@ const SELMA_IMG  = { raw: new Image(), processed: null };
 SELMA_IMG.raw.onload = () => { SELMA_IMG.processed = processImage(SELMA_IMG.raw); };
 SELMA_IMG.raw.src = 'Selma.png';
 
-const CHANCE_GOLD  = 0.10;
-const CHANCE_YUCKY = 0.20;
-const CHANCE_SALIM = 0.15; // 15% chans
-const CHANCE_SELMA = 0.15; // 15% chans
-
 class Candy {
   constructor(startOnScreen = false) { this.init(startOnScreen); }
   init(startOnScreen = false) {
+    const cfg = getLevelConfig();
     this.x = 70 + Math.random() * (W - 140);
     this.y = startOnScreen ? 80 + Math.random() * (H * 0.45) : -60;
     this.size = 80 + Math.random() * 30;
-    this.speed = 1.3 + Math.random() * 1.7;
+    this.speed = cfg.candySpeed[0] + Math.random() * cfg.candySpeed[1];
     this.dragging = this.eaten = false;
     this.wobble = Math.random() * Math.PI * 2;
     this.wobbleDir = (Math.random() - 0.5) * 0.7;
+
     const r = Math.random();
-    if (r < CHANCE_SALIM) {
+    const { chanceSalim, chanceSelma, chanceGold, chanceYucky } = cfg;
+
+    if (r < chanceSalim) {
       this.kind = 'salim';
       this.imgObj = SALIM_IMG;
       this.size = 90 + Math.random() * 20;
-    } else if (r < CHANCE_SALIM + CHANCE_SELMA) {
+    } else if (r < chanceSalim + chanceSelma) {
       this.kind = 'selma';
       this.imgObj = SELMA_IMG;
       this.size = 90 + Math.random() * 20;
-    } else if (r < CHANCE_SALIM + CHANCE_SELMA + CHANCE_GOLD) {
+    } else if (r < chanceSalim + chanceSelma + chanceGold) {
       this.kind = 'gold';
       this.imgObj = GOLD_IMG;
-    } else if (r < CHANCE_SALIM + CHANCE_SELMA + CHANCE_GOLD + CHANCE_YUCKY) {
+    } else if (r < chanceSalim + chanceSelma + chanceGold + chanceYucky) {
       this.kind = 'yucky';
       this.imgObj = YUCKY_IMGS[Math.floor(Math.random() * YUCKY_IMGS.length)];
     } else {
@@ -370,26 +499,22 @@ class Candy {
     ctx.save();
     ctx.translate(this.x, this.y);
 
-    // Glöd-effekter
     if (this.kind === 'gold')  { ctx.shadowColor = '#ffd700'; ctx.shadowBlur = 30; }
     if (this.kind === 'yucky') { ctx.shadowColor = '#88cc44'; ctx.shadowBlur = 16; }
     if (this.kind === 'salim' || this.kind === 'selma') { ctx.shadowColor = '#ff4444'; ctx.shadowBlur = 24; }
 
     const s = this.size;
     const drawable = getImg(this.imgObj);
-    // drawable kan vara Canvas (processad) eller Image — båda funkar med drawImage
     if (drawable) {
       try {
         ctx.drawImage(drawable, -s / 2, -s / 2, s, s);
       } catch(e) {
-        // Säkerhetsfallback om bilden är trasig/saknas
         ctx.beginPath();
         ctx.arc(0, 0, s / 2, 0, Math.PI * 2);
         ctx.fillStyle = (this.kind === 'salim' || this.kind === 'selma') ? '#ff4444' : this.kind === 'yucky' ? '#88cc44' : '#ffaacc';
         ctx.fill();
       }
     } else {
-      // Laddas fortfarande — visa färgad cirkel
       ctx.beginPath();
       ctx.arc(0, 0, s / 2, 0, Math.PI * 2);
       ctx.fillStyle = (this.kind === 'salim' || this.kind === 'selma') ? '#ff4444' : this.kind === 'yucky' ? '#88cc44' : '#ffaacc';
@@ -439,18 +564,19 @@ function spawnParticles(x, y, kind) {
 // ==========================================
 let candies = [];
 let spawnTimer = 0;
-const SPAWN_INTERVAL = 75, MAX_CANDY = 7;
 for (let i = 0; i < 5; i++) candies.push(new Candy(true));
 function spawnCandy() {
-  if (candies.filter(c => !c.eaten).length < MAX_CANDY) candies.push(new Candy());
+  const cfg = getLevelConfig();
+  if (candies.filter(c => !c.eaten).length < cfg.maxCandy) candies.push(new Candy());
 }
 
 // ==========================================
 //  UI
 // ==========================================
 function drawBackground() {
+  const cfg = getLevelConfig();
   const g = ctx.createLinearGradient(0, 0, 0, H);
-  g.addColorStop(0, '#fffbe8'); g.addColorStop(1, '#ffe6f5');
+  g.addColorStop(0, cfg.bgTop); g.addColorStop(1, cfg.bgBottom);
   ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
   [
     [W*0.14, H*0.10, 60],
@@ -464,14 +590,92 @@ function drawBackground() {
   });
   ctx.beginPath();
   ctx.ellipse(W/2, H+15, W*0.65, 55, 0, 0, Math.PI*2);
-  ctx.fillStyle = '#b8eeaa'; ctx.fill();
+  ctx.fillStyle = cfg.grassColor; ctx.fill();
 }
 
 function drawScore() {
-  if (!stars) return;
-  ctx.save(); ctx.font = 'bold 34px serif'; ctx.textAlign = 'left';
-  ctx.textBaseline = 'top'; ctx.globalAlpha = 0.88;
-  ctx.fillText('⭐'.repeat(Math.min((stars-1)%10+1,10)), 16, 60);
+  // Visa totala stjärnor uppe till vänster
+  if (!totalStars && !bestStars) return;
+  ctx.save();
+  ctx.font = 'bold 28px serif';
+  ctx.textAlign = 'left';
+  ctx.textBaseline = 'top';
+  ctx.globalAlpha = 0.88;
+
+  // Nuvarande stjärnor
+  const starCount = Math.min(totalStars, 30);
+  const starText = '⭐'.repeat(Math.min(starCount, 10));
+  ctx.fillText(starText, 16, 60);
+
+  // Visa rader om fler än 10
+  if (starCount > 10) {
+    ctx.fillText('⭐'.repeat(Math.min(starCount - 10, 10)), 16, 94);
+  }
+  if (starCount > 20) {
+    ctx.fillText('⭐'.repeat(Math.min(starCount - 20, 10)), 16, 128);
+  }
+
+  ctx.restore();
+}
+
+function drawLevelIndicator() {
+  ctx.save();
+  ctx.font = `bold ${Math.min(W * 0.04, 22)}px Arial Rounded MT Bold, Arial`;
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'top';
+  ctx.globalAlpha = 0.85;
+
+  // Nivå-badge
+  const colors = { 1: '#66bb6a', 2: '#ffa726', 3: '#ef5350' };
+  const labels = { 1: '🟢 Nivå 1', 2: '🟡 Nivå 2', 3: '🔴 Nivå 3' };
+
+  const text = labels[level] || '🔴 Nivå 3';
+  const metrics = ctx.measureText(text);
+  const px = W / 2;
+  const py = 14;
+
+  // Bakgrund
+  ctx.fillStyle = 'rgba(255,255,255,0.85)';
+  ctx.beginPath();
+  ctx.roundRect(px - metrics.width/2 - 14, py - 4, metrics.width + 28, 34, 17);
+  ctx.fill();
+
+  // Text
+  ctx.fillStyle = colors[level] || '#ef5350';
+  ctx.fillText(text, px, py);
+
+  ctx.restore();
+}
+
+function drawHighscore() {
+  if (!bestStars) return;
+  ctx.save();
+  ctx.font = `bold ${Math.min(W * 0.035, 18)}px Arial Rounded MT Bold, Arial`;
+  ctx.textAlign = 'right';
+  ctx.textBaseline = 'top';
+  ctx.globalAlpha = 0.7;
+  ctx.fillStyle = '#5d4037';
+  ctx.fillText(`🏆 Bäst: ${bestStars}⭐`, W - 16, 14);
+  ctx.restore();
+}
+
+function drawNewRecord() {
+  if (newRecordTimer <= 0) return;
+  newRecordTimer--;
+  const alpha = newRecordTimer < 30 ? newRecordTimer / 30 : 1;
+  const scale = 1 + Math.sin(newRecordTimer * 0.15) * 0.08;
+
+  ctx.save();
+  ctx.globalAlpha = alpha;
+  ctx.translate(W/2, H * 0.35);
+  ctx.scale(scale, scale);
+  ctx.font = `bold ${Math.min(W * 0.08, 48)}px Arial Rounded MT Bold, Arial`;
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillStyle = 'rgba(0,0,0,0.2)';
+  ctx.fillText('🏆 NYTT REKORD! 🏆', 3, 3);
+  ctx.fillStyle = '#ffd700';
+  ctx.fillText('🏆 NYTT REKORD! 🏆', 0, 0);
   ctx.restore();
 }
 
@@ -505,7 +709,7 @@ function getPos(e) {
 }
 function onDown(e) {
   e.preventDefault();
-  if (isShowingVideo || crash.isActive) return;
+  if (isShowingVideo || crash.isActive || levelTransition > 0) return;
   const p = getPos(e);
   for (let i = candies.length - 1; i >= 0; i--) {
     const c = candies[i];
@@ -550,7 +754,9 @@ function eatCandy(candy) {
   if (candy.kind === 'salim' || candy.kind === 'selma') { playVideo(VIDEOS.salim, true); return; }
   if (candy.kind === 'yucky') { playVideo(VIDEOS.yuck, true); return; }
 
-  candyEaten++; stars = Math.min(stars + 1, 99);
+  candyEaten++;
+  stars = Math.min(stars + 1, 99);
+  totalStars++;
 
   if (candyEaten >= 5) {
     setTimeout(() => crash.start(), 400);
@@ -578,10 +784,8 @@ function playVideo(filename, isYuck, onDone = null) {
     else        { finishVideo(onDone); }
   };
   video.src = filename;
-  // Spela direkt (iOS kräver play() inom user gesture-kontexten)
   overlay.classList.add('active');
   video.play().catch(() => {
-    // Fallback: vänta på canplay om direkt play misslyckades
     video.oncanplay = () => { video.play().catch(() => finishVideo(onDone)); };
   });
 }
@@ -609,7 +813,8 @@ function loop() {
   ctx.clearRect(0, 0, W, H);
   drawBackground();
 
-  if (++spawnTimer >= SPAWN_INTERVAL) { spawnCandy(); spawnTimer = 0; }
+  const cfg = getLevelConfig();
+  if (++spawnTimer >= cfg.spawnInterval) { spawnCandy(); spawnTimer = 0; }
 
   candies.forEach(c => c.update());
   candies.forEach(c => c.draw());
@@ -624,8 +829,12 @@ function loop() {
 
   drawScore();
   drawCandyCounter();
+  drawLevelIndicator();
+  drawHighscore();
+  drawNewRecord();
   drawInstruction();
   drawYuckOverlay();
+  drawLevelTransition();
 
   requestAnimationFrame(loop);
 }
