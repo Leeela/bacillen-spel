@@ -41,8 +41,8 @@ const LEVELS = {
     spawnInterval: 55,
     maxCandy:      8,
     chanceYucky:   0.25,
-    chanceSalim:   0.12,
-    chanceSelma:   0.12,
+    chanceSalim:   0.10,
+    chanceSelma:   0.10,
     chanceGold:    0.10,
     bgTop:    '#f3e5f5',
     bgBottom: '#e1f5fe',
@@ -54,8 +54,8 @@ const LEVELS = {
     spawnInterval: 40,
     maxCandy:      9,
     chanceYucky:   0.20,
-    chanceSalim:   0.18,
-    chanceSelma:   0.18,
+    chanceSalim:   0.10,
+    chanceSelma:   0.10,
     chanceGold:    0.12,
     bgTop:    '#fff3e0',
     bgBottom: '#ffebee',
@@ -287,35 +287,40 @@ const offCtx    = offCanvas.getContext('2d', { willReadFrequently: true });
 function processImage(srcImg) {
   const w = srcImg.naturalWidth, h = srcImg.naturalHeight;
   if (!w || !h) return null;
+  // Skala ner till max 300px för snabbare bearbetning på mobil
+  const scale = Math.min(1, 300 / Math.max(w, h));
+  const pw = Math.round(w * scale), ph = Math.round(h * scale);
   const c = document.createElement('canvas');
-  c.width = w; c.height = h;
+  c.width = pw; c.height = ph;
   const cx = c.getContext('2d');
-  cx.drawImage(srcImg, 0, 0);
+  cx.drawImage(srcImg, 0, 0, pw, ph);
   try {
-    const id = cx.getImageData(0, 0, w, h);
+    const id = cx.getImageData(0, 0, pw, ph);
     const d  = id.data;
-    const visited = new Uint8Array(w * h);
-    function isBackground(x, y) {
-      const i = (y * w + x) * 4;
-      if (d[i+3] === 0) return false;
-      const r = d[i], g = d[i+1], b = d[i+2];
+    // Snabb tröskelbaserad bakgrundsradering: grå/vit bakgrund → transparent
+    // Använder flood-fill men med flat Int32Array-kö (snabbt på iOS)
+    const visited = new Uint8Array(pw * ph);
+    const queue   = new Int32Array(pw * ph);
+    let head = 0, tail = 0;
+    const seeds = [0, pw-1, pw*(ph-1), pw*ph-1]; // hörn
+    for (const s of seeds) {
+      if (!visited[s]) { visited[s] = 1; queue[tail++] = s; }
+    }
+    while (head < tail) {
+      const idx = queue[head++];
+      const x = idx % pw, y = (idx / pw) | 0;
+      const p = idx * 4;
+      if (d[p+3] === 0) continue;
+      const r = d[p], g = d[p+1], b = d[p+2];
       const avg = (r + g + b) / 3;
-      return Math.max(Math.abs(r-avg), Math.abs(g-avg), Math.abs(b-avg)) < 30;
-    }
-    function erase(x, y) {
-      const i = (y * w + x) * 4;
-      d[i] = d[i+1] = d[i+2] = d[i+3] = 0;
-    }
-    const q = [[0,0],[w-1,0],[0,h-1],[w-1,h-1]];
-    while (q.length) {
-      const [x, y] = q.pop();
-      if (x < 0 || x >= w || y < 0 || y >= h) continue;
-      const vi = y * w + x;
-      if (visited[vi]) continue;
-      visited[vi] = 1;
-      if (!isBackground(x, y)) continue;
-      erase(x, y);
-      q.push([x+1,y],[x-1,y],[x,y+1],[x,y-1]);
+      if (Math.max(Math.abs(r-avg), Math.abs(g-avg), Math.abs(b-avg)) >= 30) continue;
+      d[p] = d[p+1] = d[p+2] = d[p+3] = 0;
+      const neighbors = [idx-1, idx+1, idx-pw, idx+pw];
+      for (const n of neighbors) {
+        if (n >= 0 && n < pw*ph && !visited[n]) {
+          visited[n] = 1; queue[tail++] = n;
+        }
+      }
     }
     cx.putImageData(id, 0, 0);
   } catch(e) {}
