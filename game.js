@@ -197,37 +197,16 @@ function processImage(srcImg) {
   return c;
 }
 
-// Tar bort vit bakgrund från videobildruta, med multiply-fallback
+// Rita videobildruta med multiply-blend (GPU-accelererad, funkar på mobil)
 function drawVideoFrameClean(src, dx, dy, dw, dh, tilt = 0) {
   if (!src || src.readyState < 2) return;
-  offCanvas.width = dw; offCanvas.height = dh;
-  offCtx.drawImage(src, 0, 0, dw, dh);
-  try {
-    const id = offCtx.getImageData(0, 0, dw, dh);
-    const d  = id.data;
-    for (let i = 0; i < d.length; i += 4) {
-      const r = d[i], g = d[i+1], b = d[i+2];
-      if (r > 220 && g > 220 && b > 220) { d[i+3] = 0; }
-      else if (r > 175 && g > 175 && b > 175) {
-        d[i+3] = Math.round(255 * (r + g + b - 525) / (660 - 525));
-      }
-    }
-    offCtx.putImageData(id, 0, 0);
-    const px = dx + dw/2, py = dy + dh;
-    ctx.save();
-    ctx.translate(px, py); ctx.rotate(tilt); ctx.translate(-px, -py);
-    ctx.drawImage(offCanvas, dx, dy, dw, dh);
-    ctx.restore();
-  } catch(e) {
-    // Fallback vid file:// — multiply-blend
-    const px = dx + dw/2, py = dy + dh;
-    ctx.save();
-    ctx.translate(px, py); ctx.rotate(tilt); ctx.translate(-px, -py);
-    ctx.globalCompositeOperation = 'multiply';
-    ctx.drawImage(src, dx, dy, dw, dh);
-    ctx.globalCompositeOperation = 'source-over';
-    ctx.restore();
-  }
+  const px = dx + dw/2, py = dy + dh;
+  ctx.save();
+  ctx.translate(px, py); ctx.rotate(tilt); ctx.translate(-px, -py);
+  ctx.globalCompositeOperation = 'multiply';
+  ctx.drawImage(src, dx, dy, dw, dh);
+  ctx.globalCompositeOperation = 'source-over';
+  ctx.restore();
 }
 
 // ==========================================
