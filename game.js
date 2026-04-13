@@ -320,7 +320,7 @@ const SALIM_IMG  = loadImg('Salim.png');
 
 const CHANCE_GOLD  = 0.10;
 const CHANCE_YUCKY = 0.20;
-const CHANCE_SALIM = 0.50; // 50% chans — Salim är ÖVERALLT!
+const CHANCE_SALIM = 0.30; // 30% chans
 
 class Candy {
   constructor(startOnScreen = false) { this.init(startOnScreen); }
