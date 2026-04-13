@@ -264,10 +264,12 @@ function handleStart() {
   video.play().then(() => {
     video.pause();
     video.muted = false;
-    video.src = '';
+    video.removeAttribute('src');
+    video.load();
   }).catch(() => {
     video.muted = false;
-    video.src = '';
+    video.removeAttribute('src');
+    video.load();
   });
 
   bugLoop.play().catch(() => {});
@@ -447,7 +449,8 @@ window.restartGame = function() {
   video.oncanplay = null;
   video.onerror   = null;
   video.onended   = null;
-  video.src = '';
+  video.removeAttribute('src');
+  video.load();
   overlay.classList.remove('active');
   isShowingVideo = false;
   crash.phase = 'idle';
@@ -840,7 +843,12 @@ function playVideo(filename, isYuck, onDone = null) {
 }
 function finishVideo(onDone = null) {
   overlay.classList.remove('active');
-  video.src = '';
+  // Nolla handlers FÖRST — annars loopar onerror in i finishVideo igen
+  video.onended  = null;
+  video.onerror  = null;
+  video.oncanplay = null;
+  video.removeAttribute('src');
+  video.load();
   if (onDone) {
     onDone();
   } else if (!crash.isActive) {
