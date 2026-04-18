@@ -94,6 +94,105 @@
   const player = { x: 0, y: 0, vy: 0, onGround: true };
   let winVideoTimer = null;
 
+  // ── Ljud (Web Audio API — inga filer behövs) ──
+  let audioCtx = null;
+  function getCtx() {
+    if (!audioCtx || audioCtx.state === 'closed') {
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    }
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+    return audioCtx;
+  }
+
+  // Bakgrundsmusik — glad löp-melodi
+  let bgLoopId = null;
+  let bgMasterGain = null;
+  const BG_MELODY = [523, 659, 784, 880, 784, 659, 523, 392]; // C5 E5 G5 A5 G5 E5 C5 G4
+  let bgStep = 0;
+  function startBgMusic() {
+    if (bgLoopId) return;
+    const ctx = getCtx();
+    bgMasterGain = ctx.createGain();
+    bgMasterGain.gain.value = 0.07;
+    bgMasterGain.connect(ctx.destination);
+    bgStep = 0;
+    function tick() {
+      if (!state.running) return;
+      if (!state.paused) {
+        const ctx2 = getCtx();
+        const freq = BG_MELODY[bgStep % BG_MELODY.length];
+        const osc  = ctx2.createOscillator();
+        const g    = ctx2.createGain();
+        osc.connect(g); g.connect(bgMasterGain);
+        osc.type = 'triangle';
+        osc.frequency.value = freq;
+        g.gain.setValueAtTime(1, ctx2.currentTime);
+        g.gain.exponentialRampToValueAtTime(0.001, ctx2.currentTime + 0.13);
+        osc.start(); osc.stop(ctx2.currentTime + 0.13);
+        bgStep++;
+      }
+      bgLoopId = setTimeout(tick, 175);
+    }
+    tick();
+  }
+  function stopBgMusic() {
+    if (bgLoopId) { clearTimeout(bgLoopId); bgLoopId = null; }
+    if (bgMasterGain) { try { bgMasterGain.disconnect(); } catch(e){} bgMasterGain = null; }
+  }
+
+  // Hopp-ljud: snabb ascending-beep när Godisbacillen klarar en tandborste
+  function playJumpSound() {
+    try {
+      const ctx = getCtx();
+      const osc  = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain); gain.connect(ctx.destination);
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(400, ctx.currentTime);
+      osc.frequency.linearRampToValueAtTime(950, ctx.currentTime + 0.15);
+      gain.gain.setValueAtTime(0.28, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.22);
+      osc.start(); osc.stop(ctx.currentTime + 0.22);
+    } catch(e) {}
+  }
+
+  // Godis-ljud: litet dubbel-pling vid upphämtning
+  function playCandySound() {
+    try {
+      const ctx = getCtx();
+      [[880, 0], [1100, 0.09]].forEach(([freq, delay]) => {
+        const osc  = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain); gain.connect(ctx.destination);
+        osc.type = 'sine';
+        osc.frequency.value = freq;
+        const t = ctx.currentTime + delay;
+        gain.gain.setValueAtTime(0.18, t);
+        gain.gain.exponentialRampToValueAtTime(0.001, t + 0.14);
+        osc.start(t); osc.stop(t + 0.14);
+      });
+    } catch(e) {}
+  }
+
+  // Varningsljud: två låga "dun"-pulser när tandläkaren spawnar
+  function playWarningSound() {
+    try {
+      const ctx = getCtx();
+      [0, 0.28].forEach(delay => {
+        const osc  = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain); gain.connect(ctx.destination);
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(220, ctx.currentTime + delay);
+        osc.frequency.linearRampToValueAtTime(110, ctx.currentTime + delay + 0.22);
+        gain.gain.setValueAtTime(0.22, ctx.currentTime + delay);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + delay + 0.22);
+        osc.start(ctx.currentTime + delay);
+        osc.stop(ctx.currentTime + delay + 0.22);
+      });
+    } catch(e) {}
+  }
+
   // ── Sprite-laddning ──
   const sprites = {
     run1: new Image(),
@@ -183,6 +282,8 @@
     state.nextDentistIn = state.config.dentistGap[0];
     state.dentist = null;
     state.showingWinVideo = false;
+    stopBgMusic();
+    startBgMusic();
 
     // Bakgrundsbyggnader
     state.buildings = [];
@@ -315,6 +416,7 @@
       const dentistW = PR*2.0;
       const dentistH = PR*2.5;
       state.dentist = { x: VW, y: GY - dentistH, w: dentistW, h: dentistH, passed: false };
+      playWarningSound();
       const [mn,mx] = cfg.dentistGap;
       state.nextDentistIn = mn + Math.random()*(mx-mn);
     }
@@ -331,6 +433,7 @@
       if (o.isBrush && !state.passedObstacles.has(o.id) && player.x > o.x + o.w) {
         state.passedObstacles.add(o.id);
         state.brushCount++;
+        playJumpSound();
         state.score += 50;
         spawnParticles(o.x + o.w/2, o.y, '#ffeb3b');
         updateHUD();
@@ -407,6 +510,7 @@
   function collectCandy(c) {
     const vals = {candy:5,lollipop:15,rainbow:25,glitter:20,cake:30};
     const cols = {candy:'#f06292',lollipop:'#ff9800',rainbow:'#e91e63',glitter:'#ffd700',cake:'#f48fb1'};
+    playCandySound();
     state.score += vals[c.type]||5;
     spawnParticles(c.x, c.y, cols[c.type]);
     updateHUD();
@@ -448,6 +552,7 @@
 
   function capturedByDentist() {
     if (winVideoTimer) { clearTimeout(winVideoTimer); winVideoTimer = null; }
+    stopBgMusic();
     state.running = false;
     pauseBtn.classList.remove('show');
     hudEl.style.display = 'none';
@@ -474,6 +579,7 @@
   }
 
   function win() {
+    stopBgMusic();
     state.running = false;
     pauseBtn.classList.remove('show');
     hudEl.style.display = 'none';
@@ -499,6 +605,7 @@
 
   function gameOver() {
     if (winVideoTimer) { clearTimeout(winVideoTimer); winVideoTimer = null; }
+    stopBgMusic();
     state.running = false;
     pauseBtn.classList.remove('show');
     hudEl.style.display = 'none';
