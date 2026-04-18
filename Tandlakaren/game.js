@@ -198,7 +198,6 @@
     run1: new Image(),
     run2: new Image(),
     jump: new Image(),
-    zoom: new Image(),
     dentist: new Image(),
     tooth: new Image(),
     toothbrush: new Image(),
@@ -206,7 +205,6 @@
   sprites.run1.src = 'sprites/Godisbacillen springer.png';
   sprites.run2.src = 'sprites/Godisbacillen springer snabbt.png';
   sprites.jump.src = 'sprites/Godisbacillen hoppar.png';
-  sprites.zoom.src = 'sprites/Godisbacillen springr zoom.png';
   sprites.dentist.src = 'sprites/Tandläkaren.png';
   sprites.tooth.src = 'sprites/tand.png';
   sprites.toothbrush.src = 'sprites/tandborste.png';
@@ -282,6 +280,7 @@
     state.nextDentistIn = state.config.dentistGap[0];
     state.dentist = null;
     state.showingWinVideo = false;
+    if (nextLevelBtn) nextLevelBtn.style.display = 'none';
     stopBgMusic();
     startBgMusic();
 
@@ -551,6 +550,7 @@
   }
 
   function capturedByDentist() {
+    if (!state.running) return;
     if (winVideoTimer) { clearTimeout(winVideoTimer); winVideoTimer = null; }
     stopBgMusic();
     state.running = false;
@@ -579,6 +579,7 @@
   }
 
   function win() {
+    if (!state.running) return;
     stopBgMusic();
     state.running = false;
     pauseBtn.classList.remove('show');
@@ -604,6 +605,7 @@
   }
 
   function gameOver() {
+    if (!state.running) return;
     if (winVideoTimer) { clearTimeout(winVideoTimer); winVideoTimer = null; }
     stopBgMusic();
     state.running = false;
