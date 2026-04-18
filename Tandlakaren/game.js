@@ -539,13 +539,15 @@
     const video = document.createElement('video');
     video.src = '../WOW_Yay!.mp4';
     video.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);height:70vh;width:auto;z-index:30;border-radius:20px;background:transparent;';
-    video.autoplay = true;
-    video.muted = true; // krävs för autoplay i Chrome/Safari
-    video.oncanplay = () => { video.muted = false; }; // slå på ljud när den är redo
+    video.muted = false;
     video.onended = () => {
       document.body.removeChild(video);
       state.showingWinVideo = false;
     };
+    video.play().catch(() => {
+      video.muted = true;
+      video.play();
+    });
     document.body.appendChild(video);
   }
 
@@ -561,9 +563,7 @@
     const video = document.createElement('video');
     video.src = '../TandlakareFangar.mp4';
     video.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);height:70vh;width:auto;z-index:30;border-radius:20px;background:transparent;';
-    video.autoplay = true;
-    video.muted = true; // krävs för autoplay i Chrome/Safari
-    video.oncanplay = () => { video.muted = false; };
+    video.muted = false;
     video.onended = () => {
       document.body.removeChild(video);
       // Visa game over-kortet efter videon
@@ -575,6 +575,10 @@
       if (nextLevelBtn) nextLevelBtn.style.display = 'none';
       gameoverEl.classList.add('show');
     };
+    video.play().catch(() => {
+      video.muted = true;
+      video.play();
+    });
     document.body.appendChild(video);
   }
 
