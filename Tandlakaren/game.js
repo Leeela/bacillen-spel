@@ -970,15 +970,15 @@
     if (!state.dentist) return;
     const d = state.dentist;
 
-    // Varningssignal — liten blinkande tandläkarbild i hörnet
-    if (d.x > VW * 0.7) {
+    // Varningssignal — liten blinkande tandläkarbild i hörnet, visas direkt från spawn tills tandläkaren är passerad
+    if (!d.passed) {
       const pulse = Math.abs(Math.sin(state.frame * 0.15));
       ctx.globalAlpha = 0.4 + pulse * 0.6;
       const iconSize = VH * 0.1;
       if (sprites.dentist && sprites.dentist.complete && sprites.dentist.naturalWidth > 0) {
         const aspect = sprites.dentist.naturalWidth / sprites.dentist.naturalHeight;
         const iconW = iconSize * aspect;
-        ctx.drawImage(sprites.dentist, VW - iconW - 16, VH * 0.12, iconW, iconSize);
+        ctx.drawImage(sprites.dentist, VW - iconW - 16, VH * 0.26, iconW, iconSize);
       }
       ctx.globalAlpha = 1;
     }
