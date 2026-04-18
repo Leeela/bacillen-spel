@@ -48,6 +48,8 @@
       obstacleGap: [150, 280],
       candyGap:    [60, 120],
       dentistGap:  [2000, 3500],
+      dentistChaseGap: [2000, 3500],
+      maxDentists: 1,
       lives: Infinity,
       jumpForgiveness: 10,
       starThresholds: [50, 100, 150],
@@ -60,6 +62,8 @@
       obstacleGap: [100, 200],
       candyGap:    [50, 100],
       dentistGap:  [1500, 2500],
+      dentistChaseGap: [1500, 2500],
+      maxDentists: 1,
       lives: 3,
       jumpForgiveness: 6,
       starThresholds: [100, 300, 500],
@@ -72,6 +76,8 @@
       obstacleGap: [80, 150],
       candyGap:    [40, 90],
       dentistGap:  [1000, 1800],
+      dentistChaseGap: [280, 420],
+      maxDentists: 3,
       lives: 1,
       jumpForgiveness: 3,
       starThresholds: [200, 500, 1000],
@@ -88,7 +94,7 @@
     bgScroll: 0, fgScroll: 0,
     nextObstacleIn: 80, nextCandyIn: 50,
     brushCount: 0, passedObstacles: new Set(),
-    dentist: null, showingWinVideo: false,
+    dentists: [], dentistsSpawned: 0, showingWinVideo: false,
   };
 
   const player = { x: 0, y: 0, vy: 0, onGround: true };
@@ -278,7 +284,8 @@
     state.brushCount = 0;
     state.passedObstacles = new Set();
     state.nextDentistIn = state.config.dentistGap[0];
-    state.dentist = null;
+    state.dentists = [];
+    state.dentistsSpawned = 0;
     state.showingWinVideo = false;
     if (nextLevelBtn) nextLevelBtn.style.display = 'none';
     stopBgMusic();
@@ -411,12 +418,14 @@
 
     // Tandläkare spawn
     state.nextDentistIn--;
-    if (state.nextDentistIn <= 0 && !state.dentist) {
+    if (state.nextDentistIn <= 0 && state.dentistsSpawned < cfg.maxDentists) {
       const dentistW = PR*2.0;
       const dentistH = PR*2.5;
-      state.dentist = { x: VW, y: GY - dentistH, w: dentistW, h: dentistH, passed: false };
+      state.dentists.push({ x: VW, y: GY - dentistH, w: dentistW, h: dentistH, passed: false });
+      state.dentistsSpawned++;
       playWarningSound();
-      const [mn,mx] = cfg.dentistGap;
+      // Nästa gap: kort chase-gap om fler ska komma, annars nästa våg
+      const [mn,mx] = state.dentistsSpawned < cfg.maxDentists ? cfg.dentistChaseGap : cfg.dentistGap;
       state.nextDentistIn = mn + Math.random()*(mx-mn);
     }
 
@@ -436,7 +445,7 @@
         state.score += 50;
         spawnParticles(o.x + o.w/2, o.y, '#ffeb3b');
         updateHUD();
-        if (state.brushCount >= 10 && !state.dentist) { win(); }
+        if (state.brushCount >= 10 && state.dentists.length === 0 && state.dentistsSpawned >= cfg.maxDentists) { win(); }
       }
 
       if (o.x + o.w < 0) { state.obstacles.splice(i,1); continue; }
@@ -455,32 +464,40 @@
       if (rectsOverlap(playerRect, cr)) { collectCandy(c); state.candies.splice(i,1); }
     }
 
-    // Tandläkare
-    if (state.dentist) {
-      state.dentist.x -= state.speed;
-      if (state.dentist.x + state.dentist.w < 0) {
-        state.dentist = null;
-        if (state.brushCount >= 10) { win(); }
-      } else {
-        // Markera passerad — spela video bara om brushCount >= 10
-        if (!state.dentist.passed && player.x > state.dentist.x + state.dentist.w) {
-          state.dentist.passed = true;
-          state.dentist.celebrated = true;
-          if (state.brushCount >= 10) {
-            winVideoTimer = setTimeout(() => showDentistWinVideo(), 400);
-          }
+    // Tandläkare — loopa över alla aktiva tandläkare
+    for (let di = state.dentists.length - 1; di >= 0; di--) {
+      const d = state.dentists[di];
+      d.x -= state.speed;
+
+      if (d.x + d.w < 0) {
+        state.dentists.splice(di, 1);
+        // Sista tandläkaren scrollade av — kolla vinst
+        if (state.dentists.length === 0 && state.dentistsSpawned >= cfg.maxDentists && state.brushCount >= 10) {
+          win();
         }
-        // Kollision med tandläkaren (mindre hitbox än sprite-storleken för bättre feel)
-        if (state.invincibleFrames <= 0) {
-          // Hitbox centrerad på figuren — figuren tar upp mitten 30% av bilden
-          const dentistHitboxW = state.dentist.w * 0.5;
-          const dentistHitboxH = state.dentist.h * 0.75;
-          const dentistHitboxX = state.dentist.x + state.dentist.w * 0.25; // skjut in mot mitten
-          const dentistHitboxY = state.dentist.y + state.dentist.h * 0.10; // 10% från toppen av spriten
-          const dentistRect = { x: dentistHitboxX, y: dentistHitboxY, w: dentistHitboxW, h: dentistHitboxH };
-          if (rectsOverlap(playerRect, dentistRect)) {
-            capturedByDentist();
-          }
+        continue;
+      }
+
+      // Markera passerad och kolla vinst om ALLA är passerade
+      if (!d.passed && player.x > d.x + d.w) {
+        d.passed = true;
+        const allPassed = state.dentists.every(dt => dt.passed);
+        if (state.brushCount >= 10 && allPassed) {
+          showDentistWinVideo(); // stoppar spelet direkt
+          return;
+        }
+      }
+
+      // Kollision
+      if (state.invincibleFrames <= 0) {
+        const dentistHitboxW = d.w * 0.5;
+        const dentistHitboxH = d.h * 0.75;
+        const dentistHitboxX = d.x + d.w * 0.25;
+        const dentistHitboxY = d.y + d.h * 0.10;
+        const dentistRect = { x: dentistHitboxX, y: dentistHitboxY, w: dentistHitboxW, h: dentistHitboxH };
+        if (rectsOverlap(playerRect, dentistRect)) {
+          capturedByDentist();
+          return;
         }
       }
     }
@@ -531,24 +548,48 @@
   }
 
   function showDentistWinVideo() {
+    if (!state.running) return;
+    stopBgMusic();
+    state.running = false; // stoppa direkt — inga fler träffar möjliga
     state.showingWinVideo = true;
     state.score += 200;
-    updateHUD();
+    pauseBtn.classList.remove('show');
+    hudEl.style.display = 'none';
 
-    // Spela WOW_Yay!.mp4
     const video = document.createElement('video');
     video.src = '../WOW_Yay!.mp4';
     video.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);height:70vh;width:auto;z-index:30;border-radius:20px;background:transparent;';
     video.muted = false;
-    video.onended = () => {
-      document.body.removeChild(video);
+    const cleanup = () => {
+      if (document.body.contains(video)) document.body.removeChild(video);
       state.showingWinVideo = false;
+      showWinCard();
     };
-    video.play().catch(() => {
-      video.muted = true;
-      video.play();
-    });
+    video.onended = cleanup;
+    video.onerror = cleanup;
+    video.play().catch(() => { video.muted = true; video.play(); });
     document.body.appendChild(video);
+  }
+
+  function showWinCard() {
+    gameoverTitle.textContent = '🎉 Du vann!';
+    finalScoreEl.textContent = state.score;
+    starsEl.textContent = '⭐⭐⭐';
+    const hsKey = 'tandlakare_hs_' + state.difficulty;
+    const prev = parseInt(localStorage.getItem(hsKey) || '0', 10);
+    if (state.score > prev) {
+      localStorage.setItem(hsKey, state.score);
+      highscoreTxt.textContent = '🏆 Nytt rekord!';
+    } else {
+      highscoreTxt.textContent = 'Rekord: ' + prev + ' 🍬';
+    }
+    playAgainBtn.textContent = 'Börja om';
+    if (nextLevelBtn) {
+      const difficulties = ['easy', 'medium', 'hard'];
+      const currentIdx = difficulties.indexOf(state.difficulty);
+      nextLevelBtn.style.display = currentIdx < difficulties.length - 1 ? 'block' : 'none';
+    }
+    setTimeout(() => gameoverEl.classList.add('show'), 400);
   }
 
   function capturedByDentist() {
@@ -588,24 +629,7 @@
     state.running = false;
     pauseBtn.classList.remove('show');
     hudEl.style.display = 'none';
-    gameoverTitle.textContent = '🎉 Du vann!';
-    finalScoreEl.textContent = state.score;
-    starsEl.textContent = '⭐⭐⭐';
-    const hsKey = 'tandlakare_hs_'+state.difficulty;
-    const prev = parseInt(localStorage.getItem(hsKey)||'0',10);
-    if (state.score>prev) {
-      localStorage.setItem(hsKey, state.score);
-      highscoreTxt.textContent = '🏆 Nytt rekord!';
-    } else {
-      highscoreTxt.textContent = 'Rekord: '+prev+' 🍬';
-    }
-    playAgainBtn.textContent = 'Börja om';
-    if (nextLevelBtn) {
-      const difficulties = ['easy', 'medium', 'hard'];
-      const currentIdx = difficulties.indexOf(state.difficulty);
-      nextLevelBtn.style.display = currentIdx < difficulties.length - 1 ? 'block' : 'none';
-    }
-    setTimeout(()=>gameoverEl.classList.add('show'),400);
+    showWinCard();
   }
 
   function gameOver() {
@@ -967,11 +991,11 @@
   }
 
   function drawDentist() {
-    if (!state.dentist) return;
-    const d = state.dentist;
+    if (!state.dentists.length) return;
 
-    // Varningssignal — liten blinkande tandläkarbild i hörnet, visas direkt från spawn tills tandläkaren är passerad
-    if (!d.passed) {
+    // Varningssignal — visa för första opasserade tandläkaren
+    const unpassedFirst = state.dentists.find(dt => !dt.passed);
+    if (unpassedFirst) {
       const pulse = Math.abs(Math.sin(state.frame * 0.15));
       ctx.globalAlpha = 0.4 + pulse * 0.6;
       const iconSize = VH * 0.1;
@@ -983,6 +1007,7 @@
       ctx.globalAlpha = 1;
     }
 
+    for (const d of state.dentists) {
     // Skugga
     ctx.fillStyle = 'rgba(0,0,0,0.25)';
     ctx.beginPath();
@@ -1036,6 +1061,7 @@
       ctx.textAlign = 'center';
       ctx.fillText('TANDLÄKARE', dx, dy + d.h*0.45);
     }
+    } // end for (const d of state.dentists)
   }
 
   // ── Render-loop ──
@@ -1044,7 +1070,7 @@
     drawBackground();
     state.obstacles.forEach(drawObstacle);
     state.candies.forEach(drawCandy);
-    if (state.dentist) drawDentist();
+    if (state.dentists.length) drawDentist();
     drawParticles();
     drawPlayer();
 
