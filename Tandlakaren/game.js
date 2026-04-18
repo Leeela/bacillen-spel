@@ -100,6 +100,13 @@
   const player = { x: 0, y: 0, vy: 0, onGround: true };
   let winVideoTimer = null;
 
+  // ── JAA!-hoppljud (mp3-fil) ──
+  const jaaSound = new Audio('../JAA!.mp3');
+  jaaSound.preload = 'auto';
+  function playJaaSound() {
+    try { jaaSound.currentTime = 0; jaaSound.play().catch(() => {}); } catch(e) {}
+  }
+
   // ── Ljud (Web Audio API — inga filer behövs) ──
   let audioCtx = null;
   function getCtx() {
@@ -225,6 +232,7 @@
     if (player.onGround) {
       player.vy = JUMP;
       player.onGround = false;
+      playJaaSound();
     }
   }
 
