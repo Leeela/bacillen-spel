@@ -471,9 +471,9 @@
 
       if (d.x + d.w < 0) {
         state.dentists.splice(di, 1);
-        // Sista tandläkaren scrollade av — kolla vinst
+        // Sista tandläkaren scrollade av — spela vinst-video
         if (state.dentists.length === 0 && state.dentistsSpawned >= cfg.maxDentists && state.brushCount >= 10) {
-          win();
+          showDentistWinVideo();
         }
         continue;
       }
