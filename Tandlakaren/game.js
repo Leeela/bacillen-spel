@@ -103,6 +103,7 @@
   // ── JAA!-hoppljud (mp3-fil) ──
   const jaaSound = new Audio('../JAA!.mp3');
   jaaSound.preload = 'auto';
+  jaaSound.volume = 0.4;
   function playJaaSound() {
     try { jaaSound.currentTime = 0; jaaSound.play().catch(() => {}); } catch(e) {}
   }
