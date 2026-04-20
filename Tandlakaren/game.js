@@ -455,7 +455,10 @@
         state.score += 50;
         spawnParticles(o.x + o.w/2, o.y, '#ffeb3b');
         updateHUD();
-        if (state.brushCount >= 10 && state.dentists.length === 0 && state.dentistsSpawned >= cfg.maxDentists) { win(); }
+        if (state.brushCount >= 10 && state.dentists.length === 0) {
+          if (state.dentistsSpawned >= cfg.maxDentists) { showDentistWinVideo(); }
+          else { win(); }
+        }
       }
 
       if (o.x + o.w < 0) { state.obstacles.splice(i,1); continue; }
@@ -506,8 +509,15 @@
         const dentistHitboxY = d.y + d.h * 0.10;
         const dentistRect = { x: dentistHitboxX, y: dentistHitboxY, w: dentistHitboxW, h: dentistHitboxH };
         if (rectsOverlap(playerRect, dentistRect)) {
-          capturedByDentist();
-          return;
+          if (state.config.lives === Infinity) {
+            // Lätt-läge: studsa tillbaka, ingen game over
+            state.invincibleFrames = 60;
+            player.vy = JUMP * 0.6;
+            player.onGround = false;
+          } else {
+            capturedByDentist();
+            return;
+          }
         }
       }
     }
