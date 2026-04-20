@@ -33,8 +33,8 @@
     GY   = Math.round(VH * 0.82);           // marknivå
     PR   = Math.round(Math.min(VW, VH) * 0.07); // spelarens radius
     const BASE = Math.min(VW, VH);
-    JUMP = -(BASE * 0.10);                  // hoppkraft (baserad på kortaste axeln)
-    GRAV = BASE * 0.0033;                   // gravitation (baserad på kortaste axeln)
+    JUMP = -(BASE * 0.072);                 // hoppkraft (baserad på kortaste axeln)
+    GRAV = BASE * 0.0018;                   // gravitation (baserad på kortaste axeln)
   }
   window.addEventListener('resize', resize);
   resize();
