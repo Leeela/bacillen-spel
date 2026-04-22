@@ -73,7 +73,7 @@
 
   // ── Spelstate ──
   let state = {
-    running: false, paused: false,
+    running: false, paused: false, brushing: false,
     difficulty: null, config: null,
     speed: 0, frame: 0, score: 0, lives: 0,
     invincibleFrames: 0,
@@ -86,6 +86,7 @@
 
   const player = { x: 0, y: 0, vy: 0, onGround: true };
   let winVideoTimer = null;
+  let brushState = null;
 
   // ── JAA!-hoppljud (mp3-fil) ──
   const jaaSound = new Audio('../JAA!.mp3');
@@ -373,8 +374,8 @@
 
   // ── Spawn godis ──
   function spawnCandy() {
-    const types = ['candy','lollipop','rainbow','glitter','cake'];
-    const weights = [60, 20, 8, 8, 4];
+    const types = ['candy','lollipop','rainbow','glitter','cake','superbag'];
+    const weights = [58, 20, 8, 8, 4, 2];
     const total = weights.reduce((a,b)=>a+b,0);
     let r = Math.random()*total, type='candy';
     for (let i=0;i<types.length;i++) { r-=weights[i]; if(r<=0){type=types[i];break;} }
@@ -404,6 +405,7 @@
 
   // ── Update ──
   function update() {
+    if (state.brushing) { updateBrushing(); return; }
     if (!state.running || state.paused) return;
     state.frame++;
     const cfg = state.config;
@@ -555,12 +557,26 @@
   }
 
   function collectCandy(c) {
-    const vals = {candy:5,lollipop:15,rainbow:25,glitter:20,cake:30};
-    const cols = {candy:'#f06292',lollipop:'#ff9800',rainbow:'#e91e63',glitter:'#ffd700',cake:'#f48fb1'};
+    const vals = {candy:5,lollipop:15,rainbow:25,glitter:20,cake:30,superbag:50};
+    const cols = {candy:'#f06292',lollipop:'#ff9800',rainbow:'#e91e63',glitter:'#ffd700',cake:'#f48fb1',superbag:'#ff4081'};
     playCandySound();
     state.score += vals[c.type]||5;
-    spawnParticles(c.x, c.y, cols[c.type]);
+    spawnParticles(c.x, c.y, cols[c.type]||'#ff4081');
     updateHUD();
+    // Supergodis-påse: godisregn!
+    if (c.type === 'superbag') {
+      const rainTypes = ['candy','lollipop','rainbow','glitter'];
+      for (let i = 0; i < 4; i++) {
+        state.candies.push({
+          type: rainTypes[Math.floor(Math.random()*rainTypes.length)],
+          x: VW * (0.3 + Math.random() * 0.5),
+          y: GY - PR * (1.5 + Math.random() * 4),
+          w: PR * 0.9, h: PR * 0.9,
+          wobble: Math.random() * Math.PI * 2,
+        });
+      }
+      spawnParticles(c.x, c.y - PR, '#ffd700');
+    }
   }
 
   function handleHit() {
@@ -638,14 +654,7 @@
     video.muted = false;
     video.onended = () => {
       document.body.removeChild(video);
-      // Visa game over-kortet efter videon
-      gameoverTitle.textContent = '😱 Tandläkaren tog dig!';
-      finalScoreEl.textContent = state.score;
-      starsEl.textContent = '';
-      highscoreTxt.textContent = 'Försök igen! 💪';
-      playAgainBtn.textContent = '▶ FÖRSÖK IGEN';
-      if (nextLevelBtn) nextLevelBtn.style.display = 'none';
-      gameoverEl.classList.add('show');
+      startBrushing(); // interaktivt tandborstnings-minispel!
     };
     video.play().catch(() => {
       video.muted = true;
@@ -653,6 +662,257 @@
     });
     document.body.appendChild(video);
   }
+
+  // ── Tandborstnings-minispel ──────────────────────────────────
+
+  function _brushEventPos(e) {
+    const rect = canvas.getBoundingClientRect();
+    const sx = VW / rect.width, sy = VH / rect.height;
+    if (e.touches && e.touches.length > 0)
+      return { x: (e.touches[0].clientX - rect.left)*sx, y: (e.touches[0].clientY - rect.top)*sy };
+    return { x: (e.clientX - rect.left)*sx, y: (e.clientY - rect.top)*sy };
+  }
+  function _onBrushDown(e) {
+    if (!state.brushing || !brushState || brushState.celebrating) return;
+    e.preventDefault();
+    const p = _brushEventPos(e);
+    brushState.pointerDown = true;
+    brushState.px = brushState.prevPx = p.x;
+    brushState.py = brushState.prevPy = p.y;
+  }
+  function _onBrushMove(e) {
+    if (!state.brushing || !brushState || !brushState.pointerDown || brushState.celebrating) return;
+    e.preventDefault();
+    const p = _brushEventPos(e);
+    brushState.prevPx = brushState.px; brushState.prevPy = brushState.py;
+    brushState.px = p.x; brushState.py = p.y;
+  }
+  function _onBrushUp() { if (brushState) brushState.pointerDown = false; }
+
+  function startBrushing() {
+    const NUM = 6;
+    const tw = PR * 1.9, th = PR * 2.8, gap = PR * 0.55;
+    const totalW = NUM*tw + (NUM-1)*gap;
+    const sx = (VW - totalW) / 2;
+    const ty = VH * 0.62;
+    const teeth = Array.from({length: NUM}, (_, i) => ({
+      x: sx + i*(tw+gap), y: ty - th, w: tw, h: th, dirty: 100, sparkled: false,
+    }));
+    brushState = {
+      teeth, pointerDown: false,
+      px: -1, py: -1, prevPx: -1, prevPy: -1,
+      celebrating: false, celebrateTimer: 0,
+      sparkles: [],
+    };
+    state.brushing = true;
+    document.addEventListener('pointerdown', _onBrushDown, { passive: false });
+    document.addEventListener('pointermove', _onBrushMove, { passive: false });
+    document.addEventListener('pointerup',   _onBrushUp);
+    document.addEventListener('touchstart',  _onBrushDown, { passive: false });
+    document.addEventListener('touchmove',   _onBrushMove, { passive: false });
+    document.addEventListener('touchend',    _onBrushUp);
+  }
+
+  function updateBrushing() {
+    if (!brushState) return;
+    // Uppdatera befintliga glittringar
+    brushState.sparkles = brushState.sparkles.filter(s => {
+      s.x += s.vx; s.y += s.vy; s.vy += 0.18; s.life--; return s.life > 0;
+    });
+    if (brushState.celebrating) {
+      brushState.celebrateTimer++;
+      if (brushState.celebrateTimer > 100) finishBrushing();
+      return;
+    }
+    if (!brushState.pointerDown) return;
+    const dx = brushState.px - brushState.prevPx;
+    const dy = brushState.py - brushState.prevPy;
+    const dist = Math.sqrt(dx*dx + dy*dy);
+    brushState.teeth.forEach(t => {
+      const over = brushState.px > t.x - PR*0.4 && brushState.px < t.x+t.w+PR*0.4 &&
+                   brushState.py > t.y - PR*0.5 && brushState.py < t.y+t.h+PR*0.5;
+      if (!over) return;
+      t.dirty = Math.max(0, t.dirty - dist*0.45 - 0.4);
+      if (t.dirty === 0 && !t.sparkled) {
+        t.sparkled = true;
+        for (let i=0;i<10;i++) brushState.sparkles.push({
+          x: t.x+t.w/2+(Math.random()-.5)*t.w,
+          y: t.y+t.h*.4,
+          vx:(Math.random()-.5)*7, vy:-(Math.random()*4+2),
+          life:55, size: PR*(0.1+Math.random()*0.2),
+          color:['#fffde7','#fff9c4','#f0f4c3','#ffffff'][Math.floor(Math.random()*4)],
+        });
+      }
+    });
+    if (brushState.teeth.every(t => t.dirty===0)) {
+      brushState.celebrating = true;
+      brushState.celebrateTimer = 0;
+      for (let i=0;i<40;i++) brushState.sparkles.push({
+        x: VW/2+(Math.random()-.5)*VW*.8,
+        y: VH*.5+(Math.random()-.5)*VH*.5,
+        vx:(Math.random()-.5)*9, vy:-(Math.random()*7+2),
+        life:90, size:PR*(0.2+Math.random()*.4),
+        color:['#ffeb3b','#ff4081','#00e5ff','#69f0ae','#ff6e40','#ff85b3'][Math.floor(Math.random()*6)],
+      });
+    }
+  }
+
+  function drawBrushing() {
+    if (!brushState) return;
+    // Bakgrund
+    const bg = ctx.createLinearGradient(0,0,0,VH);
+    bg.addColorStop(0,'#e3f2fd'); bg.addColorStop(1,'#fce4ec');
+    ctx.fillStyle = bg; ctx.fillRect(0,0,VW,VH);
+
+    // Rubrik
+    ctx.textAlign = 'center';
+    if (brushState.celebrating) {
+      ctx.fillStyle='#43a047';
+      ctx.font=`bold ${Math.round(VH*.06)}px Arial`;
+      ctx.fillText('🎉 BRAVOOOO! 🎉', VW/2, VH*.10);
+      ctx.font=`${Math.round(VH*.035)}px Arial`;
+      ctx.fillStyle='#388e3c';
+      ctx.fillText('Supert borstat! 🦷✨', VW/2, VH*.17);
+    } else {
+      ctx.fillStyle='#e91e63';
+      ctx.font=`bold ${Math.round(VH*.055)}px Arial`;
+      ctx.fillText('🦷 BORSTA TÄNDERNA!', VW/2, VH*.10);
+      ctx.fillStyle='#5d4037';
+      ctx.font=`${Math.round(VH*.03)}px Arial`;
+      ctx.fillText('Gnugga med fingret fram och tillbaka!', VW/2, VH*.16);
+    }
+
+    // Godisbacillen-ansikte med öppen mun
+    const fR = VH*0.14, fcx=VW/2, fcy=VH*0.36;
+    ctx.fillStyle='#a5d6a7';
+    ctx.beginPath(); ctx.arc(fcx,fcy,fR,0,Math.PI*2); ctx.fill();
+    ctx.strokeStyle='#388e3c'; ctx.lineWidth=Math.max(2,fR*.07);
+    ctx.beginPath(); ctx.arc(fcx,fcy,fR,0,Math.PI*2); ctx.stroke();
+    // Ögon
+    const eyeR=fR*.2;
+    [-0.36,0.36].forEach(off=>{
+      const ex=fcx+fR*off, ey=fcy-fR*.2;
+      ctx.fillStyle='white'; ctx.beginPath(); ctx.arc(ex,ey,eyeR,0,Math.PI*2); ctx.fill();
+      ctx.fillStyle='#222'; ctx.beginPath(); ctx.arc(ex+eyeR*.1,ey+eyeR*.1,eyeR*.55,0,Math.PI*2); ctx.fill();
+      ctx.fillStyle='white'; ctx.beginPath(); ctx.arc(ex+eyeR*.3,ey-eyeR*.15,eyeR*.2,0,Math.PI*2); ctx.fill();
+    });
+    // Öppen mun
+    const mW=fR*1.2, mH=fR*.55, mY=fcy+fR*.3;
+    ctx.fillStyle='#bf360c';
+    ctx.beginPath(); ctx.ellipse(fcx,mY,mW/2,mH/2,0,0,Math.PI*2); ctx.fill();
+    ctx.fillStyle='#e91e63';
+    ctx.beginPath(); ctx.ellipse(fcx,mY+mH*.2,mW*.38,mH*.32,0,0,Math.PI*2); ctx.fill();
+    // Decorativa tänder i munnen
+    const stw=mW*.28, sth=mH*.45;
+    for (let i=-1;i<=1;i++) {
+      ctx.fillStyle='#fff';
+      ctx.fillRect(fcx+i*stw-stw/2+1, mY-mH/2, stw-2, sth);
+    }
+
+    // Pil ned mot borst-tänder
+    if (!brushState.celebrating) {
+      ctx.fillStyle='#e91e63';
+      ctx.font=`${Math.round(VH*.045)}px Arial`;
+      ctx.fillText('👇', VW/2, VH*.55);
+    }
+
+    // Borst-tänder
+    brushState.teeth.forEach(t => {
+      // Vit tand
+      ctx.fillStyle='#ffffff'; ctx.strokeStyle='#bdbdbd'; ctx.lineWidth=1.5;
+      ctx.beginPath(); ctx.roundRect(t.x,t.y,t.w,t.h,[PR*.3,PR*.3,PR*.5,PR*.5]);
+      ctx.fill(); ctx.stroke();
+      // Smuts-overlay
+      if (t.dirty>0) {
+        ctx.fillStyle=`rgba(160,100,20,${(t.dirty/100)*0.72})`;
+        ctx.beginPath(); ctx.roundRect(t.x,t.y,t.w,t.h,[PR*.3,PR*.3,PR*.5,PR*.5]); ctx.fill();
+      }
+      // Glans när ren
+      if (t.dirty===0) {
+        ctx.fillStyle='rgba(255,253,220,0.8)';
+        ctx.beginPath(); ctx.arc(t.x+t.w*.7,t.y+t.h*.18,t.w*.18,0,Math.PI*2); ctx.fill();
+      }
+    });
+
+    // Glitterpartiklar
+    brushState.sparkles.forEach(s => {
+      ctx.globalAlpha = Math.max(0, s.life/65);
+      ctx.fillStyle = s.color;
+      ctx.beginPath(); ctx.arc(s.x,s.y,s.size||PR*.15,0,Math.PI*2); ctx.fill();
+    });
+    ctx.globalAlpha=1;
+
+    // Tandborste-cursor om finger är nere
+    if (brushState.pointerDown && brushState.px>=0) {
+      const bw=PR*.7, bh=PR*2.8;
+      ctx.fillStyle='#80d8ff';
+      ctx.beginPath(); ctx.roundRect(brushState.px-bw/2, brushState.py-bh, bw, bh, bw/2); ctx.fill();
+      ctx.fillStyle='white';
+      for (let i=0;i<4;i++) {
+        ctx.beginPath();
+        ctx.arc(brushState.px-bw*.3+i*(bw*.2), brushState.py-bh+PR*.35, PR*.12, 0, Math.PI*2);
+        ctx.fill();
+      }
+    }
+
+    // Progressbar
+    const cleanN = brushState.teeth.filter(t=>t.dirty===0).length;
+    const prog = cleanN/brushState.teeth.length;
+    const bW=VW*.72, bH=VH*.03, bX=(VW-bW)/2, bY=VH*.93;
+    ctx.fillStyle='#e0e0e0'; ctx.beginPath(); ctx.roundRect(bX,bY,bW,bH,bH/2); ctx.fill();
+    if (prog>0) {
+      ctx.fillStyle='#43a047'; ctx.beginPath(); ctx.roundRect(bX,bY,bW*prog,bH,bH/2); ctx.fill();
+    }
+    ctx.fillStyle='#5d4037'; ctx.font=`bold ${Math.round(VH*.026)}px Arial`;
+    ctx.fillText(`🦷 ${cleanN}/${brushState.teeth.length} borstad`, VW/2, bY-VH*.01);
+  }
+
+  function finishBrushing() {
+    document.removeEventListener('pointerdown', _onBrushDown);
+    document.removeEventListener('pointermove', _onBrushMove);
+    document.removeEventListener('pointerup',   _onBrushUp);
+    document.removeEventListener('touchstart',  _onBrushDown);
+    document.removeEventListener('touchmove',   _onBrushMove);
+    document.removeEventListener('touchend',    _onBrushUp);
+    state.brushing = false;
+    brushState = null;
+
+    state.lives--;
+    updateHUD();
+
+    if (state.lives <= 0) {
+      // Game over
+      const [s1,s2,s3] = state.config.starThresholds;
+      const stars = state.score>=s3?3:state.score>=s2?2:state.score>=s1?1:0;
+      starsEl.textContent = '⭐'.repeat(stars)+'☆'.repeat(3-stars);
+      finalScoreEl.textContent = state.score;
+      const hsKey = 'tandlakare_hs_'+state.difficulty;
+      const prev = parseInt(localStorage.getItem(hsKey)||'0',10);
+      if (state.score>prev) {
+        localStorage.setItem(hsKey, state.score);
+        highscoreTxt.textContent = '🏆 Nytt rekord!';
+        gameoverTitle.textContent = '🎉 Fantastiskt!';
+      } else {
+        highscoreTxt.textContent = 'Rekord: '+prev+' 🍬';
+        gameoverTitle.textContent = '😅 Bra försök!';
+      }
+      playAgainBtn.textContent = '▶ FÖRSÖK IGEN';
+      if (nextLevelBtn) nextLevelBtn.style.display = 'none';
+      setTimeout(() => gameoverEl.classList.add('show'), 200);
+    } else {
+      // Fortsätt spelet! Rensa tandläkare + ge oskadbarhet
+      state.dentists = [];
+      state.nextDentistIn = 2500;
+      state.invincibleFrames = 180;
+      player.y = GY; player.vy = 0; player.onGround = true;
+      state.running = true;
+      pauseBtn.classList.add('show');
+      hudEl.style.display = 'flex';
+      startBgMusic();
+    }
+  }
+
+  // ────────────────────────────────────────────────────────────
 
   function win() {
     if (!state.running) return;
@@ -1016,13 +1276,33 @@
         ctx.stroke();
       }
     }
-    else { // cake
+    else if (c.type==='cake') {
       ctx.fillStyle='#a1887f';
       ctx.fillRect(cx-r,cy+r*0.1,r*2,r);
       ctx.fillStyle='#f48fb1';
       ctx.beginPath(); ctx.arc(cx,cy,r,Math.PI,0); ctx.fill();
       ctx.fillStyle='#e91e63';
       ctx.beginPath(); ctx.arc(cx,cy-r*0.7,r*0.2,0,Math.PI*2); ctx.fill();
+    }
+    else { // superbag — glittrande godispåse
+      // Påskropp
+      ctx.fillStyle='#ff4081';
+      ctx.beginPath(); ctx.roundRect(cx-r*0.85,cy-r*0.3,r*1.7,r*1.4,r*0.35); ctx.fill();
+      // Glans
+      ctx.fillStyle='rgba(255,255,255,0.35)';
+      ctx.beginPath(); ctx.ellipse(cx-r*0.25,cy+r*0.1,r*0.4,r*0.25,-.4,0,Math.PI*2); ctx.fill();
+      // Knut/knipsa överst
+      ctx.fillStyle='#c2185b';
+      ctx.beginPath(); ctx.arc(cx,cy-r*0.45,r*0.38,0,Math.PI*2); ctx.fill();
+      ctx.strokeStyle='#880e4f'; ctx.lineWidth=Math.max(1,r*0.1);
+      ctx.beginPath(); ctx.arc(cx,cy-r*0.45,r*0.38,0,Math.PI*2); ctx.stroke();
+      // Stjärna i mitten
+      const puls = 0.85+Math.sin(state.frame*0.15+c.wobble)*0.15;
+      ctx.fillStyle=`rgba(255,235,59,${puls})`;
+      ctx.font=`bold ${Math.round(r*1.1)}px Arial`;
+      ctx.textAlign='center'; ctx.textBaseline='middle';
+      ctx.fillText('⭐',cx,cy+r*0.5);
+      ctx.textBaseline='alphabetic';
     }
   }
 
@@ -1111,6 +1391,7 @@
 
   // ── Render-loop ──
   function draw() {
+    if (state.brushing) { drawBrushing(); return; }
     ctx.clearRect(0,0,VW,VH);
     drawBackground();
     state.obstacles.forEach(drawObstacle);
