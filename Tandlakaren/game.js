@@ -92,6 +92,10 @@
   const jaaSound = new Audio('../JAA!.mp3');
   jaaSound.preload = 'auto';
   jaaSound.volume = 0.15;
+
+  const tackSound = new Audio('../Tack.mp3');
+  tackSound.preload = 'auto';
+  tackSound.volume = 1.0;
   function playJaaSound() {
     try { jaaSound.currentTime = 0; jaaSound.play().catch(() => {}); } catch(e) {}
   }
@@ -749,6 +753,7 @@
     if (brushState.teeth.every(t => t.dirty===0)) {
       brushState.celebrating = true;
       brushState.celebrateTimer = 0;
+      try { tackSound.currentTime = 0; tackSound.play().catch(() => {}); } catch(e) {}
       for (let i=0;i<40;i++) brushState.sparkles.push({
         x: VW/2+(Math.random()-.5)*VW*.8,
         y: VH*.5+(Math.random()-.5)*VH*.5,
