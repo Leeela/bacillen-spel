@@ -203,6 +203,7 @@
     dentist: new Image(),
     tooth: new Image(),
     toothbrush: new Image(),
+    gaper: new Image(),
   };
   sprites.run1.src = 'sprites/Godisbacillen springer.png';
   sprites.run2.src = 'sprites/Godisbacillen springer snabbt.png';
@@ -210,6 +211,7 @@
   sprites.dentist.src = 'sprites/Tandläkaren.png';
   sprites.tooth.src = 'sprites/tand.png';
   sprites.toothbrush.src = 'sprites/tandborste.png';
+  sprites.gaper.src = 'sprites/godisbacillen-gapar.jpg';
   let spritesLoaded = 0;
   Object.values(sprites).forEach(img => {
     img.onload = () => spritesLoaded++;
@@ -782,31 +784,13 @@
       ctx.fillText('Gnugga med fingret fram och tillbaka!', VW/2, VH*.16);
     }
 
-    // Godisbacillen-ansikte med öppen mun
-    const fR = VH*0.14, fcx=VW/2, fcy=VH*0.36;
-    ctx.fillStyle='#a5d6a7';
-    ctx.beginPath(); ctx.arc(fcx,fcy,fR,0,Math.PI*2); ctx.fill();
-    ctx.strokeStyle='#388e3c'; ctx.lineWidth=Math.max(2,fR*.07);
-    ctx.beginPath(); ctx.arc(fcx,fcy,fR,0,Math.PI*2); ctx.stroke();
-    // Ögon
-    const eyeR=fR*.2;
-    [-0.36,0.36].forEach(off=>{
-      const ex=fcx+fR*off, ey=fcy-fR*.2;
-      ctx.fillStyle='white'; ctx.beginPath(); ctx.arc(ex,ey,eyeR,0,Math.PI*2); ctx.fill();
-      ctx.fillStyle='#222'; ctx.beginPath(); ctx.arc(ex+eyeR*.1,ey+eyeR*.1,eyeR*.55,0,Math.PI*2); ctx.fill();
-      ctx.fillStyle='white'; ctx.beginPath(); ctx.arc(ex+eyeR*.3,ey-eyeR*.15,eyeR*.2,0,Math.PI*2); ctx.fill();
-    });
-    // Öppen mun
-    const mW=fR*1.2, mH=fR*.55, mY=fcy+fR*.3;
-    ctx.fillStyle='#bf360c';
-    ctx.beginPath(); ctx.ellipse(fcx,mY,mW/2,mH/2,0,0,Math.PI*2); ctx.fill();
-    ctx.fillStyle='#e91e63';
-    ctx.beginPath(); ctx.ellipse(fcx,mY+mH*.2,mW*.38,mH*.32,0,0,Math.PI*2); ctx.fill();
-    // Decorativa tänder i munnen
-    const stw=mW*.28, sth=mH*.45;
-    for (let i=-1;i<=1;i++) {
-      ctx.fillStyle='#fff';
-      ctx.fillRect(fcx+i*stw-stw/2+1, mY-mH/2, stw-2, sth);
+    // Godisbacillen-bild (riktig karaktär)
+    const imgH = VH * 0.38;
+    const gaper = sprites.gaper;
+    if (gaper && gaper.complete && gaper.naturalWidth > 0) {
+      const aspect = gaper.naturalWidth / gaper.naturalHeight;
+      const imgW = imgH * aspect;
+      ctx.drawImage(gaper, VW/2 - imgW/2, VH * 0.13, imgW, imgH);
     }
 
     // Pil ned mot borst-tänder
@@ -816,21 +800,38 @@
       ctx.fillText('👇', VW/2, VH*.55);
     }
 
-    // Borst-tänder
-    brushState.teeth.forEach(t => {
-      // Vit tand
-      ctx.fillStyle='#ffffff'; ctx.strokeStyle='#bdbdbd'; ctx.lineWidth=1.5;
-      ctx.beginPath(); ctx.roundRect(t.x,t.y,t.w,t.h,[PR*.3,PR*.3,PR*.5,PR*.5]);
-      ctx.fill(); ctx.stroke();
-      // Smuts-overlay
-      if (t.dirty>0) {
-        ctx.fillStyle=`rgba(160,100,20,${(t.dirty/100)*0.72})`;
-        ctx.beginPath(); ctx.roundRect(t.x,t.y,t.w,t.h,[PR*.3,PR*.3,PR*.5,PR*.5]); ctx.fill();
+    // Borst-tänder (triangulära som Godisbacillens egna tänder)
+    // Varannan tand lite bredare/smalare för ojämn karaktärslik känsla
+    const toothShapes = [0.5, 0.42, 0.58, 0.45, 0.55, 0.5]; // botten-punkt X-offset per tand
+    brushState.teeth.forEach((t, idx) => {
+      const tipX = t.x + t.w * toothShapes[idx]; // spetsens X-position
+      // Hjälpfunktion: rita tandform
+      function toothPath() {
+        ctx.beginPath();
+        ctx.moveTo(t.x, t.y);
+        ctx.lineTo(t.x + t.w, t.y);
+        ctx.lineTo(tipX, t.y + t.h);
+        ctx.closePath();
       }
-      // Glans när ren
-      if (t.dirty===0) {
-        ctx.fillStyle='rgba(255,253,220,0.8)';
-        ctx.beginPath(); ctx.arc(t.x+t.w*.7,t.y+t.h*.18,t.w*.18,0,Math.PI*2); ctx.fill();
+      // Vit tand
+      ctx.fillStyle = '#ffffff';
+      toothPath(); ctx.fill();
+      ctx.strokeStyle = '#bdbdbd'; ctx.lineWidth = 1.5;
+      toothPath(); ctx.stroke();
+      // Smuts-overlay (klippt till tandformen)
+      if (t.dirty > 0) {
+        ctx.save();
+        toothPath(); ctx.clip();
+        ctx.fillStyle = `rgba(160,100,20,${(t.dirty/100)*0.78})`;
+        ctx.fillRect(t.x - 2, t.y - 2, t.w + 4, t.h + 4);
+        ctx.restore();
+      }
+      // Glans-stjärna när ren
+      if (t.dirty === 0) {
+        ctx.fillStyle = 'rgba(255,253,200,0.9)';
+        ctx.beginPath();
+        ctx.arc(tipX - t.w*0.12, t.y + t.h*0.18, t.w*0.14, 0, Math.PI*2);
+        ctx.fill();
       }
     });
 
