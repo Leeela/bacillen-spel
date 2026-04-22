@@ -41,20 +41,6 @@
 
   // ── Svårighetsgrader ──
   const DIFFICULTIES = {
-    easy: {
-      label: 'LÄTT',
-      startSpeed: () => VW * 0.004,
-      maxSpeed:   () => VW * 0.008,
-      speedGrowth:() => VW * 0.0000005,
-      obstacleGap: [150, 280],
-      candyGap:    [60, 120],
-      dentistGap:  [2000, 3500],
-      dentistChaseGap: [2000, 3500],
-      maxDentists: 1,
-      lives: Infinity,
-      jumpForgiveness: 10,
-      starThresholds: [50, 100, 150],
-    },
     medium: {
       label: 'MEDEL',
       startSpeed: () => VW * 0.006,
@@ -62,9 +48,9 @@
       speedGrowth:() => VW * 0.000002,
       obstacleGap: [100, 200],
       candyGap:    [50, 100],
-      dentistGap:  [1500, 2500],
+      dentistGap:      [1500, 2500],
       dentistChaseGap: [1500, 2500],
-      maxDentists: 1,
+      maxDentists: 2,
       lives: 3,
       jumpForgiveness: 6,
       starThresholds: [100, 300, 500],
@@ -76,7 +62,7 @@
       speedGrowth:() => VW * 0.000004,
       obstacleGap: [80, 150],
       candyGap:    [40, 90],
-      dentistGap:  [1000, 1800],
+      dentistGap:      [1000, 1800],
       dentistChaseGap: [280, 420],
       maxDentists: 3,
       lives: 1,
@@ -257,7 +243,7 @@
   pauseBtn.addEventListener('click', togglePause);
   if (nextLevelBtn) {
     nextLevelBtn.addEventListener('click', () => {
-      const difficulties = ['easy', 'medium', 'hard'];
+      const difficulties = ['medium', 'hard'];
       const currentIdx = difficulties.indexOf(state.difficulty);
       const nextDiff = difficulties[Math.min(currentIdx+1, difficulties.length-1)];
       startGame(nextDiff);
@@ -334,12 +320,33 @@
 
   // ── Bakgrundsbyggnader ──
   function mkBuilding(x) {
-    const h = VH * (0.25 + Math.random() * 0.35);
-    const w = VW * (0.12 + Math.random() * 0.14);
-    const colors = ['#546e7a','#455a64','#607d8b','#78909c','#4a5568','#6b7a8d'];
-    const color = colors[Math.floor(Math.random() * colors.length)];
-    const hasTree = Math.random() < 0.6;
-    return { x, w, h, color, hasTree };
+    const h = VH * (0.20 + Math.random() * 0.25);
+    const w = VH * 0.12;
+    const treeTypes = ['oak', 'pine', 'cherry'];
+    const color = treeTypes[Math.floor(Math.random() * treeTypes.length)];
+    return { x, w, h, color, hasTree: true };
+  }
+
+  function drawFlowers(x, y) {
+    const colors = ['#ff69b4','#ff4500','#ffd700','#ff1493','#ee82ee'];
+    for (let i = 0; i < 3; i++) {
+      const fx = x + i * VW * 0.03;
+      const fc = colors[(Math.floor(x / 10 + i) % colors.length)];
+      ctx.strokeStyle = '#228B22';
+      ctx.lineWidth = Math.max(1.5, VW * 0.003);
+      ctx.beginPath();
+      ctx.moveTo(fx, y);
+      ctx.lineTo(fx, y - VH * 0.04);
+      ctx.stroke();
+      ctx.fillStyle = fc;
+      ctx.beginPath();
+      ctx.arc(fx, y - VH * 0.04, VH * 0.018, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = '#ffd700';
+      ctx.beginPath();
+      ctx.arc(fx, y - VH * 0.04, VH * 0.007, 0, Math.PI * 2);
+      ctx.fill();
+    }
   }
 
   // ── Spawn hinder ──
@@ -479,13 +486,17 @@
 
     // Tandläkare — loopa över alla aktiva tandläkare
     for (let di = state.dentists.length - 1; di >= 0; di--) {
+      if (!state.running) return;  // guard: avbryt om vinst/förlust redan triggats
       const d = state.dentists[di];
       d.x -= state.speed;
 
       if (d.x + d.w < 0) {
         state.dentists.splice(di, 1);
         // Sista tandläkaren scrollade av — spela vinst-video
-        if (state.dentists.length === 0 && state.dentistsSpawned >= cfg.maxDentists && state.brushCount >= 10) {
+        if (state.running &&
+            state.dentists.length === 0 &&
+            state.dentistsSpawned >= cfg.maxDentists &&
+            state.brushCount >= 10) {
           showDentistWinVideo();
         }
         continue;
@@ -496,8 +507,8 @@
         d.passed = true;
         const allPassed = state.dentists.every(dt => dt.passed);
         if (state.brushCount >= 10 && allPassed) {
-          showDentistWinVideo(); // stoppar spelet direkt
-          return;
+          showDentistWinVideo();
+          // return borttagen — guard i loop-toppen hanterar detta nästa iteration
         }
       }
 
@@ -605,7 +616,7 @@
     }
     playAgainBtn.textContent = 'Börja om';
     if (nextLevelBtn) {
-      const difficulties = ['easy', 'medium', 'hard'];
+      const difficulties = ['medium', 'hard'];
       const currentIdx = difficulties.indexOf(state.difficulty);
       nextLevelBtn.style.display = currentIdx < difficulties.length - 1 ? 'block' : 'none';
     }
@@ -702,7 +713,7 @@
   }
 
   function drawBird() {
-    const birdX = (state.fgScroll * 0.3 % (VW + 100)) - 50;
+    const birdX = ((state.fgScroll * 0.3) % (VW + 100)) - 50;
     const birdY = GY * 0.18;
     const s = VH * 0.025;
 
@@ -782,55 +793,69 @@
   }
 
   function drawBackground() {
-    // ── Himmel (ljusblå dagsljus) ──
-    const skyGrad = ctx.createLinearGradient(0,0,0,GY);
-    skyGrad.addColorStop(0,'#87ceeb');
-    skyGrad.addColorStop(1,'#e0f6ff');
+    // Himmel
+    const skyGrad = ctx.createLinearGradient(0, 0, 0, GY);
+    skyGrad.addColorStop(0, '#87ceeb');
+    skyGrad.addColorStop(1, '#e0f6ff');
     ctx.fillStyle = skyGrad;
-    ctx.fillRect(0,0,VW,GY);
+    ctx.fillRect(0, 0, VW, GY);
 
-    // ── Moln ──
     drawClouds();
-
-    // ── Fågel ──
     drawBird();
 
-    // ── Bakgrundsbyggnader ──
+    // Träd (ersätter höghus)
     for (const b of state.buildings) {
-      // Byggnadskropp
-      ctx.fillStyle = b.color;
-      ctx.fillRect(b.x, GY-b.h, b.w, b.h);
-      // Fönster (statiska, inte animerade)
-      ctx.fillStyle = 'rgba(255,255,200,0.45)';
-      const cols = Math.floor(b.w/14);
-      const rows = Math.floor(b.h/18);
-      for (let r=1;r<rows;r++) {
-        for (let c=0;c<cols;c++) {
-          ctx.fillRect(b.x+4+c*14, GY-b.h+6+r*18, 8, 10);
-        }
+      const treeH = b.h;
+      const trunkW = b.w * 0.18;
+      const trunkH = treeH * 0.45;
+      const crownR = treeH * 0.42;
+      const cx = b.x + b.w / 2;
+
+      let leafColor1, leafColor2, trunkColor;
+      if (b.color === 'pine') {
+        leafColor1 = '#1a6b1a'; leafColor2 = '#145214'; trunkColor = '#6b3a1f';
+      } else if (b.color === 'cherry') {
+        leafColor1 = '#ff85b3'; leafColor2 = '#e8427a'; trunkColor = '#7a3b1e';
+      } else {
+        leafColor1 = '#2d8a2d'; leafColor2 = '#1c6e1c'; trunkColor = '#8B4513';
       }
+
+      // Stam
+      ctx.fillStyle = trunkColor;
+      ctx.fillRect(cx - trunkW / 2, GY - trunkH, trunkW, trunkH);
+
+      // Lövverk
+      ctx.fillStyle = leafColor1;
+      ctx.beginPath();
+      ctx.arc(cx, GY - trunkH - crownR * 0.5, crownR, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.beginPath();
+      ctx.arc(cx - crownR * 0.65, GY - trunkH - crownR * 0.2, crownR * 0.85, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.beginPath();
+      ctx.arc(cx + crownR * 0.65, GY - trunkH - crownR * 0.2, crownR * 0.85, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = leafColor2;
+      ctx.beginPath();
+      ctx.arc(cx + crownR * 0.2, GY - trunkH - crownR * 0.1, crownR * 0.5, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Blommor vid trädets fot
+      drawFlowers(b.x, GY);
     }
 
-    // ── Trottoar / asfalt ──
-    ctx.fillStyle = '#546e7a';
-    ctx.fillRect(0, GY, VW, VH-GY);
+    // Gräsmatta
+    ctx.fillStyle = '#5aad3a';
+    ctx.fillRect(0, GY, VW, VH - GY);
+    ctx.fillStyle = '#6ecf48';
+    ctx.fillRect(0, GY, VW, VH * 0.012);
 
-    // Asfalt-kant (mörkare linje)
-    ctx.fillStyle = '#37474f';
-    ctx.fillRect(0, GY, VW, VH*0.012);
-
-    // Vägmarkering — streckade linjer
-    ctx.fillStyle = '#ffeb3b';
-    const lh = VH*0.018, lw = VW*0.08, gap = VW*0.14;
-    const markY = GY + (VH-GY)*0.55;
-    for (let i=0; i<Math.ceil(VW/gap)+1; i++) {
-      const lx = ((i*gap - state.fgScroll*0.5) % (VW+gap)) - gap;
-      ctx.fillRect(lx, markY, lw, lh);
+    // Blommor längs marken
+    const flowerSpacing = VW * 0.12;
+    for (let i = 0; i < Math.ceil(VW / flowerSpacing) + 2; i++) {
+      const fx = ((i * flowerSpacing - state.fgScroll * 0.4) % (VW + flowerSpacing)) - flowerSpacing;
+      drawFlowers(fx, GY);
     }
-
-    // Trottoar-kanter (vita streck längs kanten)
-    ctx.fillStyle = '#fff';
-    ctx.fillRect(0, GY+VH*0.012, VW, VH*0.003);
   }
 
   function drawPlayer() {
