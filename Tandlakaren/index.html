@@ -118,8 +118,15 @@
     }
 
     .diff-btn.easy   { background: linear-gradient(135deg, #66bb6a, #43a047); box-shadow: 0 6px 0 #2e7d32; }
-    .diff-btn.medium { background: linear-gradient(135deg, #ffb74d, #fb8c00); box-shadow: 0 6px 0 #ef6c00; }
+    .diff-btn.medium { background: linear-gradient(135deg, #66bb6a, #43a047); box-shadow: 0 6px 0 #2e7d32; }
     .diff-btn.hard   { background: linear-gradient(135deg, #ef5350, #e53935); box-shadow: 0 6px 0 #c62828; }
+
+    .diff-btn .char-img {
+      height: 52px;
+      width: auto;
+      object-fit: contain;
+      filter: drop-shadow(0 2px 3px rgba(0,0,0,0.25));
+    }
 
     /* Tillbaka-länk */
     .back-link {
@@ -286,21 +293,13 @@
 
     <div class="diff-buttons">
       <button class="diff-btn medium" data-diff="medium">
-        <span class="emoji">🧒🏿</span>
-        <span class="labels">
-          MEDEL
-          <div class="meta">6–8 år · 3 liv</div>
-        </span>
-        <span class="emoji">🟡</span>
+        <img class="char-img" src="sprites/Godisbacillen springer.png" alt="">
+        <span class="labels">MEDEL</span>
       </button>
 
       <button class="diff-btn hard" data-diff="hard">
-        <span class="emoji">🧑🏻</span>
-        <span class="labels">
-          SVÅR
-          <div class="meta">8+ år · 1 liv!</div>
-        </span>
-        <span class="emoji">🔴</span>
+        <img class="char-img" src="sprites/Godisbacillen springer snabbt.png" alt="">
+        <span class="labels">SVÅR</span>
       </button>
     </div>
 
