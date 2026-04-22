@@ -1098,11 +1098,6 @@
       ctx.beginPath();
       ctx.arc(cx + crownR * 0.65, GY - trunkH - crownR * 0.2, crownR * 0.85, 0, Math.PI * 2);
       ctx.fill();
-      ctx.fillStyle = leafColor2;
-      ctx.beginPath();
-      ctx.arc(cx + crownR * 0.2, GY - trunkH - crownR * 0.1, crownR * 0.5, 0, Math.PI * 2);
-      ctx.fill();
-
       // Blommor vid trädets fot (stabilt slot-index = trädets index i arrayen)
       drawFlowers(b.x, GY, state.buildings.indexOf(b));
     }
