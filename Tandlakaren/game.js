@@ -211,7 +211,7 @@
   sprites.dentist.src = 'sprites/Tandläkaren.png';
   sprites.tooth.src = 'sprites/tand.png';
   sprites.toothbrush.src = 'sprites/tandborste.png';
-  sprites.gaper.src = 'sprites/godisbacillen-gapar.jpg';
+  sprites.gaper.src = 'sprites/godisbacillen-gapar.png';
   let spritesLoaded = 0;
   Object.values(sprites).forEach(img => {
     img.onload = () => spritesLoaded++;
