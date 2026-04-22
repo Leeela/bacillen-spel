@@ -33,8 +33,8 @@
     GY   = Math.round(VH * 0.82);           // marknivå
     PR   = Math.round(Math.min(VW, VH) * 0.07); // spelarens radius
     const BASE = Math.min(VW, VH);
-    JUMP = -(BASE * 0.060);                 // hoppkraft (baserad på kortaste axeln)
-    GRAV = BASE * 0.0018;                   // gravitation (baserad på kortaste axeln)
+    JUMP = Math.max(-(BASE * 0.060), -28);  // hoppkraft (begränsad för stora skärmar)
+    GRAV = Math.min(BASE * 0.0018, 0.85);  // gravitation (begränsad för stora skärmar)
   }
   window.addEventListener('resize', resize);
   resize();
@@ -692,7 +692,7 @@
   function _onBrushUp() { if (brushState) brushState.pointerDown = false; }
 
   function startBrushing() {
-    const NUM = 6;
+    const NUM = VW < 500 ? 4 : 6;
     const tw = PR * 1.9, th = PR * 2.8, gap = PR * 0.55;
     const totalW = NUM*tw + (NUM-1)*gap;
     const sx = (VW - totalW) / 2;
@@ -771,26 +771,26 @@
     if (brushState.celebrating) {
       ctx.fillStyle='#43a047';
       ctx.font=`bold ${Math.round(VH*.06)}px Arial`;
-      ctx.fillText('🎉 BRAVOOOO! 🎉', VW/2, VH*.10);
+      ctx.fillText('🎉 BRAVOOOO! 🎉', VW/2, VH*.07);
       ctx.font=`${Math.round(VH*.035)}px Arial`;
       ctx.fillStyle='#388e3c';
-      ctx.fillText('Supert borstat! 🦷✨', VW/2, VH*.17);
+      ctx.fillText('Supert borstat! 🦷✨', VW/2, VH*.13);
     } else {
       ctx.fillStyle='#e91e63';
       ctx.font=`bold ${Math.round(VH*.055)}px Arial`;
-      ctx.fillText('🦷 BORSTA TÄNDERNA!', VW/2, VH*.10);
+      ctx.fillText('🦷 BORSTA TÄNDERNA!', VW/2, VH*.07);
       ctx.fillStyle='#5d4037';
       ctx.font=`${Math.round(VH*.03)}px Arial`;
-      ctx.fillText('Gnugga med fingret fram och tillbaka!', VW/2, VH*.16);
+      ctx.fillText('Gnugga med fingret fram och tillbaka!', VW/2, VH*.13);
     }
 
     // Godisbacillen-bild (riktig karaktär)
-    const imgH = VH * 0.38;
+    const imgH = VH * 0.32;
     const gaper = sprites.gaper;
     if (gaper && gaper.complete && gaper.naturalWidth > 0) {
       const aspect = gaper.naturalWidth / gaper.naturalHeight;
       const imgW = imgH * aspect;
-      ctx.drawImage(gaper, VW/2 - imgW/2, VH * 0.13, imgW, imgH);
+      ctx.drawImage(gaper, VW/2 - imgW/2, VH * 0.16, imgW, imgH);
     }
 
     // Pil ned mot borst-tänder
@@ -802,7 +802,9 @@
 
     // Borst-tänder (triangulära som Godisbacillens egna tänder)
     // Varannan tand lite bredare/smalare för ojämn karaktärslik känsla
-    const toothShapes = [0.5, 0.42, 0.58, 0.45, 0.55, 0.5]; // botten-punkt X-offset per tand
+    const toothShapes = brushState.teeth.length === 4
+      ? [0.5, 0.42, 0.58, 0.45]
+      : [0.5, 0.42, 0.58, 0.45, 0.55, 0.5]; // botten-punkt X-offset per tand
     brushState.teeth.forEach((t, idx) => {
       const tipX = t.x + t.w * toothShapes[idx]; // spetsens X-position
       // Hjälpfunktion: rita tandform
