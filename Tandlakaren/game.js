@@ -797,7 +797,7 @@
     if (!brushState.celebrating) {
       ctx.fillStyle='#e91e63';
       ctx.font=`${Math.round(VH*.045)}px Arial`;
-      ctx.fillText('👇', VW/2, VH*.55);
+      ctx.fillText('👇', VW/2, VH*.48);
     }
 
     // Borst-tänder (triangulära som Godisbacillens egna tänder)
@@ -861,7 +861,7 @@
     // Progressbar
     const cleanN = brushState.teeth.filter(t=>t.dirty===0).length;
     const prog = cleanN/brushState.teeth.length;
-    const bW=VW*.72, bH=VH*.03, bX=(VW-bW)/2, bY=VH*.93;
+    const bW=VW*.72, bH=VH*.03, bX=(VW-bW)/2, bY=VH*.86;
     ctx.fillStyle='#e0e0e0'; ctx.beginPath(); ctx.roundRect(bX,bY,bW,bH,bH/2); ctx.fill();
     if (prog>0) {
       ctx.fillStyle='#43a047'; ctx.beginPath(); ctx.roundRect(bX,bY,bW*prog,bH,bH/2); ctx.fill();
