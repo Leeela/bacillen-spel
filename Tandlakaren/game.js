@@ -322,16 +322,16 @@
   function mkBuilding(x) {
     const h = VH * (0.20 + Math.random() * 0.25);
     const w = VH * 0.12;
-    const treeTypes = ['oak', 'pine', 'cherry'];
+    const treeTypes = ['oak', 'pine'];
     const color = treeTypes[Math.floor(Math.random() * treeTypes.length)];
     return { x, w, h, color, hasTree: true };
   }
 
-  function drawFlowers(x, y) {
-    const colors = ['#ff69b4','#ff4500','#ffd700','#ff1493','#ee82ee'];
+  function drawFlowers(x, y, slot = 0) {
+    const colors = ['#ff69b4','#ffd700','#ff4500','#ee82ee','#ffd700'];
     for (let i = 0; i < 3; i++) {
       const fx = x + i * VW * 0.03;
-      const fc = colors[(Math.floor(x / 10 + i) % colors.length)];
+      const fc = colors[(slot * 3 + i) % colors.length];
       ctx.strokeStyle = '#228B22';
       ctx.lineWidth = Math.max(1.5, VW * 0.003);
       ctx.beginPath();
@@ -840,8 +840,8 @@
       ctx.arc(cx + crownR * 0.2, GY - trunkH - crownR * 0.1, crownR * 0.5, 0, Math.PI * 2);
       ctx.fill();
 
-      // Blommor vid trädets fot
-      drawFlowers(b.x, GY);
+      // Blommor vid trädets fot (stabilt slot-index = trädets index i arrayen)
+      drawFlowers(b.x, GY, state.buildings.indexOf(b));
     }
 
     // Gräsmatta
@@ -850,11 +850,11 @@
     ctx.fillStyle = '#6ecf48';
     ctx.fillRect(0, GY, VW, VH * 0.012);
 
-    // Blommor längs marken
+    // Blommor längs marken (slot = i → stabil färg per plats, oberoende av scroll)
     const flowerSpacing = VW * 0.12;
     for (let i = 0; i < Math.ceil(VW / flowerSpacing) + 2; i++) {
       const fx = ((i * flowerSpacing - state.fgScroll * 0.4) % (VW + flowerSpacing)) - flowerSpacing;
-      drawFlowers(fx, GY);
+      drawFlowers(fx, GY, i);
     }
   }
 
