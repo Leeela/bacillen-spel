@@ -1005,7 +1005,7 @@
         gameoverTitle.textContent = '🎉 Fantastiskt!';
       } else {
         highscoreTxt.textContent = 'Rekord: '+prev+' 🍬';
-        gameoverTitle.textContent = '😅 Bra försök!';
+        gameoverTitle.textContent = state.difficulty === 'easy' ? '🌟 Fortsätt!' : '😅 Bra försök!';
       }
       playAgainBtn.textContent = '▶ FÖRSÖK IGEN';
       if (nextLevelBtn) nextLevelBtn.style.display = 'none';
@@ -1054,7 +1054,11 @@
       gameoverTitle.textContent = '🎉 Fantastiskt!';
     } else {
       highscoreTxt.textContent = 'Rekord: '+prev+' 🍬';
-      gameoverTitle.textContent = stars===3?'🌟 Toppen!':stars===0?'😊 Försök igen!':'🎉 Bra jobbat!';
+      if (state.difficulty === 'easy') {
+        gameoverTitle.textContent = '🌟 Bra jobbat!';
+      } else {
+        gameoverTitle.textContent = stars===3?'🌟 Toppen!':stars===0?'😊 Försök igen!':'🎉 Bra jobbat!';
+      }
     }
     setTimeout(()=>gameoverEl.classList.add('show'),400);
   }
