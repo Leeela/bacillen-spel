@@ -602,8 +602,10 @@
     const vals = {candy:5,lollipop:15,rainbow:25,glitter:20,cake:30,superbag:50};
     const cols = {candy:'#f06292',lollipop:'#ff9800',rainbow:'#e91e63',glitter:'#ffd700',cake:'#f48fb1',superbag:'#ff4081'};
     playCandySound();
-    state.streak++;
-    if (state.streak > state.bestStreak) state.bestStreak = state.streak;
+    if (!c.fromRain) {
+      state.streak++;
+      if (state.streak > state.bestStreak) state.bestStreak = state.streak;
+    }
 
     const baseVal = vals[c.type] || 5;
     const multiplier = state.streak >= 10 ? 3 : state.streak >= 5 ? 2 : state.streak >= 3 ? 1.5 : 1;
@@ -622,6 +624,7 @@
           y: rainBaseY,
           w: PR * 0.9, h: PR * 0.9,
           wobble: Math.random() * Math.PI * 2,
+          fromRain: true,
         });
       }
       spawnParticles(c.x, c.y - PR, '#ffd700');
