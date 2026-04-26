@@ -409,9 +409,11 @@
     let r = Math.random()*total, type='candy';
     for (let i=0;i<types.length;i++) { r-=weights[i]; if(r<=0){type=types[i];break;} }
     const cs = PR * 0.9; // större godis
-    const heights = [GY - PR*1.2, GY - PR*2.2, GY - PR*3.2, GY - PR*4.2, GY - PR*5];
-    const y = heights[Math.floor(Math.random()*heights.length)];
-    state.candies.push({ type, x: VW+20, y, w: cs, h: cs, wobble: Math.random()*Math.PI*2 });
+    const allHeights = [GY - PR*1.2, GY - PR*2.2, GY - PR*3.2, GY - PR*4.2, GY - PR*5];
+    const numLevels = state.config.candyHeightLevels || 5;
+    const heights = allHeights.slice(0, numLevels);
+    const baseY = heights[Math.floor(Math.random() * heights.length)];
+    state.candies.push({ type, x: VW+20, baseY, y: baseY, w: cs, h: cs, wobble: Math.random()*Math.PI*2 });
   }
 
   // ── Kollision ──
@@ -510,6 +512,9 @@
     for (let i=state.candies.length-1;i>=0;i--) {
       const c = state.candies[i];
       c.x -= state.speed;
+      const amplitude = state.config.candyBounceAmplitude ? state.config.candyBounceAmplitude() : PR * 0.9;
+      const bounceSpeed = state.config.candyBounceSpeed || 0.055;
+      c.y = c.baseY + Math.sin(state.frame * bounceSpeed + c.wobble) * amplitude;
       if (c.x+c.w<0) { state.candies.splice(i,1); continue; }
       const cr = { x:c.x-c.w/2, y:c.y-c.h/2, w:c.w, h:c.h };
       if (rectsOverlap(playerRect, cr)) { collectCandy(c); state.candies.splice(i,1); }
