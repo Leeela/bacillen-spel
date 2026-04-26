@@ -595,6 +595,14 @@
       }
     }
 
+    // Popups
+    for (let i = popups.length - 1; i >= 0; i--) {
+      const p = popups[i];
+      p.y += p.vy;
+      p.life--;
+      if (p.life <= 0) popups.splice(i, 1);
+    }
+
     // Partiklar
     for (let i=particles.length-1;i>=0;i--) {
       const p=particles[i]; p.x+=p.vx; p.y+=p.vy; p.vy+=0.3; p.life--;
@@ -623,9 +631,10 @@
     if (!c.fromRain) {
       state.streak++;
       if (state.streak > state.bestStreak) state.bestStreak = state.streak;
-      if (state.streak === 3)  spawnPopup('3 i rad! 🔥', player.x, player.y - PR * 3);
-      if (state.streak === 5)  spawnPopup('x2 BONUS! 🔥🔥', player.x, player.y - PR * 3);
-      if (state.streak === 10) spawnPopup('STREAKMASTER! 🌟', player.x, player.y - PR * 3);
+      const popupY = Math.max(PR * 2, player.y - PR * 3);
+      if (state.streak === 3)  spawnPopup('3 i rad! 🔥', player.x, popupY);
+      if (state.streak === 5)  spawnPopup('x2 BONUS! 🔥🔥', player.x, popupY);
+      if (state.streak === 10) spawnPopup('STREAKMASTER! 🌟', player.x, popupY);
     }
 
     const baseVal = vals[c.type] || 5;
@@ -1387,9 +1396,7 @@
   function drawPopups() {
     for (let i = popups.length - 1; i >= 0; i--) {
       const p = popups[i];
-      p.y += p.vy;
-      p.life--;
-      if (p.life <= 0) { popups.splice(i, 1); continue; }
+      if (p.life <= 0) continue;  // redan borttagna av update(), men guard för säkerhets skull
       ctx.globalAlpha = Math.min(1, p.life / 20);
       ctx.fillStyle = '#fff';
       ctx.strokeStyle = '#e91e63';
@@ -1401,6 +1408,7 @@
     }
     ctx.globalAlpha = 1;
     ctx.textAlign = 'left';
+    ctx.textBaseline = 'alphabetic';
   }
 
   function drawDentist() {
