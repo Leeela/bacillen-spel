@@ -601,10 +601,12 @@
     if (c.type === 'superbag') {
       const rainTypes = ['candy','lollipop','rainbow','glitter'];
       for (let i = 0; i < 4; i++) {
+        const rainBaseY = GY - PR * (1.5 + Math.random() * 4);
         state.candies.push({
           type: rainTypes[Math.floor(Math.random()*rainTypes.length)],
           x: VW * (0.3 + Math.random() * 0.5),
-          y: GY - PR * (1.5 + Math.random() * 4),
+          baseY: rainBaseY,
+          y: rainBaseY,
           w: PR * 0.9, h: PR * 0.9,
           wobble: Math.random() * Math.PI * 2,
         });
