@@ -13,6 +13,8 @@
   const scoreEl      = document.getElementById('score');
   const livesPill    = document.getElementById('livesPill');
   const brushCountEl = document.getElementById('brushCount');
+  const streakPillEl  = document.getElementById('streakPill');
+  const streakCountEl = document.getElementById('streakCount');
   const pauseBtn     = document.getElementById('pauseBtn');
   const instruction  = document.getElementById('instruction');
   const gameoverEl   = document.getElementById('gameover');
@@ -310,6 +312,7 @@
     state.brushCount = 0;
     state.streak = 0;
     state.bestStreak = 0;
+    popups.length = 0;
     state.passedObstacles = new Set();
     state.nextDentistIn = state.config.dentistGap[0];
     state.dentists = [];
@@ -347,6 +350,15 @@
       livesPill.innerHTML = '💖';
     } else {
       livesPill.innerHTML = '❤️'.repeat(Math.max(0, state.lives)) || '💔';
+    }
+    if (streakCountEl) streakCountEl.textContent = state.streak;
+    if (streakPillEl) {
+      streakPillEl.style.display = state.streak >= 3 ? 'block' : 'none';
+      streakPillEl.style.background = state.streak >= 10
+        ? 'rgba(255,215,0,0.95)'   // guld vid 10+
+        : state.streak >= 5
+        ? 'rgba(255,152,0,0.95)'   // orange vid 5+
+        : 'rgba(255,255,255,0.95)'; // vit vid 3-4
     }
   }
 
@@ -421,6 +433,12 @@
   // ── Kollision ──
   function rectsOverlap(a, b, m=0) {
     return a.x+m < b.x+b.w && a.x+a.w-m > b.x && a.y+m < b.y+b.h && a.y+a.h-m > b.y;
+  }
+
+  // ── Popups ──
+  const popups = [];
+  function spawnPopup(text, x, y) {
+    popups.push({ text, x, y, life: 55, vy: -1.5 });
   }
 
   // ── Partiklar ──
@@ -605,6 +623,9 @@
     if (!c.fromRain) {
       state.streak++;
       if (state.streak > state.bestStreak) state.bestStreak = state.streak;
+      if (state.streak === 3)  spawnPopup('3 i rad! 🔥', player.x, player.y - PR * 3);
+      if (state.streak === 5)  spawnPopup('x2 BONUS! 🔥🔥', player.x, player.y - PR * 3);
+      if (state.streak === 10) spawnPopup('STREAKMASTER! 🌟', player.x, player.y - PR * 3);
     }
 
     const baseVal = vals[c.type] || 5;
@@ -1363,6 +1384,25 @@
     ctx.globalAlpha=1;
   }
 
+  function drawPopups() {
+    for (let i = popups.length - 1; i >= 0; i--) {
+      const p = popups[i];
+      p.y += p.vy;
+      p.life--;
+      if (p.life <= 0) { popups.splice(i, 1); continue; }
+      ctx.globalAlpha = Math.min(1, p.life / 20);
+      ctx.fillStyle = '#fff';
+      ctx.strokeStyle = '#e91e63';
+      ctx.lineWidth = 3;
+      ctx.font = `bold ${Math.round(VH * 0.04)}px Arial`;
+      ctx.textAlign = 'center';
+      ctx.strokeText(p.text, p.x, p.y);
+      ctx.fillText(p.text, p.x, p.y);
+    }
+    ctx.globalAlpha = 1;
+    ctx.textAlign = 'left';
+  }
+
   function drawDentist() {
     if (!state.dentists.length) return;
 
@@ -1446,6 +1486,7 @@
     state.candies.forEach(drawCandy);
     if (state.dentists.length) drawDentist();
     drawParticles();
+    drawPopups();
     drawPlayer();
 
     if (state.paused) {
