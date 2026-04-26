@@ -1275,8 +1275,7 @@
   }
 
   function drawCandy(c) {
-    const wobble = Math.sin(state.frame*0.12+c.wobble)*VH*0.008;
-    const cx=c.x, cy=c.y+wobble, r=c.w/2;
+    const cx=c.x, cy=c.y, r=c.w/2;
 
     if (c.type==='candy') {
       ctx.fillStyle='#f06292';
