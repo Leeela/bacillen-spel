@@ -41,6 +41,23 @@
 
   // ── Svårighetsgrader ──
   const DIFFICULTIES = {
+    easy: {
+      label: 'LÄTT',
+      startSpeed: () => VW * 0.003,
+      maxSpeed:   () => VW * 0.003,   // ökar aldrig — konstant hastighet
+      speedGrowth:() => 0,
+      obstacleGap: [180, 300],
+      candyGap:    [70, 130],
+      dentistGap:      [4000, 5000],
+      dentistChaseGap: [4000, 5000],
+      maxDentists: 1,
+      lives: Infinity,
+      jumpForgiveness: 12,
+      starThresholds: [50, 150, 300],
+      candyHeightLevels: 3,
+      candyBounceSpeed: 0.025,
+      candyBounceAmplitude: () => PR * 0.4,
+    },
     medium: {
       label: 'MEDEL',
       startSpeed: () => VW * 0.006,
@@ -54,6 +71,9 @@
       lives: 3,
       jumpForgiveness: 6,
       starThresholds: [100, 300, 500],
+      candyHeightLevels: 5,
+      candyBounceSpeed: 0.055,
+      candyBounceAmplitude: () => PR * 0.9,
     },
     hard: {
       label: 'SVÅR',
@@ -68,6 +88,9 @@
       lives: 1,
       jumpForgiveness: 3,
       starThresholds: [200, 500, 1000],
+      candyHeightLevels: 5,
+      candyBounceSpeed: 0.095,
+      candyBounceAmplitude: () => PR * 1.4,
     },
   };
 
