@@ -22,6 +22,7 @@
   const finalScoreEl = document.getElementById('finalScore');
   const starsEl      = document.getElementById('stars');
   const highscoreTxt = document.getElementById('highscoreText');
+  const bestStreakEl = document.getElementById('bestStreakText');
   const playAgainBtn = document.getElementById('playAgain');
   const toMenuBtn    = document.getElementById('toMenu');
   const nextLevelBtn = document.getElementById('nextLevel');
@@ -728,6 +729,7 @@
     gameoverTitle.textContent = '🎉 Du vann!';
     finalScoreEl.textContent = state.score;
     starsEl.textContent = '⭐⭐⭐';
+    if (bestStreakEl) bestStreakEl.textContent = `🔥 Bästa streak: ${state.bestStreak}`;
     const hsKey = 'tandlakare_hs_' + state.difficulty;
     const prev = parseInt(localStorage.getItem(hsKey) || '0', 10);
     if (state.score > prev) {
@@ -993,6 +995,7 @@
       const [s1,s2,s3] = state.config.starThresholds;
       const stars = state.score>=s3?3:state.score>=s2?2:state.score>=s1?1:0;
       starsEl.textContent = '⭐'.repeat(stars)+'☆'.repeat(3-stars);
+      if (bestStreakEl) bestStreakEl.textContent = `🔥 Bästa streak: ${state.bestStreak}`;
       finalScoreEl.textContent = state.score;
       const hsKey = 'tandlakare_hs_'+state.difficulty;
       const prev = parseInt(localStorage.getItem(hsKey)||'0',10);
@@ -1041,6 +1044,7 @@
     const [s1,s2,s3] = state.config.starThresholds;
     let stars = state.score>=s3?3:state.score>=s2?2:state.score>=s1?1:0;
     starsEl.textContent = '⭐'.repeat(stars)+'☆'.repeat(3-stars);
+    if (bestStreakEl) bestStreakEl.textContent = `🔥 Bästa streak: ${state.bestStreak}`;
     finalScoreEl.textContent = state.score;
     const hsKey = 'tandlakare_hs_'+state.difficulty;
     const prev = parseInt(localStorage.getItem(hsKey)||'0',10);
