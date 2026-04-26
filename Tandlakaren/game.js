@@ -308,6 +308,8 @@
     state.nextObstacleIn = 120;
     state.nextCandyIn = 60;
     state.brushCount = 0;
+    state.streak = 0;
+    state.bestStreak = 0;
     state.passedObstacles = new Set();
     state.nextDentistIn = state.config.dentistGap[0];
     state.dentists = [];
@@ -515,6 +517,12 @@
       const amplitude = state.config.candyBounceAmplitude ? state.config.candyBounceAmplitude() : PR * 0.9;
       const bounceSpeed = state.config.candyBounceSpeed || 0.055;
       c.y = c.baseY + Math.sin(state.frame * bounceSpeed + c.wobble) * amplitude;
+      // Godis har passerat spelaren utan att plockas
+      if (!c.missed && c.x + c.w < player.x - PR) {
+        c.missed = true;
+        state.streak = 0;
+        updateHUD();
+      }
       if (c.x+c.w<0) { state.candies.splice(i,1); continue; }
       const cr = { x:c.x-c.w/2, y:c.y-c.h/2, w:c.w, h:c.h };
       if (rectsOverlap(playerRect, cr)) { collectCandy(c); state.candies.splice(i,1); }
@@ -594,7 +602,12 @@
     const vals = {candy:5,lollipop:15,rainbow:25,glitter:20,cake:30,superbag:50};
     const cols = {candy:'#f06292',lollipop:'#ff9800',rainbow:'#e91e63',glitter:'#ffd700',cake:'#f48fb1',superbag:'#ff4081'};
     playCandySound();
-    state.score += vals[c.type]||5;
+    state.streak++;
+    if (state.streak > state.bestStreak) state.bestStreak = state.streak;
+
+    const baseVal = vals[c.type] || 5;
+    const multiplier = state.streak >= 10 ? 3 : state.streak >= 5 ? 2 : state.streak >= 3 ? 1.5 : 1;
+    state.score += Math.round(baseVal * multiplier);
     spawnParticles(c.x, c.y, cols[c.type]||'#ff4081');
     updateHUD();
     // Supergodis-påse: godisregn!
