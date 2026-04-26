@@ -310,6 +310,8 @@
     state.nextObstacleIn = 120;
     state.nextCandyIn = 60;
     state.brushCount = 0;
+    state.milestonesReached = 0;
+    state.bonusBounce = false;
     state.streak = 0;
     state.bestStreak = 0;
     popups.length = 0;
@@ -441,6 +443,17 @@
     popups.push({ text, x, y, life: 55, vy: -1.5 });
   }
 
+  function triggerMilestone(n) {
+    if (n === 1) {
+      // Hastighetsboost vid milstolpe 1
+      state.speed = Math.min(state.speed * 1.4, state.config.maxSpeed());
+      spawnPopup('🔥 Snabbare!', VW / 2, VH * 0.3);
+    } else if (n === 2) {
+      state.bonusBounce = true;
+      spawnPopup('🍬 Vad händer?!', VW / 2, VH * 0.3);
+    }
+  }
+
   // ── Partiklar ──
   const particles = [];
   function spawnParticles(x, y, color) {
@@ -511,6 +524,14 @@
       if (o.isBrush && !state.passedObstacles.has(o.id) && player.x > o.x + o.w) {
         state.passedObstacles.add(o.id);
         state.brushCount++;
+        if (state.brushCount === 4 && state.milestonesReached < 1) {
+          state.milestonesReached = 1;
+          triggerMilestone(1);
+        }
+        if (state.brushCount === 7 && state.milestonesReached < 2) {
+          state.milestonesReached = 2;
+          triggerMilestone(2);
+        }
         playJumpSound();
         state.score += 50;
         spawnParticles(o.x + o.w/2, o.y, '#ffeb3b');
@@ -532,7 +553,8 @@
     for (let i=state.candies.length-1;i>=0;i--) {
       const c = state.candies[i];
       c.x -= state.speed;
-      const amplitude = state.config.candyBounceAmplitude ? state.config.candyBounceAmplitude() : PR * 0.9;
+      const baseAmplitude = state.config.candyBounceAmplitude ? state.config.candyBounceAmplitude() : PR * 0.9;
+      const amplitude = state.bonusBounce ? baseAmplitude * 1.6 : baseAmplitude;
       const bounceSpeed = state.config.candyBounceSpeed || 0.055;
       c.y = c.baseY + Math.sin(state.frame * bounceSpeed + c.wobble) * amplitude;
       // Godis har passerat spelaren utan att plockas
