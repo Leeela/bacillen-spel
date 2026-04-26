@@ -524,13 +524,15 @@
       if (o.isBrush && !state.passedObstacles.has(o.id) && player.x > o.x + o.w) {
         state.passedObstacles.add(o.id);
         state.brushCount++;
-        if (state.brushCount === 4 && state.milestonesReached < 1) {
-          state.milestonesReached = 1;
-          triggerMilestone(1);
-        }
-        if (state.brushCount === 7 && state.milestonesReached < 2) {
-          state.milestonesReached = 2;
-          triggerMilestone(2);
+        if (state.difficulty !== 'easy') {
+          if (state.brushCount === 4 && state.milestonesReached < 1) {
+            state.milestonesReached = 1;
+            triggerMilestone(1);
+          }
+          if (state.brushCount === 7 && state.milestonesReached < 2) {
+            state.milestonesReached = 2;
+            triggerMilestone(2);
+          }
         }
         playJumpSound();
         state.score += 50;
