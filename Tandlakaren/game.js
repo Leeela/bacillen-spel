@@ -796,7 +796,7 @@
   function _onBrushUp() { if (brushState) brushState.pointerDown = false; }
 
   function startBrushing() {
-    const NUM = VW < 500 ? 4 : 6;
+    const NUM = 4;
     const tw = PR * 1.9, th = PR * 2.8, gap = PR * 0.55;
     const totalW = NUM*tw + (NUM-1)*gap;
     const sx = (VW - totalW) / 2;
@@ -838,7 +838,7 @@
       const over = brushState.px > t.x - PR*0.4 && brushState.px < t.x+t.w+PR*0.4 &&
                    brushState.py > t.y - PR*0.5 && brushState.py < t.y+t.h+PR*0.5;
       if (!over) return;
-      t.dirty = Math.max(0, t.dirty - dist*0.45 - 0.4);
+      t.dirty = Math.max(0, t.dirty - dist * 0.9 - 0.8);
       if (t.dirty === 0 && !t.sparkled) {
         t.sparkled = true;
         for (let i=0;i<10;i++) brushState.sparkles.push({
