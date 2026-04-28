@@ -194,7 +194,7 @@
     display: block;
   }
   .hero-bug:hover { transform: translateY(-4px) rotate(-2deg); }
-  .hero-bug .emoji { font-size: 48px; line-height: 1; }
+  .hero-bug .portrait { width: 80px; height: 80px; object-fit: contain; display: block; margin: 0 auto; }
   .hero-bug.candy { border-color: var(--candy); }
   .hero-bug.love { border-color: var(--love); }
   .hero-bug.happy { border-color: var(--happy); }
@@ -208,7 +208,7 @@
     .hero { padding: 40px 20px 56px; }
     .hero-grid { grid-template-columns: repeat(3, 1fr); gap: 10px; }
     .hero-bug { padding: 16px 8px; }
-    .hero-bug .emoji { font-size: 36px; }
+    .hero-bug .portrait { width: 60px; height: 60px; }
   }
 
   /* === SECTIONS === */
@@ -299,7 +299,7 @@
     display: block;
   }
   .char-card:hover { transform: translateY(-3px); box-shadow: 0 8px 22px rgba(0,0,0,0.10); }
-  .char-card .emoji { font-size: 56px; line-height: 1; margin-bottom: 12px; }
+  .char-card .portrait { width: 100px; height: 100px; object-fit: contain; display: block; margin: 0 auto 12px auto; }
   .char-card .name {
     font-family: var(--font-heading);
     font-weight: 700;
@@ -349,7 +349,7 @@
   @media (max-width: 720px) {
     .char-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
     .char-card { padding: 16px 12px; }
-    .char-card .emoji { font-size: 40px; }
+    .char-card .portrait { width: 72px; height: 72px; }
     .char-card .name { font-size: 13px; }
   }
 
@@ -572,12 +572,12 @@
       <a class="btn btn-secondary" href="#karaktarer">Lär känna bacillerna</a>
     </div>
     <div class="hero-grid">
-      <a class="hero-bug candy" href="#karaktarer"><div class="emoji">🍬</div></a>
-      <a class="hero-bug love" href="#karaktarer"><div class="emoji">💖</div></a>
-      <a class="hero-bug happy" href="#karaktarer"><div class="emoji">😄</div></a>
-      <a class="hero-bug tease" href="#karaktarer"><div class="emoji">😝</div></a>
-      <a class="hero-bug dance" href="#karaktarer"><div class="emoji">💃</div></a>
-      <a class="hero-bug wealth" href="#karaktarer"><div class="emoji">💰</div></a>
+      <a class="hero-bug candy" href="godisbacillen.html"><img src="bilder/godisbacillen.png" alt="Godisbacillen" class="portrait"></a>
+      <a class="hero-bug love" href="karleksbacillen.html"><img src="bilder/karleksbacillen.png" alt="Kärleksbacillen" class="portrait"></a>
+      <a class="hero-bug happy" href="gladjebacillen.html"><img src="bilder/gladjebacillen.png" alt="Glädjebacillen" class="portrait"></a>
+      <a class="hero-bug tease" href="retbacillen.html"><img src="bilder/retbacillen.png" alt="Retbacillen" class="portrait"></a>
+      <a class="hero-bug dance" href="dansbacillen.html"><img src="bilder/dansbacillen.jpg" alt="Dansbacillen" class="portrait"></a>
+      <a class="hero-bug wealth" href="rikedomsbacillen.html"><img src="bilder/rikedomsbacillen.png" alt="Rikedomsbacillen" class="portrait"></a>
     </div>
   </section>
 
@@ -616,42 +616,42 @@
 
       <div class="char-grid">
         <a class="char-card candy" href="godisbacillen.html">
-          <div class="emoji">🍬</div>
+          <img src="bilder/godisbacillen.png" alt="Godisbacillen" class="portrait">
           <div class="name">GODISBACILLEN</div>
           <div class="power">Sockervågen</div>
           <div class="desc">Den limegröna bacillen som vaknar varje lördag med nya planer.</div>
           <span class="more">Läs mer →</span>
         </a>
         <a class="char-card love" href="karleksbacillen.html">
-          <div class="emoji">💖</div>
+          <img src="bilder/karleksbacillen.png" alt="Kärleksbacillen" class="portrait">
           <div class="name">KÄRLEKSBACILLEN</div>
           <div class="power">Kärleksvågen</div>
           <div class="desc">Den rosa bacillen med vild fluff och hjärta av guld.</div>
           <span class="more">Läs mer →</span>
         </a>
         <a class="char-card happy" href="gladjebacillen.html">
-          <div class="emoji">😄</div>
+          <img src="bilder/gladjebacillen.png" alt="Glädjebacillen" class="portrait">
           <div class="name">GLÄDJEBACILLEN</div>
           <div class="power">Glädjesmitta</div>
           <div class="desc">Den orange bacillen som inte kan låta bli att sprida glädje.</div>
           <span class="more">Läs mer →</span>
         </a>
         <a class="char-card tease" href="retbacillen.html">
-          <div class="emoji">😝</div>
+          <img src="bilder/retbacillen.png" alt="Retbacillen" class="portrait">
           <div class="name">RETBACILLEN</div>
           <div class="power">Retgesten</div>
           <div class="desc">Den knallgula bacillen som retar med kärlek, aldrig med elakhet.</div>
           <span class="more">Läs mer →</span>
         </a>
         <a class="char-card dance" href="dansbacillen.html">
-          <div class="emoji">💃</div>
+          <img src="bilder/dansbacillen.jpg" alt="Dansbacillen" class="portrait">
           <div class="name">DANSBACILLEN</div>
           <div class="power">Dansvågen</div>
           <div class="desc">Den turkosa bacillen med boombox som får alla att börja röra sig.</div>
           <span class="more">Läs mer →</span>
         </a>
         <a class="char-card wealth" href="rikedomsbacillen.html">
-          <div class="emoji">💰</div>
+          <img src="bilder/rikedomsbacillen.png" alt="Rikedomsbacillen" class="portrait">
           <div class="name">RIKEDOMSBACILLEN</div>
           <div class="power">Pengaregnet</div>
           <div class="desc">Den guldglittrande bacillen som vet att rikedom är att ge bort.</div>
