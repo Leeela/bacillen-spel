@@ -55,12 +55,31 @@
   .placeholder-note h3 { font-family: var(--font-heading); font-size: 18px; margin: 0 0 8px 0; color: var(--char-color-deep); }
   .placeholder-note p { font-size: 14px; color: var(--color-text-secondary); margin: 0; line-height: 1.6; }
 
+  .portrait-block { display: grid; grid-template-columns: 220px 1fr; gap: 36px; align-items: start; margin-top: 32px; }
+  .portrait-img { width: 100%; aspect-ratio: 3/4; object-fit: cover; border-radius: var(--radius-md); display: block; box-shadow: 0 6px 24px rgba(0,0,0,0.08); }
+  .portrait-credit { font-size: 12px; color: var(--color-text-tertiary); margin-top: 10px; text-align: center; letter-spacing: 0.3px; }
+  .portrait-text p.prose { margin-top: 0; }
+
+  .cta-block { background: var(--brand-light); background: linear-gradient(180deg, var(--brand-light) 0%, #FFEFEA 100%); border-radius: var(--radius-lg); padding: 48px 40px; text-align: center; margin-top: 48px; }
+  .cta-block h3 { font-family: var(--font-heading); font-weight: 700; font-size: 26px; margin: 0 0 12px 0; color: var(--color-text-primary); }
+  .cta-block p { font-size: 16px; color: var(--color-text-secondary); margin: 0 0 24px 0; }
+  .cta-buttons { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+  .btn { display: inline-block; padding: 14px 28px; border-radius: var(--radius-pill); font-family: var(--font-body); font-weight: 700; font-size: 15px; text-decoration: none; border: none; cursor: pointer; transition: transform 0.15s, box-shadow 0.15s; }
+  .btn:hover { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(0,0,0,0.15); }
+  .btn-primary { background: var(--brand-deep); color: white; }
+  .btn-primary:hover { background: #C44A30; }
+  .btn-secondary { background: white; color: var(--brand-deep); border: 2px solid var(--brand-deep); padding: 12px 26px; }
+  .btn-secondary:hover { background: var(--brand-light); }
+
   @media (max-width: 720px) {
     .hero-parent { padding: 48px 20px 56px; }
     .hero-parent h1 { font-size: 36px; }
     .hero-parent p { font-size: 16px; }
     section { padding: 56px 20px; }
     .section-title { font-size: 26px; }
+    .portrait-block { grid-template-columns: 1fr; gap: 20px; max-width: 280px; margin-left: auto; margin-right: auto; }
+    .cta-block { padding: 36px 24px; }
+    .cta-block h3 { font-size: 22px; }
   }
 
   .site-footer { background: #1a1a1a; color: #999; padding: 48px 32px 32px; }
@@ -106,17 +125,48 @@
   <section>
     <div class="section-inner">
 
-      <!-- TODO: Leila fyller i text om varumärket här. Förslag på sektioner:
-           1. Berättelsen – Hur Bacillerna kom till
-           2. Visionen – Vad vi vill skapa
-           3. Människan bakom – Om Leila
-           4. Bacillernas värld – Vad universumet står för
-           Använd <h2 class="section-title"> för rubriker och <p class="prose"> för text.
-      -->
+      <div class="section-eyebrow">Berättelsen om Bacillerna</div>
+      <h2 class="section-title">Det började med fyra tavlor</h2>
+      <p class="prose">Det började för över 25 år sedan med fyra tavlor. Kärleksbacillen, Rikedomsbacillen, Godisbacillen och Glädjebacillen. Målade av glädje, för glädje. De gjorde mig glad, och även min familj och vänner.</p>
+      <p class="prose">Idag är de tillbaka. Och de har fått sällskap. I bacillernas värld finns nu också Retbacillen och Dansbacillen, och fler är på väg. Var och en med sin egen superkraft. Var och en med sin egen svaghet. Och alla med samma sak gemensamt: <strong>att bakom varje bus finns ett barn.</strong></p>
 
-      <div class="placeholder-note">
-        <h3>Innehåll kommer snart</h3>
-        <p>Den här sidan är under uppbyggnad. Snart hittar du här berättelsen om hur Bacillerna föddes, visionen för varumärket och människan bakom universumet.</p>
+    </div>
+  </section>
+
+  <section style="background: var(--color-bg-soft);">
+    <div class="section-inner">
+
+      <div class="section-eyebrow">Visionen</div>
+      <h2 class="section-title">Gjorda för att leva länge</h2>
+      <p class="prose">Bacillerna är gjorda för att leva länge. I podcastformat. Som bilderböcker. På YouTube. På scenen, en dag. På fler språk.</p>
+      <p class="prose">Den svenska versionen kommer först. Den internationella, <em>Luv Bugs Collection</em>, byggs upp parallellt. Målet är enkelt att säga och stort att göra: att Bacillerna ska bli ett av Nordens mest älskade barnvarumärken. Och med tiden, världens.</p>
+
+    </div>
+  </section>
+
+  <section>
+    <div class="section-inner">
+
+      <div class="section-eyebrow">Människan bakom</div>
+      <h2 class="section-title">Skaparen</h2>
+
+      <div class="portrait-block">
+        <div>
+          <img src="bilder/leila-portratt2.jpg" alt="Leila El Harfaoui, skaparen bakom Bacillerna" class="portrait-img">
+          <div class="portrait-credit">Foto: Heléne Spjuth</div>
+        </div>
+        <div class="portrait-text">
+          <p class="prose">Bakom Bacillerna står <strong>Leila El Harfaoui</strong>, skaparen som byggt universumet från grunden. Med digitala verktyg som hjälpmedel skriver, formger och producerar hon hela varumärket: från sagor och bilderböcker till animation och podcast.</p>
+        </div>
+      </div>
+
+      <div class="cta-block">
+        <h3>Vill du veta mer?</h3>
+        <p>För samarbeten, press eller bara för att säga hej.</p>
+        <div class="cta-buttons">
+          <a class="btn btn-primary" href="kontakt.html">Kontakta mig →</a>
+          <a class="btn btn-secondary" href="https://www.instagram.com/bacillerna/" target="_blank" rel="noopener">Följ på Instagram →</a>
+        </div>
       </div>
 
     </div>
