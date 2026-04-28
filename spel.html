@@ -60,19 +60,19 @@
   .game-list { display: flex; flex-direction: column; gap: 24px; }
   .game-card { background: white; border: 3px solid var(--color-border); border-radius: var(--radius-lg); padding: 36px; display: grid; grid-template-columns: 140px 1fr; gap: 36px; align-items: center; transition: transform 0.2s, box-shadow 0.2s; }
   .game-card:hover { transform: translateY(-3px); box-shadow: 0 10px 30px rgba(0,0,0,0.09); }
-  .game-card.candy { border-color: var(--candy); }
-  .game-card.dance { border-color: var(--candy); }
-  .game-card.brand { border-color: var(--candy); }
+  .game-card.candy { border-color: var(--brand-mid); }
+  .game-card.dance { border-color: var(--brand-mid); }
+  .game-card.brand { border-color: var(--brand-mid); }
 
   .game-thumb { width: 140px; height: 140px; border-radius: var(--radius-lg); flex-shrink: 0; object-fit: contain; display: block; }
-  .game-card.candy .game-thumb { background: var(--candy-light); }
-  .game-card.dance .game-thumb { background: var(--candy-light); }
-  .game-card.brand .game-thumb { background: var(--candy-light); }
+  .game-card.candy .game-thumb { background: var(--brand-light); }
+  .game-card.dance .game-thumb { background: var(--brand-light); }
+  .game-card.brand .game-thumb { background: var(--brand-light); }
 
   .game-age { display: inline-block; padding: 4px 12px; border-radius: var(--radius-pill); font-size: 11px; font-weight: 700; margin-bottom: 10px; }
-  .game-card.candy .game-age { background: var(--candy); color: white; }
-  .game-card.dance .game-age { background: var(--candy); color: white; }
-  .game-card.brand .game-age { background: var(--candy); color: white; }
+  .game-card.candy .game-age { background: var(--brand-mid); color: white; }
+  .game-card.dance .game-age { background: var(--brand-mid); color: white; }
+  .game-card.brand .game-age { background: var(--brand-mid); color: white; }
 
   .game-title { font-family: var(--font-heading); font-weight: 700; font-size: 26px; margin: 0 0 8px 0; }
   .game-desc { font-size: 15px; color: var(--color-text-secondary); line-height: 1.6; margin-bottom: 20px; }
@@ -158,7 +158,7 @@
         </div>
 
         <div class="game-card dance">
-          <img src="bilder/godisbacillen.png" alt="Bacillerna Memory" class="game-thumb">
+          <img src="bilder/alla-bacillerna.png" alt="Bacillerna Memory" class="game-thumb">
           <div>
             <div class="game-age">4–8 år</div>
             <div class="game-title">Bacillerna Memory</div>
