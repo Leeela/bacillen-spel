@@ -523,7 +523,7 @@
     display: block;
   }
   .other-bug:hover { transform: translateY(-4px) rotate(-2deg); box-shadow: 0 8px 20px rgba(0,0,0,0.10); }
-  .other-bug .emoji { font-size: 40px; line-height: 1; margin-bottom: 8px; }
+  .other-bug .portrait { width: 72px; height: 72px; object-fit: contain; display: block; margin: 0 auto 8px auto; }
   .other-bug .name {
     font-family: var(--font-heading);
     font-weight: 700;
@@ -540,7 +540,7 @@
   @media (max-width: 720px) {
     .others-grid { grid-template-columns: repeat(5, 1fr); gap: 8px; }
     .other-bug { padding: 12px 6px; }
-    .other-bug .emoji { font-size: 28px; }
+    .other-bug .portrait { width: 48px; height: 48px; }
     .other-bug .name { font-size: 9px; letter-spacing: 0; }
   }
 
@@ -799,23 +799,23 @@
 
       <div class="others-grid">
         <a class="other-bug candy" href="godisbacillen.html">
-          <div class="emoji">🍬</div>
+          <img src="bilder/godisbacillen.png" alt="Godisbacillen" class="portrait">
           <div class="name">GODIS-<br>BACILLEN</div>
         </a>
         <a class="other-bug love" href="karleksbacillen.html">
-          <div class="emoji">💖</div>
+          <img src="bilder/karleksbacillen.png" alt="Kärleksbacillen" class="portrait">
           <div class="name">KÄRLEKS-<br>BACILLEN</div>
         </a>
         <a class="other-bug happy" href="gladjebacillen.html">
-          <div class="emoji">😄</div>
+          <img src="bilder/gladjebacillen.png" alt="Glädjebacillen" class="portrait">
           <div class="name">GLÄDJE-<br>BACILLEN</div>
         </a>
         <a class="other-bug dance" href="dansbacillen.html">
-          <div class="emoji">💃</div>
+          <img src="bilder/dansbacillen.png" alt="Dansbacillen" class="portrait">
           <div class="name">DANS-<br>BACILLEN</div>
         </a>
         <a class="other-bug wealth" href="rikedomsbacillen.html">
-          <div class="emoji">💰</div>
+          <img src="bilder/rikedomsbacillen.png" alt="Rikedomsbacillen" class="portrait">
           <div class="name">RIKEDOMS-<br>BACILLEN</div>
         </a>
       </div>
