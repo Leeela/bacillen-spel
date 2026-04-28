@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
   <base href="/Memory/">
-  <title>Godisbacillens Memory 🍬</title>
+  <title>Bacillerna Memory 🎉</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -132,16 +132,17 @@
       box-shadow: 0 4px 12px rgba(0,0,0,0.15);
     }
 
-    /* Back — framsida av kortet (Godisbacillen) */
+    /* Back — framsida av kortet (BACILLERNA) */
     .card-back {
-      background: linear-gradient(135deg, #e91e63, #ff6090);
+      background: linear-gradient(135deg, #7BC142, #4a9a1f);
     }
 
-    .card-back img {
-      width: 75%;
-      height: 75%;
-      object-fit: contain;
-      mix-blend-mode: multiply;
+    .card-back-text {
+      font-size: clamp(11px, 3vw, 16px);
+      font-weight: 900;
+      color: white;
+      letter-spacing: 2px;
+      text-shadow: 1px 1px 0 rgba(0,0,0,0.25);
     }
 
     /* Front — bildsidan */
@@ -237,9 +238,9 @@
 
   <!-- Header -->
   <div class="header">
-    <img src="../godisbacillen.png" alt="Godisbacillen">
-    <div class="title">GODISBACILLENS<br>MEMORY 🍬</div>
-    <img src="../godisbacillen.png" alt="Godisbacillen" style="transform:scaleX(-1)">
+    <img src="../bilder/bacillerna i rad.png" alt="Bacillerna" style="width:80px;height:50px;object-fit:contain;">
+    <div class="title">BACILLERNA<br>MEMORY 🎉</div>
+    <img src="../bilder/bacillerna i rad.png" alt="Bacillerna" style="width:80px;height:50px;object-fit:contain;transform:scaleX(-1);">
   </div>
 
   <!-- Stats -->
@@ -300,43 +301,34 @@
       } catch(e) {}
     }
 
-    // Lätt (6 par) — original godisar
-    const IMAGES_EASY = [
-      '../Godisar och veggies/Godis1.png',
-      '../Godisar och veggies/Godis2.png',
-      '../Godisar och veggies/Godis3.png',
-      '../Godisar och veggies/Godis4.png',
-      '../Selma.png',
-      '../Salim.png',
+    // Alla 6 baciller
+    const BACILLERNA = [
+      '../bilder/godisbacillen.png',
+      '../bilder/karleksbacillen.png',
+      '../bilder/gladjebacillen.png',
+      '../bilder/retbacillen.png',
+      '../bilder/dansbacillen.png',
+      '../bilder/rikedomsbacillen.png',
     ];
 
-    // Medel (8 par) — fler godisar
-    const IMAGES_MEDIUM = [
-      '../Godisar och veggies/Godis1.png',
-      '../Godisar och veggies/Godis2.png',
-      '../Godisar och veggies/Godis3.png',
-      '../Godisar och veggies/Godis4.png',
-      '../Godisar och veggies/Godis5.png',
-      '../Selma.png',
-      'godisar/Cute cartoon gummy bear candy, orange translucent, transparent background, flat vector style, children\'s animation.jpg',
-      '../Salim.png',
-    ];
-
-    // Svårt (12 par) — alla godisar
-    const IMAGES_HARD = [
+    // Godisar som fylls på om fler bilder behövs
+    const GODISAR = [
       '../Godisar och veggies/Godis1.png',
       '../Godisar och veggies/Godis2.png',
       '../Godisar och veggies/Godis3.png',
       '../Godisar och veggies/Godis4.png',
       '../Godisar och veggies/Godis5.png',
       '../Godisar och veggies/Godis6.png',
-      '../Godisar och veggies/Broccoli.png',
-      '../Godisar och veggies/Morot.png',
-      '../Selma.png',
-      'godisar/Cute cartoon gummy bear candy, orange translucent, transparent background, flat vector style, children\'s animation.jpg',
-      'godisar/Cute cartoon lollipop candy, bright pink swirl pattern, transparent background, flat vector style, children animation.jpg',
-      '../Salim.png',
     ];
+
+    // Lätt (6 par) — alla baciller
+    const IMAGES_EASY = [...BACILLERNA];
+
+    // Medel (8 par) — alla baciller + 2 godisar
+    const IMAGES_MEDIUM = [...BACILLERNA, ...GODISAR.slice(0, 2)];
+
+    // Svårt (12 par) — alla baciller + 6 godisar
+    const IMAGES_HARD = [...BACILLERNA, ...GODISAR];
 
     const IMAGES = IMAGES_EASY; // standard, byts nedan
 
@@ -406,7 +398,7 @@
         card.dataset.index = i;
         card.innerHTML = `
           <div class="card-inner">
-            <div class="card-back"><img src="../godisbacillen.png" alt="Godisbacillen"></div>
+            <div class="card-back"><span class="card-back-text">BACILLERNA</span></div>
             <div class="card-front"><img src="${img}" alt="godis"></div>
           </div>`;
         card.addEventListener('click', () => flipCard(card));
