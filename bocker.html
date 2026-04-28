@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Spel — BACILLERNA</title>
-<meta name="description" content="Spela med Bacillerna. Gratis spel för barn utan reklam och utan in-app köp.">
+<title>Böcker — BACILLERNA</title>
+<meta name="description" content="Bilderböcker med Bacillerna. Vackra böcker att läsa tillsammans med barn 3–8 år.">
 <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -48,6 +48,8 @@
   .btn:hover { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(0,0,0,0.15); }
   .btn-primary { background: var(--char-color); color: white; }
   .btn-primary:hover { background: var(--char-color-deep); }
+  .btn-secondary { background: white; border: 3px solid var(--char-color); color: var(--char-color-deep); padding: 13px 30px; }
+  .btn-secondary:hover { background: var(--char-color-light); }
 
   section { padding: 80px 32px; }
   section:nth-child(even) { background: var(--color-bg-soft); }
@@ -56,37 +58,32 @@
   .section-title { font-family: var(--font-heading); font-weight: 700; font-size: 38px; margin: 0 0 16px 0; color: var(--color-text-primary); line-height: 1.15; }
   .section-text { font-size: 17px; color: var(--color-text-secondary); max-width: 640px; margin: 0 0 40px 0; line-height: 1.7; }
 
-  /* === SPELKORT === */
-  .game-list { display: flex; flex-direction: column; gap: 24px; }
-  .game-card { background: white; border: 3px solid var(--color-border); border-radius: var(--radius-lg); padding: 36px; display: grid; grid-template-columns: 140px 1fr; gap: 36px; align-items: center; transition: transform 0.2s, box-shadow 0.2s; }
-  .game-card:hover { transform: translateY(-3px); box-shadow: 0 10px 30px rgba(0,0,0,0.09); }
-  .game-card.candy { border-color: var(--candy); }
-  .game-card.dance { border-color: var(--candy); }
-  .game-card.brand { border-color: var(--candy); }
+  /* === BOKGRID === */
+  .book-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+  .book-card { background: white; border: 2px solid var(--color-border); border-radius: var(--radius-lg); padding: 36px 28px; display: flex; flex-direction: column; align-items: center; text-align: center; transition: transform 0.2s, box-shadow 0.2s; }
+  .book-card:hover { transform: translateY(-4px); box-shadow: 0 12px 32px rgba(0,0,0,0.09); border-color: var(--char-color); }
 
-  .game-thumb { width: 140px; height: 140px; border-radius: var(--radius-lg); flex-shrink: 0; object-fit: contain; display: block; }
-  .game-card.candy .game-thumb { background: var(--candy-light); }
-  .game-card.dance .game-thumb { background: var(--candy-light); }
-  .game-card.brand .game-thumb { background: var(--candy-light); }
+  /* TODO: Byt ut .book-cover mot en riktig <img> med bokomslaget */
+  .book-cover { width: 150px; height: 210px; background: var(--char-color-light); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 64px; margin-bottom: 24px; box-shadow: 4px 6px 20px rgba(0,0,0,0.13); border: 2px dashed var(--char-color); }
+  .book-cover-note { font-size: 11px; color: var(--color-text-tertiary); margin-top: 8px; font-style: italic; }
+  .book-cover-img { width: 180px; height: auto; aspect-ratio: 1 / 1; object-fit: cover; border-radius: 8px; margin-bottom: 24px; box-shadow: 4px 8px 24px rgba(0,0,0,0.15); }
 
-  .game-age { display: inline-block; padding: 4px 12px; border-radius: var(--radius-pill); font-size: 11px; font-weight: 700; margin-bottom: 10px; }
-  .game-card.candy .game-age { background: var(--candy); color: white; }
-  .game-card.dance .game-age { background: var(--candy); color: white; }
-  .game-card.brand .game-age { background: var(--candy); color: white; }
+  .book-episode { font-family: var(--font-body); font-weight: 700; font-size: 12px; letter-spacing: 2px; text-transform: uppercase; color: var(--char-color-deep); margin-bottom: 8px; }
+  .book-title { font-family: var(--font-heading); font-weight: 700; font-size: 22px; margin: 0 0 8px 0; line-height: 1.2; }
+  .book-meta { font-size: 13px; color: var(--color-text-tertiary); margin-bottom: 14px; }
+  .book-desc { font-size: 14px; color: var(--color-text-secondary); line-height: 1.6; margin-bottom: 24px; }
+  .book-ctas { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
 
-  .game-title { font-family: var(--font-heading); font-weight: 700; font-size: 26px; margin: 0 0 8px 0; }
-  .game-desc { font-size: 15px; color: var(--color-text-secondary); line-height: 1.6; margin-bottom: 20px; }
-  .game-tags { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px; }
-  .game-tag { font-size: 12px; font-weight: 600; color: var(--color-text-tertiary); background: var(--color-bg-soft); border: 1px solid var(--color-border); padding: 4px 10px; border-radius: var(--radius-pill); }
-
-  .btn-candy { background: var(--candy); color: white; }
-  .btn-candy:hover { background: var(--candy-deep); }
-  .btn-dance { background: var(--dance); color: white; }
-  .btn-dance:hover { background: var(--dance-deep); }
+  /* === KOMMANDE BÖCKER === */
+  .coming-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+  .coming-card { background: white; border: 2px dashed var(--color-border-strong); border-radius: var(--radius-lg); padding: 28px 20px; text-align: center; }
+  .coming-emoji { font-size: 40px; margin-bottom: 10px; }
+  .coming-card h4 { font-family: var(--font-heading); font-weight: 700; font-size: 16px; margin: 0 0 6px 0; color: var(--color-text-secondary); }
+  .coming-card p { font-size: 12px; color: var(--color-text-tertiary); margin: 0; }
 
   @media (max-width: 720px) {
-    .game-card { grid-template-columns: 1fr; gap: 20px; padding: 24px; }
-    .game-thumb { width: 100px; height: 100px; font-size: 44px; }
+    .book-grid { grid-template-columns: 1fr; }
+    .coming-grid { grid-template-columns: repeat(2, 1fr); }
     .hero-char { padding: 48px 20px 64px; }
     .hero-char h1 { font-size: 40px; }
     .hero-tagline { font-size: 18px; }
@@ -116,8 +113,8 @@
     <nav class="site-nav">
       <a href="karaktarer.html">Karaktärer</a>
       <a href="sagor.html">Sagor</a>
-      <a href="bocker.html">Böcker</a>
-      <a href="spel.html" class="active">Spel</a>
+      <a href="bocker.html" class="active">Böcker</a>
+      <a href="spel.html">Spel</a>
       <a href="titta.html">Titta</a>
       <a href="foraldrar.html">Föräldrar</a>
     </nav>
@@ -125,68 +122,82 @@
   </header>
 
   <div class="breadcrumb">
-    <a href="index.html">Hem</a> · SPEL
+    <a href="index.html">Hem</a> · BÖCKER
   </div>
 
   <section class="hero-char">
-    <div class="hero-eyebrow">Gratis spel</div>
-    <h1>SPELA MED BACILLERNA</h1>
-    <p class="hero-tagline">Gratis, utan reklam och utan in-app köp. Bara ren glädje.</p>
+    <div class="hero-eyebrow">Bilderböcker</div>
+    <h1>BILDERBÖCKER MED BACILLERNA</h1>
+    <p class="hero-tagline">Vackra böcker att läsa tillsammans, baserade på de mest omtyckta podcastavsnitten.</p>
   </section>
 
   <section>
     <div class="section-inner">
-      <div class="section-eyebrow">Tillgängliga spel</div>
-      <h2 class="section-title">Välj ditt äventyr</h2>
-      <p class="section-text">Spelen är byggda för barn och fungerar lika bra på mobil som på dator.</p>
+      <div class="section-eyebrow">Utgivna nu</div>
+      <h2 class="section-title">Tre böcker finns redan</h2>
+      <p class="section-text">Varje bok bygger på ett podcastavsnitt och passar perfekt att läsa högt tillsammans.</p>
 
-      <div class="game-list">
+      <div class="book-grid">
 
-        <div class="game-card candy">
-          <img src="bilder/godisbacillen-gapar.png" alt="Mata Godisbacillen" class="game-thumb">
-          <div>
-            <div class="game-age">2–4 år</div>
-            <div class="game-title">Mata Godisbacillen</div>
-            <p class="game-desc">Dra godis till Godisbacillens öppna mun och hör det magiska CHOMP-ljudet. Specialgodis ger bonusar och dansanimationer.</p>
-            <div class="game-tags">
-              <span class="game-tag">Dra & släpp</span>
-              <span class="game-tag">Ljud & animation</span>
-              <span class="game-tag">Oändligt</span>
-            </div>
-            <a class="btn btn-candy" href="https://bacillerna.se/mata-godisbacillen.html" target="_blank">Spela nu →</a>
+        <div class="book-card">
+          <img src="bilder/bok-avsnitt-1.jpg" alt="Nattens sötaste hemlighet, bokomslag" class="book-cover-img">
+          <div class="book-episode">Baserad på avsnitt 1</div>
+          <div class="book-title">Nattens sötaste hemlighet</div>
+          <div class="book-meta">32 sidor · 3–6 år</div>
+          <p class="book-desc">Godisbacillen smyger ner till köket mitt i natten. Men vad hittar den egentligen där? En mjuk och rolig bilderbok med stora illustrationer.</p>
+          <div class="book-ctas">
+            <!-- TODO: Klistra in Amazon KDP-länk för bok 1 -->
+            <!-- <a class="btn btn-primary" href="DIN_AMAZON_LÄNK_HÄR" target="_blank">Köp boken</a> -->
+            <a class="btn btn-secondary" href="sagor.html">Lyssna på sagan</a>
           </div>
         </div>
 
-        <div class="game-card dance">
-          <img src="bilder/godisbacillen.png" alt="Bacillerna Memory" class="game-thumb">
-          <div>
-            <div class="game-age">4–8 år</div>
-            <div class="game-title">Bacillerna Memory</div>
-            <p class="game-desc">Hitta alla matchande par med bacillerna. Tränar minnet och koncentrationen på ett lekfullt sätt.</p>
-            <div class="game-tags">
-              <span class="game-tag">Memory</span>
-              <span class="game-tag">Alla baciller</span>
-              <span class="game-tag">Hjärnträning</span>
-            </div>
-            <a class="btn btn-candy" href="https://bacillerna.se/Memory/" target="_blank">Spela nu →</a>
+        <div class="book-card">
+          <img src="bilder/bok-avsnitt-2.jpg" alt="Det försvunna godisberget, bokomslag" class="book-cover-img">
+          <div class="book-episode">Baserad på avsnitt 2</div>
+          <div class="book-title">Det försvunna godisberget</div>
+          <div class="book-meta">32 sidor · 3–6 år</div>
+          <p class="book-desc">Godisberget är borta, och Godisbacillen måste hitta det innan natten är slut. En drömsk och magisk bilderbok som tar barnen med på ett godnattäventyr.</p>
+          <div class="book-ctas">
+            <!-- TODO: Klistra in Amazon KDP-länk för bok 2 (avsnitt 2) -->
+            <!-- <a class="btn btn-primary" href="DIN_AMAZON_LÄNK_HÄR" target="_blank">Köp boken</a> -->
+            <a class="btn btn-secondary" href="sagor.html">Lyssna på sagan</a>
           </div>
         </div>
 
-        <div class="game-card brand">
-          <img src="bilder/godisbacillen-springer.png" alt="Godisbacillen rymmer från tandläkaren" class="game-thumb">
-          <div>
-            <div class="game-age">6–10 år</div>
-            <div class="game-title">Godisbacillen rymmer från tandläkaren!</div>
-            <p class="game-desc">Spring så fort du kan! Hoppa över hinder och samla godis, men undvik tandläkaren som jagar Godisbacillen genom stan.</p>
-            <div class="game-tags">
-              <span class="game-tag">Endless runner</span>
-              <span class="game-tag">Highscore</span>
-              <span class="game-tag">Snabbt tempo</span>
-            </div>
-            <a class="btn btn-candy" href="https://bacillerna.se/Tandlakaren/" target="_blank">Spela nu →</a>
+        <div class="book-card">
+          <!-- TODO: Ersätt .book-cover nedan med:
+               <img src="bilder/bok-avsnitt-9.jpg" alt="Godisbacillen och godismiddagen, omslag" class="book-cover-img">
+          -->
+          <div class="book-cover">📗</div>
+          <p class="book-cover-note">Bokomslag placeras här</p>
+          <div class="book-episode">Baserad på avsnitt 9</div>
+          <div class="book-title">Godisbacillen och godismiddagen</div>
+          <div class="book-meta">28 sidor · 3–6 år</div>
+          <p class="book-desc">Vad händer när hela middagen plötsligt förvandlas till godis? En tokrolig bilderbok full av överraskningar och skratt.</p>
+          <div class="book-ctas">
+            <!-- TODO: Klistra in Amazon KDP-länk för bok 3 (avsnitt 9) -->
+            <!-- <a class="btn btn-primary" href="DIN_AMAZON_LÄNK_HÄR" target="_blank">Köp boken</a> -->
+            <a class="btn btn-secondary" href="sagor.html">Lyssna på sagan</a>
           </div>
         </div>
 
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-inner">
+      <div class="section-eyebrow">På väg</div>
+      <h2 class="section-title">Fler böcker kommer</h2>
+      <p class="section-text">Planen är en bilderbok per podcastavsnitt. Nya baciller, nya böcker.</p>
+
+      <div class="coming-grid">
+        <div class="coming-card"><div class="coming-emoji">📖</div><h4>Avsnitt 3</h4><p>Inbrott i godisfabriken</p></div>
+        <div class="coming-card"><div class="coming-emoji">📖</div><h4>Avsnitt 4</h4><p>Godisbacillen i mataffären</p></div>
+        <div class="coming-card"><div class="coming-emoji">📖</div><h4>Avsnitt 5</h4><p>Godisbacillen på dagis</p></div>
+        <div class="coming-card"><div class="coming-emoji">📖</div><h4>Avsnitt 6</h4><p>Godisbacillen i lekparken</p></div>
+        <div class="coming-card"><div class="coming-emoji">📖</div><h4>Avsnitt 7–10</h4><p>Och fler till…</p></div>
       </div>
     </div>
   </section>

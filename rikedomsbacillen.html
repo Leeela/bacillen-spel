@@ -1,0 +1,875 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RIKEDOMSBACILLEN — BACILLERNA</title>
+<meta name="description" content="Möt Rikedomsbacillen, den guldfärgade bacillen med platinakrona som lever i ett konstant pengaregn och vet att generositet alltid lönar sig.">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  /* === BACILLERNA DESIGNSYSTEM v1.0 === */
+  :root {
+    --color-bg: #ffffff;
+    --color-bg-soft: #fafafa;
+    --color-text-primary: #2a2a2a;
+    --color-text-secondary: #555555;
+    --color-text-tertiary: #888888;
+    --color-border: #f0f0f0;
+    --color-border-strong: #e0e0e0;
+
+    --brand-light: #FFD9CE;
+    --brand-mid: #FF8A75;
+    --brand-deep: #E55A40;
+
+    /* Karaktärsfärger */
+    --candy: #7BC142;
+    --candy-light: #E5F4D6;
+    --candy-deep: #5C9B22;
+    --candy-text-on-light: #3F6A18;
+    --love: #FF6B9D;
+    --love-light: #FFE0EC;
+    --love-deep: #D63A75;
+    --love-text-on-light: #B02A5F;
+    --happy: #FFB347;
+    --happy-light: #FFF0DC;
+    --happy-deep: #C97D00;
+    --happy-text-on-light: #8A5500;
+    --tease: #FFD93D;
+    --tease-light: #FFF8C8;
+    --tease-deep: #B89400;
+    --tease-text-on-light: #806600;
+    --dance: #4ECDC4;
+    --dance-light: #DAF6F3;
+    --dance-deep: #2BA89F;
+    --dance-text-on-light: #1F7A73;
+    --wealth: #D4A017;
+    --wealth-light: #FAF0CC;
+    --wealth-deep: #A07A0A;
+    --wealth-text-on-light: #6B5008;
+
+    --font-heading: 'Fredoka', sans-serif;
+    --font-body: 'Nunito', sans-serif;
+
+    --radius-sm: 8px;
+    --radius-md: 14px;
+    --radius-lg: 20px;
+    --radius-xl: 32px;
+    --radius-pill: 999px;
+
+    /* === KARAKTÄRSSPECIFIKA VARIABLER ===
+       Ändra dessa per karaktär — resten av sidan följer med */
+    --char-color: var(--wealth);
+    --char-color-light: var(--wealth-light);
+    --char-color-deep: var(--wealth-deep);
+    --char-color-text-on-light: var(--wealth-text-on-light);
+  }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: var(--font-body);
+    background: var(--color-bg);
+    color: var(--color-text-primary);
+    margin: 0;
+    padding: 0;
+    line-height: 1.6;
+  }
+  a { color: inherit; }
+
+  /* === HEADER === */
+  .site-header {
+    background: white;
+    border-bottom: 1px solid var(--color-border);
+    padding: 18px 32px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .site-logo {
+    font-family: var(--font-heading);
+    font-weight: 700;
+    font-size: 26px;
+    letter-spacing: 1.5px;
+    color: var(--color-text-primary);
+    text-decoration: none;
+  }
+  .site-nav {
+    display: flex;
+    gap: 22px;
+    font-size: 14px;
+    font-weight: 600;
+    flex-wrap: wrap;
+  }
+  .site-nav a {
+    text-decoration: none;
+    color: var(--color-text-secondary);
+    padding: 4px 0;
+    border-bottom: 2px solid transparent;
+    transition: color 0.15s, border-color 0.15s;
+  }
+  .site-nav a:hover { color: var(--char-color-deep); }
+  .site-nav a.active { color: var(--char-color-deep); border-bottom-color: var(--char-color-deep); }
+  .site-lang { font-size: 12px; font-weight: 700; color: #ccc; letter-spacing: 1.5px; text-decoration: none; cursor: not-allowed; pointer-events: none; }
+  .menu-btn {
+    display: none;
+    background: none;
+    border: 2px solid var(--color-border-strong);
+    border-radius: var(--radius-sm);
+    padding: 8px 12px;
+    font-family: var(--font-body);
+    font-weight: 700;
+    font-size: 14px;
+    cursor: pointer;
+  }
+  @media (max-width: 720px) {
+    .site-nav { display: none; width: 100%; flex-direction: column; gap: 12px; padding-top: 12px; }
+    .site-nav.open { display: flex; }
+    .menu-btn { display: block; }
+  }
+
+  /* === BREADCRUMB === */
+  .breadcrumb {
+    padding: 16px 32px;
+    background: var(--color-bg-soft);
+    font-size: 13px;
+    color: var(--color-text-tertiary);
+  }
+  .breadcrumb a { color: var(--color-text-secondary); text-decoration: none; }
+  .breadcrumb a:hover { color: var(--char-color-deep); }
+
+  /* === HERO (full barn-zon!) === */
+  .hero-char {
+    background: var(--char-color-light);
+    background-image:
+      radial-gradient(circle at 20% 30%, rgba(255,255,255,0.5) 0%, transparent 50%),
+      radial-gradient(circle at 80% 70%, rgba(255,255,255,0.3) 0%, transparent 50%);
+    padding: 80px 32px 100px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero-char::before {
+    content: '💰';
+    position: absolute;
+    font-size: 80px;
+    top: 10%;
+    left: 5%;
+    opacity: 0.15;
+    transform: rotate(-15deg);
+  }
+  .hero-char::after {
+    content: '💎';
+    position: absolute;
+    font-size: 70px;
+    bottom: 10%;
+    right: 8%;
+    opacity: 0.15;
+    transform: rotate(20deg);
+  }
+
+  .hero-emoji-big {
+    font-size: 140px;
+    line-height: 1;
+    margin-bottom: 24px;
+    display: inline-block;
+    animation: bounce 2s ease-in-out infinite;
+  }
+  .hero-portrait {
+    width: 280px;
+    height: 280px;
+    object-fit: contain;
+    margin-bottom: 24px;
+    display: inline-block;
+    animation: bounce 2s ease-in-out infinite;
+    filter: drop-shadow(0 10px 24px rgba(0,0,0,0.15));
+  }
+  @keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-12px); }
+  }
+
+  .hero-eyebrow {
+    font-family: var(--font-body);
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--char-color-deep);
+    margin-bottom: 12px;
+  }
+  .hero-char h1 {
+    font-family: var(--font-heading);
+    font-weight: 700;
+    font-size: 72px;
+    line-height: 1;
+    margin: 0 0 18px 0;
+    letter-spacing: 2px;
+    color: var(--color-text-primary);
+  }
+  .hero-tagline {
+    font-family: var(--font-heading);
+    font-weight: 500;
+    font-size: 26px;
+    color: var(--color-text-primary);
+    max-width: 580px;
+    margin: 0 auto 24px auto;
+    line-height: 1.3;
+  }
+  .hero-power-badge {
+    display: inline-block;
+    padding: 12px 28px;
+    background: var(--char-color);
+    color: white;
+    border-radius: var(--radius-pill);
+    font-family: var(--font-heading);
+    font-weight: 700;
+    font-size: 18px;
+    letter-spacing: 1px;
+    margin-bottom: 32px;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.10);
+  }
+  .hero-ctas {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  .btn {
+    display: inline-block;
+    padding: 16px 32px;
+    border-radius: var(--radius-pill);
+    font-family: var(--font-body);
+    font-weight: 700;
+    font-size: 16px;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    transition: transform 0.15s, box-shadow 0.15s;
+  }
+  .btn:hover { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(0,0,0,0.15); }
+  .btn-primary { background: var(--char-color); color: white; }
+  .btn-primary:hover { background: var(--char-color-deep); }
+  .btn-secondary { background: white; border: 3px solid var(--char-color); color: var(--char-color-deep); padding: 13px 30px; }
+  .btn-secondary:hover { background: var(--char-color-light); }
+
+  /* === SECTIONS === */
+  section { padding: 80px 32px; }
+  .section-inner {
+    max-width: 900px;
+    margin: 0 auto;
+  }
+  .section-eyebrow {
+    font-family: var(--font-body);
+    font-weight: 700;
+    font-size: 12px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--char-color-deep);
+    margin-bottom: 8px;
+  }
+  .section-title {
+    font-family: var(--font-heading);
+    font-weight: 700;
+    font-size: 38px;
+    margin: 0 0 16px 0;
+    color: var(--color-text-primary);
+    line-height: 1.15;
+  }
+  .section-text {
+    font-size: 18px;
+    color: var(--color-text-primary);
+    line-height: 1.7;
+    max-width: 700px;
+  }
+
+  /* === PERSONLIGHET BLOCK === */
+  .personality {
+    background: white;
+  }
+  .personality .section-text {
+    font-size: 19px;
+    line-height: 1.8;
+  }
+  .personality .section-text strong {
+    color: var(--char-color-deep);
+    font-weight: 700;
+  }
+
+  /* === SUPERKRAFT === */
+  .superpower {
+    background: var(--char-color-light);
+    text-align: center;
+  }
+  .superpower .section-title { font-size: 44px; }
+  .superpower-icon {
+    font-size: 80px;
+    margin-bottom: 16px;
+  }
+  .superpower-name {
+    font-family: var(--font-heading);
+    font-weight: 700;
+    font-size: 56px;
+    color: var(--char-color-deep);
+    margin: 0 0 16px 0;
+    letter-spacing: 1px;
+    line-height: 1.1;
+  }
+  .superpower-desc {
+    font-size: 19px;
+    line-height: 1.7;
+    color: var(--color-text-primary);
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  /* === SVAGHETER === */
+  .weaknesses {
+    background: white;
+  }
+  .weakness-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 20px;
+    margin-top: 32px;
+  }
+  .weakness-card {
+    background: var(--color-bg-soft);
+    border: 2px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: 28px;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .weakness-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 22px rgba(0,0,0,0.08);
+    border-color: var(--char-color);
+  }
+  .weakness-emoji { font-size: 36px; margin-bottom: 10px; }
+  .weakness-name {
+    font-family: var(--font-heading);
+    font-weight: 700;
+    font-size: 22px;
+    color: var(--char-color-deep);
+    margin: 0 0 10px 0;
+  }
+  .weakness-desc {
+    font-size: 15px;
+    color: var(--color-text-secondary);
+    line-height: 1.6;
+  }
+  @media (max-width: 720px) {
+    .weakness-list { grid-template-columns: 1fr; }
+  }
+
+  /* === ÅTERKOMMANDE GAG === */
+  .gag {
+    background: var(--char-color);
+    color: white;
+    text-align: center;
+  }
+  .gag .section-eyebrow { color: rgba(255,255,255,0.85); }
+  .gag .section-title { color: white; }
+  .gag .gag-text {
+    font-size: 19px;
+    line-height: 1.7;
+    max-width: 640px;
+    margin: 16px auto 0 auto;
+    color: rgba(255,255,255,0.95);
+  }
+  .gag-list {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+    margin-top: 36px;
+  }
+  .gag-step {
+    background: rgba(255,255,255,0.15);
+    border-radius: var(--radius-lg);
+    padding: 24px;
+    backdrop-filter: blur(4px);
+  }
+  .gag-step .num {
+    font-family: var(--font-heading);
+    font-weight: 700;
+    font-size: 32px;
+    color: rgba(255,255,255,0.6);
+    line-height: 1;
+    margin-bottom: 8px;
+  }
+  .gag-step h4 {
+    font-family: var(--font-heading);
+    font-weight: 700;
+    font-size: 17px;
+    margin: 0 0 8px 0;
+    color: white;
+  }
+  .gag-step p {
+    font-size: 14px;
+    color: rgba(255,255,255,0.9);
+    margin: 0;
+    line-height: 1.5;
+  }
+  @media (max-width: 720px) {
+    .gag-list { grid-template-columns: 1fr; }
+  }
+
+  /* === CITAT/BUDSKAP === */
+  .quote-block {
+    background: var(--color-bg-soft);
+    text-align: center;
+    padding: 100px 32px;
+  }
+  .quote-mark {
+    font-family: var(--font-heading);
+    font-weight: 700;
+    font-size: 120px;
+    color: var(--char-color);
+    line-height: 0.8;
+    margin-bottom: 16px;
+  }
+  .quote-text {
+    font-family: var(--font-heading);
+    font-weight: 500;
+    font-size: 32px;
+    color: var(--color-text-primary);
+    max-width: 720px;
+    margin: 0 auto 20px auto;
+    line-height: 1.3;
+    font-style: italic;
+  }
+  .quote-author {
+    font-family: var(--font-body);
+    font-weight: 700;
+    font-size: 14px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--char-color-deep);
+  }
+  @media (max-width: 720px) {
+    .quote-text { font-size: 22px; }
+    .quote-mark { font-size: 80px; }
+  }
+
+  /* === HÄR HITTAR DU BACILLEN === */
+  .find-section { background: white; }
+  .find-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+    margin-top: 32px;
+  }
+  .find-card {
+    background: var(--color-bg-soft);
+    border: 2px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: 28px;
+    text-align: center;
+    text-decoration: none;
+    color: var(--color-text-primary);
+    transition: transform 0.2s, box-shadow 0.2s;
+    display: block;
+  }
+  .find-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 22px rgba(0,0,0,0.08);
+    border-color: var(--char-color);
+  }
+  .find-emoji { font-size: 44px; margin-bottom: 12px; }
+  .find-card h4 {
+    font-family: var(--font-heading);
+    font-weight: 700;
+    font-size: 18px;
+    margin: 0 0 6px 0;
+  }
+  .find-card p {
+    font-size: 13px;
+    color: var(--color-text-secondary);
+    margin: 0 0 12px 0;
+    line-height: 1.5;
+  }
+  .find-card .arrow {
+    font-weight: 700;
+    color: var(--char-color-deep);
+    font-size: 13px;
+  }
+  @media (max-width: 720px) {
+    .find-grid { grid-template-columns: 1fr; }
+  }
+
+  /* === MÖT DE ANDRA === */
+  .others-section {
+    background: var(--color-bg-soft);
+  }
+  .others-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 14px;
+    margin-top: 32px;
+  }
+  .other-bug {
+    background: white;
+    border: 3px solid;
+    border-radius: var(--radius-lg);
+    padding: 20px 12px;
+    text-align: center;
+    text-decoration: none;
+    color: var(--color-text-primary);
+    transition: transform 0.2s, box-shadow 0.2s;
+    display: block;
+  }
+  .other-bug:hover { transform: translateY(-4px) rotate(-2deg); box-shadow: 0 8px 20px rgba(0,0,0,0.10); }
+  .other-bug .emoji { font-size: 40px; line-height: 1; margin-bottom: 8px; }
+  .other-bug .name {
+    font-family: var(--font-heading);
+    font-weight: 700;
+    font-size: 11px;
+    letter-spacing: 0.5px;
+  }
+  .other-bug.candy { border-color: var(--candy); }
+  .other-bug.love { border-color: var(--love); }
+  .other-bug.happy { border-color: var(--happy); }
+  .other-bug.tease { border-color: var(--tease); }
+  .other-bug.dance { border-color: var(--dance); }
+  .other-bug.wealth { border-color: var(--wealth); }
+
+  @media (max-width: 720px) {
+    .others-grid { grid-template-columns: repeat(5, 1fr); gap: 8px; }
+    .other-bug { padding: 12px 6px; }
+    .other-bug .emoji { font-size: 28px; }
+    .other-bug .name { font-size: 9px; letter-spacing: 0; }
+  }
+
+  /* === CTA-block === */
+  .cta-block {
+    background: var(--char-color);
+    color: white;
+    text-align: center;
+    padding: 80px 32px;
+  }
+  .cta-block h2 {
+    font-family: var(--font-heading);
+    font-weight: 700;
+    font-size: 36px;
+    margin: 0 0 16px 0;
+    color: white;
+  }
+  .cta-block p {
+    font-size: 17px;
+    color: rgba(255,255,255,0.9);
+    max-width: 540px;
+    margin: 0 auto 28px auto;
+    line-height: 1.6;
+  }
+  .cta-block .btn-primary {
+    background: white;
+    color: var(--char-color-deep);
+  }
+  .cta-block .btn-primary:hover { background: var(--color-bg-soft); }
+  .cta-block .btn-secondary {
+    background: transparent;
+    border-color: white;
+    color: white;
+  }
+  .cta-block .btn-secondary:hover { background: rgba(255,255,255,0.15); }
+
+  /* === FOOTER === */
+  .site-footer {
+    background: #1a1a1a;
+    color: #999;
+    padding: 48px 32px 32px;
+  }
+  .footer-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr;
+    gap: 32px;
+  }
+  .footer-brand h3 {
+    font-family: var(--font-heading);
+    font-weight: 700;
+    font-size: 22px;
+    color: white;
+    letter-spacing: 1px;
+    margin: 0 0 8px 0;
+  }
+  .footer-brand p { font-size: 13px; line-height: 1.6; margin: 0; }
+  .footer-col h4 {
+    font-family: var(--font-heading);
+    font-weight: 600;
+    font-size: 14px;
+    color: white;
+    margin: 0 0 12px 0;
+  }
+  .footer-col ul { list-style: none; padding: 0; margin: 0; }
+  .footer-col li { margin-bottom: 8px; }
+  .footer-col a { text-decoration: none; color: #aaa; font-size: 13px; transition: color 0.15s; }
+  .footer-col a:hover { color: var(--brand-mid); }
+  .footer-bottom {
+    max-width: 1100px;
+    margin: 32px auto 0;
+    padding-top: 24px;
+    border-top: 1px solid #333;
+    text-align: center;
+    font-size: 12px;
+    color: #888;
+  }
+  .footer-bottom strong { color: white; letter-spacing: 1px; }
+
+  @media (max-width: 720px) {
+    .hero-emoji-big { font-size: 100px; }
+    .hero-portrait { width: 200px; height: 200px; }
+    .hero-char h1 { font-size: 44px; }
+    .hero-tagline { font-size: 18px; }
+    .hero-char { padding: 48px 20px 64px; }
+    section { padding: 56px 20px; }
+    .section-title { font-size: 28px; }
+    .superpower-name { font-size: 36px; }
+    .quote-block { padding: 64px 20px; }
+    .footer-inner { grid-template-columns: 1fr 1fr; gap: 24px; }
+    .cta-block h2 { font-size: 26px; }
+  }
+</style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header class="site-header">
+    <a href="/" class="site-logo">BACILLERNA</a>
+    <button class="menu-btn" onclick="document.querySelector('.site-nav').classList.toggle('open')">Meny</button>
+    <nav class="site-nav">
+      <a href="karaktarer.html" class="active">Karaktärer</a>
+      <a href="sagor.html">Sagor</a>
+      <a href="bocker.html">Böcker</a>
+      <a href="spel.html">Spel</a>
+      <a href="index.html#titta">Titta</a>
+      <a href="foraldrar.html">Föräldrar</a>
+    </nav>
+    <span class="site-lang" title="Engelsk version kommer snart">SV / EN</span>
+  </header>
+
+  <!-- BREADCRUMB -->
+  <div class="breadcrumb">
+    <a href="/">Hem</a> · <a href="karaktarer.html">Karaktärer</a> · RIKEDOMSBACILLEN
+  </div>
+
+  <!-- HERO -->
+  <section class="hero-char">
+    <img src="bilder/rikedomsbacillen.png" alt="Rikedomsbacillen" class="hero-portrait">
+    <div class="hero-eyebrow">Möt</div>
+    <h1>RIKEDOMSBACILLEN</h1>
+    <div class="hero-tagline">Den guldfärgade bacillen som lever i ett konstant pengaregn</div>
+    <div class="hero-power-badge">Superkraft: PENGAREGNET</div>
+    <div class="hero-ctas">
+      <a class="btn btn-primary" href="#sagor">Möt bacillen</a>
+      <a class="btn btn-secondary" href="#superkraft">Lär dig mer</a>
+    </div>
+  </section>
+
+  <!-- PERSONLIGHET -->
+  <section class="personality">
+    <div class="section-inner">
+      <div class="section-eyebrow">Personlighet</div>
+      <h2 class="section-title">Euforisk, extravagant och genuint generös</h2>
+      <p class="section-text">
+        Rikedomsbacillen är metalliskt guld med en platinakrona prydd av ädelstenar i blått, rött, grönt och rosa. Långa ögonfransar, glittertänder och en röd tunga. Den lever i ett konstant regn av pengar och blir <strong>fullständigt tokig av lycka</strong> varje gång ett nytt sedelbunt landar. Men det viktigaste: Rikedomsbacillen är ingen girig karaktär. Tvärtom. Den har förstått hemligheten: ju mer den delar ut desto mer kommer tillbaka. Girighet är den enda saken som faktiskt gör den fattig.
+      </p>
+    </div>
+  </section>
+
+  <!-- SUPERKRAFT -->
+  <section class="superpower" id="superkraft">
+    <div class="section-inner">
+      <div class="superpower-icon">💎</div>
+      <div class="section-eyebrow">Superkraft</div>
+      <div class="superpower-name">PENGAREGNET</div>
+      <p class="superpower-desc">
+        Rikedomsbacillen är en magnet för pengar. Där den dyker upp börjar sedlar och mynt flyga genom luften, rakt mot den. Folks plånböcker töms inte, men känslan av överflöd sprider sig till alla i närheten. Alla känner sig rika när den är i rummet.
+      </p>
+    </div>
+  </section>
+
+  <!-- SVAGHET -->
+  <section class="weaknesses">
+    <div class="section-inner">
+      <div class="section-eyebrow">Svaghet</div>
+      <h2 class="section-title">Även den rikaste bacillen har sina sidor</h2>
+
+      <div class="weakness-list">
+        <div class="weakness-card">
+          <div class="weakness-emoji">🥳</div>
+          <div class="weakness-name">Euforin tar över</div>
+          <p class="weakness-desc">
+            När pengarna regnar tappar Rikedomsbacillen helt greppet om verkligheten. Skrattar, rullar runt i sedlarna, glömmer allt annat. Fullständigt oanvändbar tills ruset lagt sig.
+          </p>
+        </div>
+        <div class="weakness-card">
+          <div class="weakness-emoji">🚫</div>
+          <div class="weakness-name">Snålheten straffar sig</div>
+          <p class="weakness-desc">
+            De sällsynta gångerna den försöker hålla ihop och inte dela med sig händer ingenting. Pengarna slutar flyga mot den. Regnet stannar. Den sitter kvar ensam med sina mynt och förstår inte varför.
+          </p>
+        </div>
+        <div class="weakness-card">
+          <div class="weakness-emoji">🏷️</div>
+          <div class="weakness-name">Förväxlar värde</div>
+          <p class="weakness-desc">
+            Förstår inte alltid vad som är värdefullt på riktigt. Kan ge bort ett diamanthalsband utan att blinka men hålla hårt i ett gammalt klistermärke för att den tycker det är finare.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ÅTERKOMMANDE GAG -->
+  <section class="gag">
+    <div class="section-inner">
+      <div class="section-eyebrow">Återkommande bus</div>
+      <h2 class="section-title">Rikedomsbacillen och pengaregnet som vänder</h2>
+      <p class="gag-text">
+        Det börjar med ett regn av guld. Det slutar nästan alltid med en lärdom. Och bacillen är full av lycka i båda fallen.
+      </p>
+
+      <div class="gag-list">
+        <div class="gag-step">
+          <div class="num">01</div>
+          <h4>Pengarna börjar regna</h4>
+          <p>Sedlar flyger genom luften. Mynt ramlar ner från ingenstans. Rikedomsbacillen badar i guld och blir tokig av lycka.</p>
+        </div>
+        <div class="gag-step">
+          <div class="num">02</div>
+          <h4>Bacillen försöker hålla ihop</h4>
+          <p>Just denna gång ska den inte dela med sig. Bara denna enda gång. Den knyter handen runt sedlarna.</p>
+        </div>
+        <div class="gag-step">
+          <div class="num">03</div>
+          <h4>Regnet stannar</h4>
+          <p>Tystnad. Inga sedlar. Inga mynt. Bacillen släpper greppet, ger bort allt, och regnet börjar igen.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- BUDSKAP -->
+  <section class="quote-block">
+    <div class="quote-mark">"</div>
+    <p class="quote-text">Ju mer du ger, desto mer får du tillbaka.</p>
+    <div class="quote-author">— Rikedomsbacillens budskap</div>
+  </section>
+
+  <!-- HÄR HITTAR DU BACILLEN -->
+  <section class="find-section" id="sagor">
+    <div class="section-inner">
+      <div class="section-eyebrow">Var möter du Rikedomsbacillen?</div>
+      <h2 class="section-title">Kommer snart! Följ för mer</h2>
+
+      <div class="find-grid">
+        <a class="find-card" href="https://www.tiktok.com/@bacillerna" target="_blank">
+          <div class="find-emoji">📱</div>
+          <h4>Följ på TikTok</h4>
+          <p>Rikedomsbacillen får eget innehåll snart. Följ @bacillerna för att vara först.</p>
+          <span class="arrow">Följ för mer →</span>
+        </a>
+        <a class="find-card" href="https://www.instagram.com/bacillerna/" target="_blank">
+          <div class="find-emoji">📷</div>
+          <h4>Följ på Instagram</h4>
+          <p>Bacillerna i bild och rörelse. Följ @bacillerna för att aldrig missa en bacill.</p>
+          <span class="arrow">Följ för mer →</span>
+        </a>
+        <a class="find-card" href="https://www.youtube.com/channel/UCQdNaboog6_vw0YoajNJPzw" target="_blank">
+          <div class="find-emoji">📺</div>
+          <h4>Prenumerera på YouTube</h4>
+          <p>Hela Bacillerna-världen samlad. Prenumerera så missar du inget när Rikedomsbacillen kommer.</p>
+          <span class="arrow">Prenumerera →</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- MÖT DE ANDRA -->
+  <section class="others-section">
+    <div class="section-inner">
+      <div class="section-eyebrow">Bacillerna är ett gäng</div>
+      <h2 class="section-title">Möt de andra fem</h2>
+
+      <div class="others-grid">
+        <a class="other-bug candy" href="godisbacillen.html">
+          <div class="emoji">🍬</div>
+          <div class="name">GODIS-<br>BACILLEN</div>
+        </a>
+        <a class="other-bug love" href="karleksbacillen.html">
+          <div class="emoji">💖</div>
+          <div class="name">KÄRLEKS-<br>BACILLEN</div>
+        </a>
+        <a class="other-bug happy" href="gladjebacillen.html">
+          <div class="emoji">😄</div>
+          <div class="name">GLÄDJE-<br>BACILLEN</div>
+        </a>
+        <a class="other-bug tease" href="retbacillen.html">
+          <div class="emoji">😝</div>
+          <div class="name">RET-<br>BACILLEN</div>
+        </a>
+        <a class="other-bug dance" href="dansbacillen.html">
+          <div class="emoji">💃</div>
+          <div class="name">DANS-<br>BACILLEN</div>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta-block">
+    <h2>Eget innehåll om Rikedomsbacillen kommer snart!</h2>
+    <p>Just nu möter du bacillen i ensemblevärlden. Följ för att vara först när eget material släpps.</p>
+    <a class="btn btn-primary" href="https://www.tiktok.com/@bacillerna" target="_blank">📱 Följ på TikTok</a>
+    <a class="btn btn-secondary" href="/">Tillbaka till start</a>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <h3>BACILLERNA</h3>
+        <p>En svensk barn-IP för 3-8 år. Sex baciller, sex superkrafter, oändligt med bus.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Utforska</h4>
+        <ul>
+          <li><a href="karaktarer.html">Karaktärer</a></li>
+          <li><a href="sagor.html">Sagor</a></li>
+          <li><a href="bocker.html">Böcker</a></li>
+          <li><a href="spel.html">Spel</a></li>
+          <li><a href="index.html#titta">Titta</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Följ oss</h4>
+        <ul>
+          <li><a href="https://www.tiktok.com/@bacillerna" target="_blank">TikTok</a></li>
+          <li><a href="https://www.instagram.com/bacillerna/" target="_blank">Instagram</a></li>
+          <li><a href="https://www.youtube.com/channel/UCQdNaboog6_vw0YoajNJPzw" target="_blank">YouTube</a></li>
+          <li><a href="https://open.spotify.com/show/2X0WwBDFy6mdud7rfAIzrZ" target="_blank">Spotify</a></li>
+          <li><a href="https://podcasts.apple.com/se/podcast/godisbacillen/id1890639062" target="_blank">Apple Podcasts</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Information</h4>
+        <ul>
+          <li><a href="foraldrar.html">För föräldrar</a></li>
+          <li><a href="om.html">Om varumärket</a></li>
+          <li><a href="kontakt.html">Kontakt</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      © 2026 <strong>BACILLERNA</strong> — LuvBugs Collection
+    </div>
+  </footer>
+
+</body>
+</html>

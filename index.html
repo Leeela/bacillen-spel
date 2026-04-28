@@ -1,259 +1,796 @@
 <!DOCTYPE html>
 <html lang="sv">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>Bacillernas Spelportal 🎮</title>
-  <!-- Google tag (gtag.js) -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-GJG476R480"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'G-GJG476R480');
-  </script>
-  <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BACILLERNA — Möt godisbacillen och dess vänner</title>
+<meta name="description" content="BACILLERNA är en svensk barn-IP för 3-8 år. Sex baciller, sex superkrafter, oändligt med bus. Lyssna på podcasten, läs böckerna eller spela spelen.">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  /* ============================================
+     BACILLERNA DESIGNSYSTEM v1.0
+     ============================================ */
+  :root {
+    --color-bg: #ffffff;
+    --color-bg-soft: #fafafa;
+    --color-text-primary: #2a2a2a;
+    --color-text-secondary: #555555;
+    --color-text-tertiary: #888888;
+    --color-border: #f0f0f0;
+    --color-border-strong: #e0e0e0;
 
-    body {
-      background: linear-gradient(160deg, #fff8e1 0%, #fce4ec 50%, #e8f5e9 100%);
-      min-height: 100vh;
-      font-family: 'Arial Rounded MT Bold', Arial, sans-serif;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 20px 16px 40px;
-      overflow-x: hidden;
-    }
+    --brand-light: #FFD9CE;
+    --brand-mid: #FF8A75;
+    --brand-deep: #E55A40;
+    --brand-text-on-light: #B53B26;
 
-    /* ── Fallande godis ── */
-    .bg-candy {
-      position: fixed; top: -80px;
-      font-size: 40px;
-      animation: fall linear infinite;
-      pointer-events: none;
-      z-index: 0;
-      opacity: 0.5;
-    }
-    @keyframes fall {
-      from { transform: translateY(0) rotate(0deg); }
-      to   { transform: translateY(110vh) rotate(360deg); }
-    }
+    --candy: #7BC142;
+    --candy-deep: #5C9B22;
+    --love: #FF6B9D;
+    --love-deep: #D63A75;
+    --happy: #FFB347;
+    --happy-deep: #C97D00;
+    --tease: #FFD93D;
+    --tease-deep: #B89400;
+    --dance: #4ECDC4;
+    --dance-deep: #2BA89F;
+    --wealth: #D4A017;
+    --wealth-deep: #A07A0A;
 
-    /* ── Header ── */
-    .header {
-      position: relative; z-index: 1;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      margin-bottom: 32px;
-    }
+    --font-heading: 'Fredoka', sans-serif;
+    --font-body: 'Nunito', sans-serif;
 
-    .header img {
-      width: min(140px, 30vw);
-      mix-blend-mode: multiply;
-      animation: bounce 1.8s ease-in-out infinite;
-    }
-    @keyframes bounce {
-      0%,100% { transform: translateY(0); }
-      50%      { transform: translateY(-12px); }
-    }
+    --radius-sm: 8px;
+    --radius-md: 14px;
+    --radius-lg: 20px;
+    --radius-pill: 999px;
+  }
 
-    .header h1 {
-      font-size: clamp(26px, 7vw, 48px);
-      font-weight: 900;
-      color: #fff;
-      text-shadow:
-        3px 3px 0 #e91e63,
-        -1px -1px 0 #e91e63,
-        1px -1px 0 #e91e63,
-        -1px 1px 0 #e91e63;
-      letter-spacing: 2px;
-      text-align: center;
-      margin-top: 8px;
-    }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: var(--font-body);
+    background: var(--color-bg);
+    color: var(--color-text-primary);
+    margin: 0;
+    padding: 0;
+    line-height: 1.6;
+  }
+  a { color: inherit; }
 
-    .header p {
-      font-size: clamp(14px, 3.5vw, 20px);
-      color: #5d4037;
-      margin-top: 6px;
-    }
+  /* === HEADER === */
+  .site-header {
+    background: white;
+    border-bottom: 1px solid var(--color-border);
+    padding: 18px 32px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .site-logo {
+    font-family: var(--font-heading);
+    font-weight: 700;
+    font-size: 26px;
+    letter-spacing: 1.5px;
+    color: var(--color-text-primary);
+    text-decoration: none;
+  }
+  .site-nav {
+    display: flex;
+    gap: 22px;
+    font-size: 14px;
+    font-weight: 600;
+    flex-wrap: wrap;
+  }
+  .site-nav a {
+    text-decoration: none;
+    color: var(--color-text-secondary);
+    padding: 4px 0;
+    border-bottom: 2px solid transparent;
+    transition: color 0.15s, border-color 0.15s;
+  }
+  .site-nav a:hover { color: var(--brand-deep); }
+  .site-nav a.active { color: var(--brand-deep); border-bottom-color: var(--brand-deep); }
+  .site-lang { font-size: 12px; font-weight: 700; color: #ccc; letter-spacing: 1.5px; text-decoration: none; cursor: not-allowed; pointer-events: none; }
 
-    /* ── Spelgrid ── */
-    .games-grid {
-      position: relative; z-index: 1;
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 20px;
-      width: 100%;
-      max-width: 700px;
-    }
+  /* === MOBILE NAV === */
+  .menu-btn {
+    display: none;
+    background: none;
+    border: 2px solid var(--color-border-strong);
+    border-radius: var(--radius-sm);
+    padding: 8px 12px;
+    font-family: var(--font-body);
+    font-weight: 700;
+    font-size: 14px;
+    cursor: pointer;
+  }
+  @media (max-width: 720px) {
+    .site-nav { display: none; width: 100%; flex-direction: column; gap: 12px; padding-top: 12px; }
+    .site-nav.open { display: flex; }
+    .menu-btn { display: block; }
+  }
 
-    /* ── Spelkort ── */
-    .game-card {
-      background: white;
-      border-radius: 28px;
-      padding: 24px 20px;
-      text-align: center;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.12);
-      text-decoration: none;
-      transition: transform 0.2s, box-shadow 0.2s;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 12px;
-      cursor: pointer;
-    }
-    .game-card:hover, .game-card:active {
-      transform: translateY(-6px) scale(1.02);
-      box-shadow: 0 14px 32px rgba(0,0,0,0.18);
-    }
+  /* === HERO === */
+  .hero {
+    background: linear-gradient(180deg, var(--brand-light) 0%, #FFEFEA 100%);
+    padding: 64px 32px 80px;
+    text-align: center;
+  }
+  .hero-eyebrow {
+    font-family: var(--font-body);
+    font-weight: 700;
+    font-size: 12px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--brand-deep);
+    margin-bottom: 14px;
+  }
+  .hero h1 {
+    font-family: var(--font-heading);
+    font-weight: 700;
+    font-size: 64px;
+    line-height: 1.05;
+    margin: 0 0 18px 0;
+    letter-spacing: 1px;
+    color: var(--color-text-primary);
+  }
+  .hero-tagline {
+    font-family: var(--font-heading);
+    font-weight: 500;
+    font-size: 22px;
+    color: var(--color-text-secondary);
+    max-width: 580px;
+    margin: 0 auto 32px auto;
+    line-height: 1.4;
+  }
+  .hero-ctas {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: 50px;
+  }
+  .btn {
+    display: inline-block;
+    padding: 16px 32px;
+    border-radius: var(--radius-pill);
+    font-family: var(--font-body);
+    font-weight: 700;
+    font-size: 16px;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    transition: transform 0.15s, box-shadow 0.15s;
+  }
+  .btn:hover { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(0,0,0,0.12); }
+  .btn-primary { background: var(--brand-mid); color: white; }
+  .btn-primary:hover { background: var(--brand-deep); }
+  .btn-secondary { background: white; border: 2px solid var(--brand-deep); color: var(--brand-deep); padding: 14px 30px; }
+  .btn-secondary:hover { background: var(--brand-light); }
 
-    .game-card .emoji {
-      font-size: 64px;
-      line-height: 1;
-    }
+  /* Hjälte-grid (placeholder) */
+  .hero-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 16px;
+    max-width: 800px;
+    margin: 0 auto;
+  }
+  .hero-bug {
+    background: white;
+    border-radius: var(--radius-lg);
+    padding: 24px 12px;
+    text-align: center;
+    border: 3px solid;
+    transition: transform 0.2s, box-shadow 0.2s;
+    text-decoration: none;
+    color: var(--color-text-primary);
+    display: block;
+  }
+  .hero-bug:hover { transform: translateY(-4px) rotate(-2deg); }
+  .hero-bug .emoji { font-size: 48px; line-height: 1; }
+  .hero-bug.candy { border-color: var(--candy); }
+  .hero-bug.love { border-color: var(--love); }
+  .hero-bug.happy { border-color: var(--happy); }
+  .hero-bug.tease { border-color: var(--tease); }
+  .hero-bug.dance { border-color: var(--dance); }
+  .hero-bug.wealth { border-color: var(--wealth); }
 
-    .game-card h2 {
-      font-size: clamp(20px, 5vw, 26px);
-      font-weight: 900;
-      color: #333;
-    }
+  @media (max-width: 720px) {
+    .hero h1 { font-size: 40px; }
+    .hero-tagline { font-size: 18px; }
+    .hero { padding: 40px 20px 56px; }
+    .hero-grid { grid-template-columns: repeat(3, 1fr); gap: 10px; }
+    .hero-bug { padding: 16px 8px; }
+    .hero-bug .emoji { font-size: 36px; }
+  }
 
-    .game-card p {
-      font-size: clamp(13px, 3vw, 16px);
-      color: #888;
-      line-height: 1.4;
-    }
+  /* === SECTIONS === */
+  section { padding: 72px 32px; }
+  section:nth-child(even) { background: var(--color-bg-soft); }
 
-    .age-badge {
-      background: #fce4ec;
-      color: #e91e63;
-      border-radius: 50px;
-      padding: 4px 14px;
-      font-size: 13px;
-      font-weight: 900;
-    }
+  .section-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+  .section-eyebrow {
+    font-family: var(--font-body);
+    font-weight: 700;
+    font-size: 12px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--brand-deep);
+    margin-bottom: 8px;
+  }
+  .section-title {
+    font-family: var(--font-heading);
+    font-weight: 700;
+    font-size: 38px;
+    margin: 0 0 12px 0;
+    color: var(--color-text-primary);
+  }
+  .section-text {
+    font-size: 17px;
+    color: var(--color-text-secondary);
+    max-width: 640px;
+    margin: 0 0 36px 0;
+    line-height: 1.6;
+  }
+  .section-header-center {
+    text-align: center;
+  }
+  .section-header-center .section-text { margin-left: auto; margin-right: auto; }
 
-    .play-btn {
-      background: linear-gradient(135deg, #66bb6a, #43a047);
-      color: white;
-      border: none;
-      border-radius: 50px;
-      padding: 12px 32px;
-      font-size: clamp(16px, 4vw, 20px);
-      font-weight: 900;
-      cursor: pointer;
-      box-shadow: 0 4px 0 #2e7d32;
-      transition: transform 0.1s, box-shadow 0.1s;
-      width: 100%;
-      letter-spacing: 1px;
-    }
-    .play-btn:active {
-      transform: translateY(2px);
-      box-shadow: 0 2px 0 #2e7d32;
-    }
+  /* === VÄRDERINGSBLOCK === */
+  .values-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    margin-top: 36px;
+  }
+  .value-card {
+    background: white;
+    border: 2px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: 28px;
+    text-align: center;
+  }
+  .value-icon {
+    font-size: 36px;
+    margin-bottom: 12px;
+  }
+  .value-card h3 {
+    font-family: var(--font-heading);
+    font-weight: 600;
+    font-size: 20px;
+    margin: 0 0 8px 0;
+  }
+  .value-card p {
+    font-size: 14px;
+    color: var(--color-text-secondary);
+    margin: 0;
+    line-height: 1.5;
+  }
+  @media (max-width: 720px) {
+    .values-grid { grid-template-columns: 1fr; }
+  }
 
-    /* Kommande spel */
-    .game-card.coming-soon {
-      opacity: 0.65;
-      cursor: default;
-    }
-    .game-card.coming-soon:hover {
-      transform: none;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.12);
-    }
-    .game-card.coming-soon .play-btn {
-      background: linear-gradient(135deg, #bdbdbd, #9e9e9e);
-      box-shadow: 0 4px 0 #757575;
-      cursor: default;
-    }
+  /* === KARAKTÄRSGRID === */
+  .char-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+  }
+  .char-card {
+    background: white;
+    border: 3px solid;
+    border-radius: var(--radius-lg);
+    padding: 24px 20px;
+    text-align: center;
+    text-decoration: none;
+    color: var(--color-text-primary);
+    transition: transform 0.2s, box-shadow 0.2s;
+    display: block;
+  }
+  .char-card:hover { transform: translateY(-3px); box-shadow: 0 8px 22px rgba(0,0,0,0.10); }
+  .char-card .emoji { font-size: 56px; line-height: 1; margin-bottom: 12px; }
+  .char-card .name {
+    font-family: var(--font-heading);
+    font-weight: 700;
+    font-size: 16px;
+    letter-spacing: 0.5px;
+    margin-bottom: 8px;
+  }
+  .char-card .power {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: var(--radius-pill);
+    font-size: 11px;
+    font-weight: 700;
+    margin-bottom: 12px;
+  }
+  .char-card .desc {
+    font-size: 13px;
+    color: var(--color-text-secondary);
+    line-height: 1.5;
+  }
+  .char-card .more {
+    display: inline-block;
+    margin-top: 12px;
+    font-size: 12px;
+    font-weight: 700;
+  }
 
-    .coming-badge {
-      background: #fff3e0;
-      color: #f57c00;
-      border-radius: 50px;
-      padding: 4px 14px;
-      font-size: 13px;
-      font-weight: 900;
-    }
+  .char-card.candy { border-color: var(--candy); }
+  .char-card.candy .power { background: var(--candy); color: white; }
+  .char-card.candy .more { color: var(--candy-deep); }
+  .char-card.love { border-color: var(--love); }
+  .char-card.love .power { background: var(--love); color: white; }
+  .char-card.love .more { color: var(--love-deep); }
+  .char-card.happy { border-color: var(--happy); }
+  .char-card.happy .power { background: var(--happy); color: white; }
+  .char-card.happy .more { color: var(--happy-deep); }
+  .char-card.tease { border-color: var(--tease); }
+  .char-card.tease .power { background: var(--tease); color: var(--color-text-primary); }
+  .char-card.tease .more { color: var(--tease-deep); }
+  .char-card.dance { border-color: var(--dance); }
+  .char-card.dance .power { background: var(--dance); color: white; }
+  .char-card.dance .more { color: var(--dance-deep); }
+  .char-card.wealth { border-color: var(--wealth); }
+  .char-card.wealth .power { background: var(--wealth); color: white; }
+  .char-card.wealth .more { color: var(--wealth-deep); }
 
-    /* ── YouTube-knapp ── */
-    .yt-btn {
-      position: relative; z-index: 1;
-      margin-top: 36px;
-      background: #ff0000;
-      color: white;
-      border-radius: 50px;
-      padding: 12px 28px;
-      font-size: 16px;
-      font-weight: 900;
-      text-decoration: none;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-      transition: transform 0.2s;
-    }
-    .yt-btn:hover { transform: scale(1.05); }
-  </style>
+  @media (max-width: 720px) {
+    .char-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+    .char-card { padding: 16px 12px; }
+    .char-card .emoji { font-size: 40px; }
+    .char-card .name { font-size: 13px; }
+  }
+
+  /* === SAGOR LIST === */
+  .saga-list {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+  }
+  .saga-card {
+    background: white;
+    border: 2px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: 24px;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .saga-card:hover { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(0,0,0,0.08); border-color: var(--brand-mid); }
+  .saga-num {
+    font-family: var(--font-heading);
+    font-weight: 700;
+    font-size: 14px;
+    color: var(--brand-deep);
+    letter-spacing: 1px;
+  }
+  .saga-title {
+    font-family: var(--font-heading);
+    font-weight: 600;
+    font-size: 18px;
+    margin: 8px 0 12px 0;
+    line-height: 1.3;
+  }
+  .saga-meta {
+    font-size: 12px;
+    color: var(--color-text-tertiary);
+    margin-bottom: 14px;
+  }
+  .saga-listen {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--brand-deep);
+    text-decoration: none;
+  }
+  .saga-listen:hover { text-decoration: underline; }
+
+  @media (max-width: 720px) {
+    .saga-list { grid-template-columns: 1fr; }
+  }
+
+  /* === FEATURE BLOCK (böcker, spel, titta) === */
+  .feature-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+  }
+  .feature-card {
+    background: white;
+    border: 2px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: 36px 32px;
+    text-align: center;
+  }
+  .feature-card .feature-emoji { font-size: 48px; margin-bottom: 16px; }
+  .feature-card h3 {
+    font-family: var(--font-heading);
+    font-weight: 700;
+    font-size: 24px;
+    margin: 0 0 10px 0;
+  }
+  .feature-card p {
+    font-size: 15px;
+    color: var(--color-text-secondary);
+    margin: 0 0 20px 0;
+    line-height: 1.6;
+  }
+  @media (max-width: 720px) {
+    .feature-grid { grid-template-columns: 1fr; }
+  }
+
+  /* === YOUTUBE EMBED === */
+  .yt-embed-wrap {
+    position: relative;
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
+    aspect-ratio: 16 / 9;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    box-shadow: 0 12px 40px rgba(0,0,0,0.12);
+  }
+  .yt-embed-wrap iframe {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  /* === PARENTS BLOCK === */
+  .parents-block {
+    background: var(--color-text-primary);
+    color: white;
+    border-radius: var(--radius-lg);
+    padding: 48px 40px;
+    text-align: center;
+  }
+  .parents-block h2 {
+    font-family: var(--font-heading);
+    font-weight: 700;
+    font-size: 32px;
+    margin: 0 0 14px 0;
+    color: white;
+  }
+  .parents-block p {
+    font-size: 16px;
+    color: #d0d0d0;
+    max-width: 580px;
+    margin: 0 auto 24px auto;
+    line-height: 1.6;
+  }
+  .parents-block .btn-secondary {
+    background: transparent;
+    border-color: white;
+    color: white;
+  }
+  .parents-block .btn-secondary:hover { background: white; color: var(--color-text-primary); }
+
+  /* === FOOTER === */
+  .site-footer {
+    background: #1a1a1a;
+    color: #999;
+    padding: 48px 32px 32px;
+  }
+  .footer-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr;
+    gap: 32px;
+  }
+  .footer-brand h3 {
+    font-family: var(--font-heading);
+    font-weight: 700;
+    font-size: 22px;
+    color: white;
+    letter-spacing: 1px;
+    margin: 0 0 8px 0;
+  }
+  .footer-brand p {
+    font-size: 13px;
+    line-height: 1.6;
+    margin: 0;
+  }
+  .footer-col h4 {
+    font-family: var(--font-heading);
+    font-weight: 600;
+    font-size: 14px;
+    color: white;
+    margin: 0 0 12px 0;
+    letter-spacing: 0.5px;
+  }
+  .footer-col ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  .footer-col li { margin-bottom: 8px; }
+  .footer-col a {
+    text-decoration: none;
+    color: #aaa;
+    font-size: 13px;
+    transition: color 0.15s;
+  }
+  .footer-col a:hover { color: var(--brand-mid); }
+  .footer-bottom {
+    max-width: 1100px;
+    margin: 32px auto 0;
+    padding-top: 24px;
+    border-top: 1px solid #333;
+    text-align: center;
+    font-size: 12px;
+    color: #888;
+  }
+  .footer-bottom strong { color: white; letter-spacing: 1px; }
+  @media (max-width: 720px) {
+    .footer-inner { grid-template-columns: 1fr 1fr; gap: 24px; }
+    section { padding: 48px 20px; }
+    .section-title { font-size: 28px; }
+    .section-text { font-size: 15px; }
+    .parents-block { padding: 32px 24px; }
+    .parents-block h2 { font-size: 24px; }
+  }
+</style>
 </head>
 <body>
 
-  <!-- Fallande godis bakgrund -->
-  <span class="bg-candy" style="left:5%;  animation-duration:3.2s; animation-delay:0s;">🍭</span>
-  <span class="bg-candy" style="left:20%; animation-duration:4.1s; animation-delay:0.7s;">🍫</span>
-  <span class="bg-candy" style="left:40%; animation-duration:2.9s; animation-delay:1.3s;">🍬</span>
-  <span class="bg-candy" style="left:60%; animation-duration:3.7s; animation-delay:0.4s;">🧁</span>
-  <span class="bg-candy" style="left:78%; animation-duration:4.4s; animation-delay:0.9s;">🍩</span>
-  <span class="bg-candy" style="left:92%; animation-duration:3.1s; animation-delay:1.7s;">🍪</span>
+  <!-- HEADER -->
+  <header class="site-header">
+    <a href="index.html" class="site-logo">BACILLERNA</a>
+    <button class="menu-btn" onclick="document.querySelector('.site-nav').classList.toggle('open')">Meny</button>
+    <nav class="site-nav">
+      <a href="#karaktarer" class="active">Karaktärer</a>
+      <a href="#sagor">Sagor</a>
+      <a href="#bocker">Böcker</a>
+      <a href="#spel">Spel</a>
+      <a href="#titta">Titta</a>
+      <a href="#foraldrar">Föräldrar</a>
+    </nav>
+    <span class="site-lang" title="Engelsk version kommer snart">SV / EN</span>
+  </header>
 
-  <!-- Header -->
-  <div class="header">
-    <img src="godisbacillen.png" alt="Godisbacillen">
-    <h1>BACILLERNAS<br>SPELPORTAL 🎮</h1>
-    <p>🍬 Välj ett spel och ha kul! 🍬</p>
-  </div>
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-eyebrow">Möt</div>
+    <h1>BACILLERNA</h1>
+    <div class="hero-tagline">Sex baciller, sex superkrafter, oändligt med bus</div>
+    <div class="hero-ctas">
+      <a class="btn btn-primary" href="#sagor">Lyssna på podcasten</a>
+      <a class="btn btn-secondary" href="#karaktarer">Lär känna bacillerna</a>
+    </div>
+    <div class="hero-grid">
+      <a class="hero-bug candy" href="#karaktarer"><div class="emoji">🍬</div></a>
+      <a class="hero-bug love" href="#karaktarer"><div class="emoji">💖</div></a>
+      <a class="hero-bug happy" href="#karaktarer"><div class="emoji">😄</div></a>
+      <a class="hero-bug tease" href="#karaktarer"><div class="emoji">😝</div></a>
+      <a class="hero-bug dance" href="#karaktarer"><div class="emoji">💃</div></a>
+      <a class="hero-bug wealth" href="#karaktarer"><div class="emoji">💰</div></a>
+    </div>
+  </section>
 
-  <!-- Spel -->
-  <div class="games-grid">
+  <!-- VAD ÄR BACILLERNA -->
+  <section>
+    <div class="section-inner section-header-center">
+      <div class="section-eyebrow">En värld för barn 3-8 år</div>
+      <h2 class="section-title">En lekfull värld med hjärta</h2>
+      <p class="section-text">Bacillerna är en svensk barn-IP där sex färgglada karaktärer lär barn om vänskap, glädje, kärlek och att dela med sig. Helt fri från reklam.</p>
+      <div class="values-grid">
+        <div class="value-card">
+          <div class="value-icon">🎙️</div>
+          <h3>Sagor som somnar med</h3>
+          <p>Tio podcastavsnitt med varma berättelser, mjuka röster och vackra bakgrundsljud.</p>
+        </div>
+        <div class="value-card">
+          <div class="value-icon">📚</div>
+          <h3>Böcker att läsa tillsammans</h3>
+          <p>Vackra bilderböcker som binder samman det barnen hör med det de ser.</p>
+        </div>
+        <div class="value-card">
+          <div class="value-icon">🎮</div>
+          <h3>Spel utan in-app köp</h3>
+          <p>Tre interaktiva spel som leker fram nyfikenheten utan stress eller köp.</p>
+        </div>
+      </div>
+    </div>
+  </section>
 
-    <!-- Spel 1: Mata Godisbacillen -->
-    <a class="game-card" href="mata-godisbacillen.html">
-      <div class="emoji"><img src="godisbacillen-gapar.png" alt="Godisbacillen gapar" style="width:80px;height:80px;object-fit:contain;"></div>
-      <span class="age-badge">👶🏻 2–5 år</span>
-      <h2>Mata Godisbacillen!</h2>
-      <p>Dra godis till Godisbacillens mun och mata honom! Passa dig för broccoli! 🥦</p>
-      <button class="play-btn">▶ &nbsp;SPELA!</button>
-    </a>
+  <!-- KARAKTÄRER -->
+  <section id="karaktarer">
+    <div class="section-inner">
+      <div class="section-eyebrow">Sex karaktärer</div>
+      <h2 class="section-title">Lär känna bacillerna</h2>
+      <p class="section-text">Varje bacill har sin egen superkraft, sin egen stil och sitt eget sätt att leva. Klicka på en bacill för att lära dig mer.</p>
 
-    <!-- Spel 2: Memory -->
-    <a class="game-card" href="Memory/index.html">
-      <div class="emoji"><img src="Tandlakaren/sprites/Godisbacillen hoppar.png" alt="Godisbacillen" style="width:80px;height:80px;object-fit:contain;"></div>
-      <span class="age-badge">🧒🏽 4–8 år</span>
-      <h2>Godisbacillens Memory!</h2>
-      <p>Para ihop godisar! Tre svårighetsgrader — kan du hitta alla par? 🌟</p>
-      <button class="play-btn">▶ &nbsp;SPELA!</button>
-    </a>
+      <div class="char-grid">
+        <a class="char-card candy" href="godisbacillen.html">
+          <div class="emoji">🍬</div>
+          <div class="name">GODISBACILLEN</div>
+          <div class="power">Sockervågen</div>
+          <div class="desc">Den limegröna bacillen som vaknar varje lördag med nya planer.</div>
+          <span class="more">Läs mer →</span>
+        </a>
+        <a class="char-card love" href="karleksbacillen.html">
+          <div class="emoji">💖</div>
+          <div class="name">KÄRLEKSBACILLEN</div>
+          <div class="power">Kärleksvågen</div>
+          <div class="desc">Den rosa bacillen med vild fluff och hjärta av guld.</div>
+          <span class="more">Läs mer →</span>
+        </a>
+        <a class="char-card happy" href="gladjebacillen.html">
+          <div class="emoji">😄</div>
+          <div class="name">GLÄDJEBACILLEN</div>
+          <div class="power">Glädjesmitta</div>
+          <div class="desc">Den orange bacillen som inte kan låta bli att sprida glädje.</div>
+          <span class="more">Läs mer →</span>
+        </a>
+        <a class="char-card tease" href="retbacillen.html">
+          <div class="emoji">😝</div>
+          <div class="name">RETBACILLEN</div>
+          <div class="power">Retgesten</div>
+          <div class="desc">Den knallgula bacillen som retar med kärlek, aldrig med elakhet.</div>
+          <span class="more">Läs mer →</span>
+        </a>
+        <a class="char-card dance" href="dansbacillen.html">
+          <div class="emoji">💃</div>
+          <div class="name">DANSBACILLEN</div>
+          <div class="power">Dansvågen</div>
+          <div class="desc">Den turkosa bacillen med boombox som får alla att börja röra sig.</div>
+          <span class="more">Läs mer →</span>
+        </a>
+        <a class="char-card wealth" href="rikedomsbacillen.html">
+          <div class="emoji">💰</div>
+          <div class="name">RIKEDOMSBACILLEN</div>
+          <div class="power">Pengaregnet</div>
+          <div class="desc">Den guldglittrande bacillen som vet att rikedom är att ge bort.</div>
+          <span class="more">Läs mer →</span>
+        </a>
+      </div>
+    </div>
+  </section>
 
-    <!-- Spel 3: Rymmer från Tandläkaren -->
-    <a class="game-card" href="Tandlakaren/index.html">
-      <div class="emoji"><img src="Tandlakaren/sprites/Godisbacillen springer.png" alt="Godisbacillen" style="width:80px;height:80px;object-fit:contain;"></div>
-      <span class="age-badge">🧒🏾 3–10 år</span>
-      <h2>Rymmer från Tandläkaren!</h2>
-      <p>Hoppa över tandborstar och samla godis! Tre svårighetsgrader. 🦷</p>
-      <button class="play-btn">▶ &nbsp;SPELA!</button>
-    </a>
+  <!-- SAGOR -->
+  <section id="sagor">
+    <div class="section-inner">
+      <div class="section-eyebrow">Godissagor med Godisbacillen</div>
+      <h2 class="section-title">Sagor som följer med in i drömmarna</h2>
+      <p class="section-text">Tio avsnitt finns att lyssna på just nu, och varje lördag finns ett nytt äventyr. Berättat med varma röster och mjuka bakgrundsljud.</p>
 
-  </div>
+      <div class="saga-list">
+        <div class="saga-card">
+          <div class="saga-num">Avsnitt 1</div>
+          <div class="saga-title">Nattens sötaste hemlighet</div>
+          <div class="saga-meta">8 min · godisbacillen smyger ner till köket</div>
+          <a class="saga-listen" href="https://open.spotify.com/show/2X0WwBDFy6mdud7rfAIzrZ" target="_blank">▶ Lyssna på Spotify</a>
+        </div>
+        <div class="saga-card">
+          <div class="saga-num">Avsnitt 3</div>
+          <div class="saga-title">Inbrott i godisfabriken</div>
+          <div class="saga-meta">9 min · ett farligt äventyr i nattens fabriksvärld</div>
+          <a class="saga-listen" href="https://open.spotify.com/show/2X0WwBDFy6mdud7rfAIzrZ" target="_blank">▶ Lyssna på Spotify</a>
+        </div>
+        <div class="saga-card">
+          <div class="saga-num">Avsnitt 9</div>
+          <div class="saga-title">Godisbacillen och godismiddagen</div>
+          <div class="saga-meta">8 min · när hela middagen blir godis</div>
+          <a class="saga-listen" href="https://open.spotify.com/show/2X0WwBDFy6mdud7rfAIzrZ" target="_blank">▶ Lyssna på Spotify</a>
+        </div>
+      </div>
 
-  <!-- YouTube-knapp -->
-  <a class="yt-btn" href="https://www.youtube.com/@LuvbugsBacillerna/playlists" target="_blank" rel="noopener">
-    <svg width="22" height="16" viewBox="0 0 22 16" fill="white">
-      <path d="M21.5 2.5s-.2-1.5-.9-2.1C19.8-.3 18.9-.3 18.5-.3 15.5-.5 11-.5 11-.5S6.5-.5 3.5-.3C3.1-.3 2.2-.3 1.4.4.7 1 .5 2.5.5 2.5S.3 4.2.3 6v1.7c0 1.7.2 3.5.2 3.5s.2 1.5.9 2.1c.8.7 1.9.7 2.4.7C5.3 14.2 11 14.2 11 14.2s4.5 0 7.5-.3c.4 0 1.3-.1 2.1-.8.7-.6.9-2.1.9-2.1s.2-1.8.2-3.5V6C21.7 4.2 21.5 2.5 21.5 2.5zM8.8 9.7V4.5l6 2.6-6 2.6z"/>
-    </svg>
-    Se Godisbacillen på YouTube!
-  </a>
+      <div style="text-align:center;margin-top:36px;">
+        <a class="btn btn-secondary" href="sagor.html">Se alla 10 avsnitt</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- BÖCKER & SPEL & TITTA -->
+  <section id="bocker">
+    <div class="section-inner">
+      <div class="section-eyebrow">Mer från bacillerna</div>
+      <h2 class="section-title">Läs, spela, titta</h2>
+      <p class="section-text">Bacillerna lever i flera världar. Välj din favorit.</p>
+
+      <div class="feature-grid">
+        <div class="feature-card">
+          <div class="feature-emoji">📚</div>
+          <h3>Bilderböcker</h3>
+          <p>Två böcker finns just nu: Nattens sötaste hemlighet och Godisbacillen och godismiddagen. Fler kommer.</p>
+          <a class="btn btn-primary" href="bocker.html">Se böckerna</a>
+        </div>
+        <div class="feature-card">
+          <div class="feature-emoji">🎮</div>
+          <h3>Spela med bacillerna</h3>
+          <p>Tre interaktiva spel: Mata Godisbacillen, Memory och Rymmer från Tandläkaren.</p>
+          <a class="btn btn-primary" href="spel.html">Spela nu</a>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- TITTA -->
+  <section id="titta">
+    <div class="section-inner section-header-center">
+      <div class="section-eyebrow">YouTube</div>
+      <h2 class="section-title">Titta på Bacillerna</h2>
+      <p class="section-text">Korta shorts och fullängdsavsnitt på YouTube. Prenumerera för att inte missa nya släpp!</p>
+
+      <div class="yt-embed-wrap">
+        <iframe
+          src="https://www.youtube.com/embed/videoseries?list=UUQdNaboog6_vw0YoajNJPzw"
+          title="Bacillerna på YouTube"
+          frameborder="0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          allowfullscreen>
+        </iframe>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- FÖRÄLDRAR -->
+  <section id="foraldrar">
+    <div class="section-inner">
+      <div class="parents-block">
+        <h2>För föräldrar och pedagoger</h2>
+        <p>Bacillerna är utvecklat med omsorg om barns välbefinnande. Inga in-app köp, ingen reklam, ingen datainsamling. Bara berättelser, lek och varumärkesvärden vi tror på.</p>
+        <a class="btn btn-secondary" href="foraldrar.html">Läs om varumärket</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <h3>BACILLERNA</h3>
+        <p>En svensk barn-IP för 3-8 år. Sex baciller, sex superkrafter, oändligt med bus.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Utforska</h4>
+        <ul>
+          <li><a href="#karaktarer">Karaktärer</a></li>
+          <li><a href="#sagor">Sagor</a></li>
+          <li><a href="#bocker">Böcker</a></li>
+          <li><a href="#spel">Spel</a></li>
+          <li><a href="#titta">Titta</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Följ oss</h4>
+        <ul>
+          <li><a href="https://www.tiktok.com/@bacillerna" target="_blank">TikTok</a></li>
+          <li><a href="https://www.instagram.com/bacillerna/" target="_blank">Instagram</a></li>
+          <li><a href="https://www.youtube.com/channel/UCQdNaboog6_vw0YoajNJPzw" target="_blank">YouTube</a></li>
+          <li><a href="https://open.spotify.com/show/2X0WwBDFy6mdud7rfAIzrZ" target="_blank">Spotify</a></li>
+          <li><a href="https://podcasts.apple.com/se/podcast/godisbacillen/id1890639062" target="_blank">Apple Podcasts</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Information</h4>
+        <ul>
+          <li><a href="foraldrar.html">För föräldrar</a></li>
+          <li><a href="om.html">Om varumärket</a></li>
+          <li><a href="kontakt.html">Kontakt</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      © 2026 <strong>BACILLERNA</strong> — LuvBugs Collection
+    </div>
+  </footer>
 
 </body>
 </html>
