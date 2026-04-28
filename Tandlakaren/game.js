@@ -539,7 +539,7 @@
         state.score += 50;
         spawnParticles(o.x + o.w/2, o.y, '#ffeb3b');
         updateHUD();
-        if (state.brushCount >= 10 && state.dentists.length === 0) {
+        if (state.dentists.length === 0) {
           if (state.dentistsSpawned >= cfg.maxDentists) { showDentistWinVideo(); }
           else { win(); }
         }
@@ -582,8 +582,7 @@
         // Sista tandläkaren scrollade av — spela vinst-video
         if (state.running &&
             state.dentists.length === 0 &&
-            state.dentistsSpawned >= cfg.maxDentists &&
-            state.brushCount >= 10) {
+            state.dentistsSpawned >= cfg.maxDentists) {
           showDentistWinVideo();
         }
         continue;
@@ -593,7 +592,7 @@
       if (!d.passed && player.x > d.x + d.w) {
         d.passed = true;
         const allPassed = state.dentists.every(dt => dt.passed);
-        if (state.brushCount >= 10 && allPassed) {
+        if (allPassed) {
           showDentistWinVideo();
           // return borttagen — guard i loop-toppen hanterar detta nästa iteration
         }
