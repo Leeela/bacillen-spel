@@ -539,9 +539,8 @@
         state.score += 50;
         spawnParticles(o.x + o.w/2, o.y, '#ffeb3b');
         updateHUD();
-        if (state.dentists.length === 0) {
-          if (state.dentistsSpawned >= cfg.maxDentists) { showDentistWinVideo(); }
-          else { win(); }
+        if (state.dentists.length === 0 && state.dentistsSpawned >= cfg.maxDentists) {
+          showDentistWinVideo();
         }
       }
 
