@@ -255,6 +255,15 @@
     border-radius: var(--radius-lg);
     padding: 28px;
     text-align: center;
+    display: block;
+    text-decoration: none;
+    color: inherit;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .value-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.1);
   }
   .value-icon {
     font-size: 36px;
@@ -578,21 +587,21 @@
       <h2 class="section-title">En lekfull värld med hjärta</h2>
       <p class="section-text">Bacillerna är en svensk barn-IP där sex färgglada karaktärer lär barn om vänskap, glädje, kärlek och att dela med sig. Helt fri från reklam.</p>
       <div class="values-grid">
-        <div class="value-card">
+        <a class="value-card" href="sagor.html">
           <div class="value-icon">🎙️</div>
-          <h3>Sagor som somnar med</h3>
+          <h3>Sagor att somna till</h3>
           <p>Tio podcastavsnitt med varma berättelser, mjuka röster och vackra bakgrundsljud.</p>
-        </div>
-        <div class="value-card">
+        </a>
+        <a class="value-card" href="bocker.html">
           <div class="value-icon">📚</div>
           <h3>Böcker att läsa tillsammans</h3>
           <p>Vackra bilderböcker som binder samman det barnen hör med det de ser.</p>
-        </div>
-        <div class="value-card">
+        </a>
+        <a class="value-card" href="spel.html">
           <div class="value-icon">🎮</div>
           <h3>Spel utan in-app köp</h3>
           <p>Tre interaktiva spel som leker fram nyfikenheten utan stress eller köp.</p>
-        </div>
+        </a>
       </div>
     </div>
   </section>
