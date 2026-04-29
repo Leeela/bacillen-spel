@@ -31,7 +31,7 @@
   .site-nav a { text-decoration: none; color: var(--color-text-secondary); padding: 4px 0; border-bottom: 2px solid transparent; transition: color 0.15s, border-color 0.15s; }
   .site-nav a:hover { color: var(--char-color-deep); }
   .site-nav a.active { color: var(--char-color-deep); border-bottom-color: var(--char-color-deep); }
-  .site-lang { font-size: 12px; font-weight: 700; color: #ccc; letter-spacing: 1.5px; text-decoration: none; cursor: not-allowed; pointer-events: none; }
+  .site-lang { font-size: 12px; font-weight: 700; color: var(--color-text-secondary); letter-spacing: 1.5px; text-decoration: none; transition: color 0.15s; }
   .menu-btn { display: none; background: none; border: 2px solid var(--color-border-strong); border-radius: var(--radius-sm); padding: 8px 12px; font-family: var(--font-body); font-weight: 700; font-size: 14px; cursor: pointer; }
   @media (max-width: 720px) { .site-nav { display: none; width: 100%; flex-direction: column; gap: 12px; padding-top: 12px; } .site-nav.open { display: flex; } .menu-btn { display: block; } }
 
@@ -118,7 +118,7 @@
       <a href="titta.html">Titta</a>
       <a href="foraldrar.html">Föräldrar</a>
     </nav>
-    <span class="site-lang" title="Engelsk version kommer snart">SV / EN</span>
+    <a href="https://luvbugscollection.com" class="site-lang" title="English version">SV / EN</a>
   </header>
 
   <div class="breadcrumb">
