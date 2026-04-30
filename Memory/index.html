@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
   <base href="/Memory/">
   <title>Bacillerna Memory 🎉</title>
-  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;600;700;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;600;700;900&family=Studsig:wght@400;700&display=swap" rel="stylesheet">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -156,6 +156,19 @@
       width: 70%;
       height: 70%;
       object-fit: contain;
+      margin-bottom: 8px;
+    }
+
+    .card-name {
+      font-family: 'Fredoka', sans-serif;
+      font-size: clamp(13px, 2.8vw, 15px);
+      font-weight: 600;
+      color: #2d8659;
+      text-align: center;
+      letter-spacing: 0.3px;
+      text-shadow: 1px 1px 0 rgba(255,255,255,0.8);
+      line-height: 1.1;
+      margin-top: 6px;
     }
 
     /* ── Win screen ── */
@@ -323,6 +336,26 @@
       '../Godisar och veggies/Godis6.png',
     ];
 
+    // Namn på bacillerna och godisar
+    const NAMES = {
+      '../bilder/godisbacillen.png': 'Godisbacillen',
+      '../bilder/karleksbacillen.png': 'Kärleksbacillen',
+      '../bilder/gladjebacillen.png': 'Glädjedebacillen',
+      '../bilder/retbacillen.png': 'Rétbacillen',
+      '../bilder/dansbacillen.png': 'Dansbacillen',
+      '../bilder/rikedomsbacillen.png': 'Rikedomsbacillen',
+      '../Godisar och veggies/Godis1.png': 'Godis',
+      '../Godisar och veggies/Godis2.png': 'Godis',
+      '../Godisar och veggies/Godis3.png': 'Godis',
+      '../Godisar och veggies/Godis4.png': 'Godis',
+      '../Godisar och veggies/Godis5.png': 'Godis',
+      '../Godisar och veggies/Godis6.png': 'Godis',
+    };
+
+    function getCardName(imagePath) {
+      return NAMES[imagePath] || 'Okänd';
+    }
+
     // Lätt (6 par) — alla baciller
     const IMAGES_EASY = [...BACILLERNA];
 
@@ -398,10 +431,16 @@
         card.className = 'card';
         card.dataset.img = img;
         card.dataset.index = i;
+        const cardName = getCardName(img);
         card.innerHTML = `
           <div class="card-inner">
             <div class="card-back"><span class="card-back-text">BACILLERNA</span></div>
-            <div class="card-front"><img src="${img}" alt="godis"></div>
+            <div class="card-front">
+              <div style="display:flex;flex-direction:column;align-items:center;width:100%;height:100%;justify-content:center;">
+                <img src="${img}" alt="${cardName}" style="width:70%;height:60%;object-fit:contain;">
+                <div class="card-name">${cardName}</div>
+              </div>
+            </div>
           </div>`;
         card.addEventListener('click', () => flipCard(card));
         grid.appendChild(card);
