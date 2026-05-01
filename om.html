@@ -3,6 +3,24 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- PWA -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#7BC142">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Bacillerna">
+    <link rel="apple-touch-icon" href="/icons/icon-180.png">
+    <!-- iOS Splash Screens -->
+    <link rel="apple-touch-startup-image" href="/icons/splash-640x1136.png" media="(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)">
+    <link rel="apple-touch-startup-image" href="/icons/splash-750x1334.png" media="(device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)">
+    <link rel="apple-touch-startup-image" href="/icons/splash-828x1792.png" media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)">
+    <link rel="apple-touch-startup-image" href="/icons/splash-1125x2436.png" media="(device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)">
+    <link rel="apple-touch-startup-image" href="/icons/splash-1242x2688.png" media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)">
+    <link rel="apple-touch-startup-image" href="/icons/splash-1170x2532.png" media="(device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)">
+    <link rel="apple-touch-startup-image" href="/icons/splash-1290x2796.png" media="(device-width: 430px) and (device-height: 932px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)">
+    <link rel="apple-touch-startup-image" href="/icons/splash-1536x2048.png" media="(min-device-width: 768px) and (max-device-width: 1024px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)">
+    <link rel="apple-touch-startup-image" href="/icons/splash-1668x2388.png" media="(min-device-width: 834px) and (max-device-width: 834px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)">
+    <link rel="apple-touch-startup-image" href="/icons/splash-2048x2732.png" media="(min-device-width: 1024px) and (max-device-width: 1024px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)">
 <title>Om varumärket — BACILLERNA</title>
 <meta name="description" content="Om Bacillerna. Berättelsen bakom varumärket, visionen och människorna bakom bacillerna.">
 <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
@@ -94,6 +112,13 @@
   .footer-bottom { max-width: 1100px; margin: 32px auto 0; padding-top: 24px; border-top: 1px solid #333; text-align: center; font-size: 12px; color: #888; }
   .footer-bottom strong { color: white; letter-spacing: 1px; }
   @media (max-width: 720px) { .footer-inner { grid-template-columns: 1fr 1fr; gap: 24px; } }
+
+  .pwa-tip {
+    font-size: 11px;
+    color: #aaa;
+    margin: 8px 0 0 0;
+    text-align: center;
+  }
 </style>
 <meta name="google-site-verification" content="v_mCFoXSo8yWM_zMYOrxm_uutPYdq2Cx4Pxy-vxGWfQ" />
   <link rel="alternate" hreflang="sv" href="https://bacillerna.se/om.html" />
@@ -213,7 +238,11 @@
       </div>
     </div>
     <div class="footer-bottom">© 2026 <strong>BACILLERNA</strong> — LuvBugs Collection</div>
+  
+    <p class="pwa-tip">💡 Spara Bacillerna som app! Leta efter installationsalternativet i din webbläsares meny 🍬</p>
   </footer>
 
+
+<script src="/pwa-install.js" defer></script>
 </body>
 </html>
