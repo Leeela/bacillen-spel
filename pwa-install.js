@@ -60,7 +60,7 @@
   style.textContent =
     '#pwa-install-banner{' +
     'position:fixed;top:0;left:0;right:0;z-index:9999;' +
-    'background:#7BC142;color:#fff;' +
+    'background:#FF7F50;color:#000;' +
     'display:flex;align-items:center;gap:12px;' +
     'padding:12px 16px;font-family:inherit;font-size:14px;line-height:1.4;' +
     'box-shadow:0 2px 8px rgba(0,0,0,0.15);' +
@@ -74,7 +74,7 @@
     'padding:6px 14px;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap;' +
     '}' +
     '.pwa-close-btn{' +
-    'background:none;border:none;color:#fff;font-size:18px;cursor:pointer;' +
+    'background:none;border:none;color:#000;font-size:18px;cursor:pointer;' +
     'padding:0 4px;line-height:1;flex-shrink:0;' +
     '}';
 
