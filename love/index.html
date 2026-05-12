@@ -288,7 +288,7 @@
           card.style.borderColor = b.farg_mjuk;
         }
 
-        const imgSrc = b.image_sv ? b.image_sv.replace('images/', '/bilder/') : null;
+        const imgSrc = b.image_sv || null;
         const visual = imgSrc
           ? '<div class="card-emoji"><img src="' + imgSrc + '" alt="' + b.namn_sv + '"></div>'
           : '<div class="card-emoji">' + b.emoji + '</div>';
