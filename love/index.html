@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-VPN8T03G8N"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-VPN8T03G8N');
+</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Skicka en hälsning · Bacillerna</title>
+<meta name="description" content="Skicka en hemlig hälsning från Bacillerna till någon du bryr dig om.">
+<link rel="alternate" hreflang="sv" href="https://bacillerna.se/love/" />
+<link rel="alternate" hreflang="en" href="https://luvbugscollection.com/love/" />
+<link rel="alternate" hreflang="x-default" href="https://luvbugscollection.com/love/" />
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --coral: #FF6B6B;
+    --coral-dark: #E85555;
+    --ink: #2D2D2D;
+    --ink-soft: #6B6B6B;
+    --bg: #FFF8F8;
+    --white: #FFFFFF;
+    --border: #F0E8E8;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    font-family: 'Nunito', sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .page {
+    min-height: 100vh;
+    padding: 32px 20px 60px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .container { max-width: 520px; width: 100%; }
+
+  h1 {
+    font-family: 'Fredoka', sans-serif;
+    font-weight: 600;
+    font-size: 30px;
+    line-height: 1.2;
+    color: var(--ink);
+    margin-bottom: 12px;
+    text-align: center;
+  }
+
+  .intro {
+    font-size: 16px;
+    color: var(--ink-soft);
+    text-align: center;
+    margin-bottom: 36px;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+  }
+
+  .card {
+    background: var(--white);
+    border: 2px solid var(--border);
+    border-radius: 20px;
+    padding: 24px 16px;
+    text-align: center;
+    text-decoration: none;
+    color: var(--ink);
+    transition: transform 0.15s, border-color 0.2s, box-shadow 0.2s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    aspect-ratio: 1 / 1;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .card.active:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+  }
+
+  .card-emoji {
+    font-size: 48px;
+    margin-bottom: 12px;
+    line-height: 1;
+  }
+
+  .card-emoji img {
+    width: 90px;
+    height: 90px;
+    object-fit: contain;
+  }
+
+  .card-name {
+    font-family: 'Fredoka', sans-serif;
+    font-weight: 600;
+    font-size: 15px;
+    color: var(--ink);
+    margin-bottom: 6px;
+    line-height: 1.1;
+  }
+
+  .card-description {
+    font-size: 13px;
+    color: var(--ink-soft);
+    font-weight: 400;
+  }
+
+  .card.inactive {
+    opacity: 0.5;
+    pointer-events: none;
+    background: #FAFAFA;
+  }
+
+  .card.inactive::after {
+    content: 'Kommer snart';
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: var(--ink-soft);
+    color: var(--white);
+    font-size: 10px;
+    font-weight: 600;
+    padding: 3px 8px;
+    border-radius: 8px;
+    letter-spacing: 0.5px;
+  }
+
+  .footer {
+    margin-top: 48px;
+    text-align: center;
+    font-size: 12px;
+    color: var(--ink-soft);
+  }
+
+  .footer a { color: var(--ink-soft); text-decoration: none; }
+
+  @media (max-width: 480px) {
+    h1 { font-size: 24px; }
+    .card-emoji { font-size: 40px; }
+    .card-name { font-size: 14px; }
+  }
+
+  /* === SITE NAV === */
+  .site-header {
+    background: white;
+    border-bottom: 1px solid #f0f0f0;
+    padding: 18px 32px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .site-logo {
+    font-family: 'Fredoka', sans-serif;
+    font-weight: 700;
+    font-size: 26px;
+    letter-spacing: 1.5px;
+    color: #2a2a2a;
+    text-decoration: none;
+  }
+  .site-nav {
+    display: flex;
+    gap: 22px;
+    font-size: 14px;
+    font-weight: 600;
+    flex-wrap: wrap;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+  .site-nav a {
+    text-decoration: none;
+    color: #555555;
+    padding: 4px 0;
+    border-bottom: 2px solid transparent;
+    transition: color 0.15s, border-color 0.15s;
+    font-family: 'Nunito', sans-serif;
+  }
+  .site-nav a:hover { color: var(--coral-dark); }
+  .site-lang { font-size: 12px; font-weight: 700; color: var(--ink-soft); letter-spacing: 1.5px; text-decoration: none; transition: color 0.15s; }
+  .site-lang:hover { color: var(--coral-dark); }
+  .menu-btn {
+    display: none;
+    background: none;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 8px 12px;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    cursor: pointer;
+  }
+  @media (max-width: 720px) {
+    .site-header { flex-wrap: nowrap; }
+    .site-nav {
+      display: none;
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      transform: none;
+      background: white;
+      border-bottom: 1px solid #f0f0f0;
+      padding: 16px 24px;
+      flex-direction: column;
+      gap: 12px;
+      z-index: 99;
+    }
+    .site-nav.open { display: flex; }
+    .menu-btn { display: block; }
+  }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <a href="/" class="site-logo">BACILLERNA</a>
+  <button class="menu-btn" onclick="document.querySelector('.site-nav').classList.toggle('open')">Meny</button>
+  <nav class="site-nav">
+    <a href="/karaktarer.html">Karaktärer</a>
+    <a href="/sagor.html">Sagor</a>
+    <a href="/bocker.html">Böcker</a>
+    <a href="/spel.html">Spel</a>
+    <a href="/index.html#titta">Titta</a>
+    <a href="/foraldrar.html">Föräldrar</a>
+  </nav>
+  <a href="https://luvbugscollection.com/love/" class="site-lang" title="English version">SV / EN</a>
+</header>
+
+<div class="page">
+
+  <div class="container">
+
+    <h1>Skicka en hemlig hälsning</h1>
+    <p class="intro">Välj vilken bacill som ska leverera ditt meddelande.</p>
+
+    <div class="grid" id="bacill-grid">
+      <!-- Fylls dynamiskt från messages.json -->
+    </div>
+
+    <div class="footer">
+      Bacillerna · <a href="/">bacillerna.se</a>
+    </div>
+
+  </div>
+
+</div>
+
+<script>
+  fetch('data/messages.json')
+    .then(r => r.json())
+    .then(data => {
+      const grid = document.getElementById('bacill-grid');
+      const baciller = data.baciller;
+
+      for (const key in baciller) {
+        const b = baciller[key];
+        const isActive = b.aktiv;
+        const card = document.createElement(isActive ? 'a' : 'div');
+        card.className = 'card ' + (isActive ? 'active' : 'inactive');
+
+        if (isActive) {
+          card.href = b.slug_sv + '/';
+          card.style.borderColor = b.farg_mjuk;
+        }
+
+        const imgSrc = b.image_sv ? b.image_sv.replace('images/', '/bilder/') : null;
+        const visual = imgSrc
+          ? '<div class="card-emoji"><img src="' + imgSrc + '" alt="' + b.namn_sv + '"></div>'
+          : '<div class="card-emoji">' + b.emoji + '</div>';
+        card.innerHTML =
+          visual +
+          '<div class="card-name">' + b.namn_sv.toUpperCase() + '</div>' +
+          '<div class="card-description">' + b.beskrivning_sv + '</div>';
+
+        grid.appendChild(card);
+      }
+    })
+    .catch(err => {
+      console.error('Kunde inte ladda meddelanden:', err);
+      document.getElementById('bacill-grid').innerHTML =
+        '<p style="grid-column: 1 / -1; text-align: center; color: #888;">Kunde inte ladda bacillerna. Försök igen senare.</p>';
+    });
+</script>
+
+</body>
+</html>
