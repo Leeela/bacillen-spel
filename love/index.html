@@ -105,6 +105,12 @@
     line-height: 1;
   }
 
+  .card-emoji img {
+    width: 90px;
+    height: 90px;
+    object-fit: contain;
+  }
+
   .card-name {
     font-family: 'Fredoka', sans-serif;
     font-weight: 600;
@@ -297,8 +303,11 @@
           card.style.borderColor = b.farg_mjuk;
         }
 
+        const visual = b.image_sv
+          ? '<div class="card-emoji"><img src="' + b.image_sv + '" alt="' + b.namn_sv + '"></div>'
+          : '<div class="card-emoji">' + b.emoji + '</div>';
         card.innerHTML =
-          '<div class="card-emoji">' + b.emoji + '</div>' +
+          visual +
           '<div class="card-name">' + b.namn_sv.toUpperCase() + '</div>' +
           '<div class="card-description">' + b.beskrivning_sv + '</div>';
 
