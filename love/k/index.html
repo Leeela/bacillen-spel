@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>En hälsning till dig · Bacillerna</title>
+<meta name="description" content="Du har fått en hemlig hälsning från Bacillerna.">
+
+<meta property="og:title" content="Du har fått en hälsning 💖">
+<meta property="og:description" content="Någon har skickat en hemlig hälsning till dig.">
+<meta property="og:type" content="website">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --coral: #FF6B6B;
+    --coral-dark: #E85555;
+    --coral-soft: #FFE5E5;
+    --ink: #2D2D2D;
+    --ink-soft: #6B6B6B;
+    --bg: #FFF8F8;
+    --white: #FFFFFF;
+    --border: #F0E8E8;
+    --primary: var(--coral);
+    --primary-soft: var(--coral-soft);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    font-family: 'Nunito', sans-serif;
+    background: linear-gradient(180deg, var(--primary-soft) 0%, var(--bg) 60%);
+    color: var(--ink);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    min-height: 100vh;
+  }
+
+  .page {
+    min-height: 100vh;
+    padding: 32px 20px 60px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .logo {
+    font-family: 'Fredoka', sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    color: var(--primary);
+    letter-spacing: 2px;
+    margin-bottom: 32px;
+    opacity: 0.7;
+  }
+
+  .container {
+    max-width: 480px;
+    width: 100%;
+    text-align: center;
+  }
+
+  .to-label {
+    font-weight: 600;
+    font-size: 14px;
+    color: var(--ink-soft);
+    letter-spacing: 3px;
+    margin-bottom: 8px;
+  }
+
+  .recipient {
+    font-family: 'Fredoka', sans-serif;
+    font-weight: 700;
+    font-size: 56px;
+    line-height: 1.1;
+    color: var(--primary);
+    margin-bottom: 16px;
+    word-break: break-word;
+  }
+
+  .subtitle {
+    font-size: 16px;
+    color: var(--ink-soft);
+    margin-bottom: 28px;
+  }
+
+  .video-wrap {
+    width: 100%;
+    max-width: min(100%, calc(70vh * 9 / 16));
+    border-radius: 24px;
+    overflow: hidden;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    background: var(--white);
+    margin: 0 auto 24px;
+    aspect-ratio: 9 / 16;
+  }
+
+  .video-wrap video {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+    background: #000;
+  }
+
+  .sender {
+    font-family: 'Fredoka', sans-serif;
+    font-weight: 500;
+    font-size: 18px;
+    color: var(--ink);
+    margin-bottom: 32px;
+  }
+
+  .sender em {
+    font-style: normal;
+    color: var(--primary);
+    font-weight: 600;
+  }
+
+  .actions {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+
+  .action {
+    display: inline-block;
+    padding: 16px 24px;
+    border-radius: 14px;
+    font-family: 'Fredoka', sans-serif;
+    font-weight: 600;
+    font-size: 16px;
+    text-decoration: none;
+    transition: transform 0.1s, background 0.2s;
+    cursor: pointer;
+    border: none;
+  }
+
+  .action.primary {
+    background: var(--primary);
+    color: var(--white);
+  }
+
+  .action.primary:hover { background: var(--coral-dark); }
+  .action.primary:active { transform: scale(0.98); }
+
+  .action.secondary {
+    background: var(--white);
+    color: var(--ink);
+    border: 2px solid var(--border);
+  }
+
+  .action.secondary:hover {
+    border-color: var(--primary);
+    color: var(--primary);
+  }
+
+  .error {
+    background: var(--white);
+    border: 2px solid var(--border);
+    padding: 24px;
+    border-radius: 16px;
+    color: var(--ink-soft);
+    text-align: center;
+  }
+
+  .footer {
+    margin-top: 32px;
+    font-size: 12px;
+    color: var(--ink-soft);
+  }
+
+  .footer a { color: var(--ink-soft); text-decoration: none; }
+
+  @media (max-width: 480px) {
+    .recipient { font-size: 44px; }
+    .video-wrap { max-width: min(100%, calc(65vh * 9 / 16)); }
+  }
+
+  @media (max-width: 360px) {
+    .recipient { font-size: 36px; }
+  }
+
+  /* === SITE NAV === */
+  .site-header {
+    background: white;
+    border-bottom: 1px solid #f0f0f0;
+    padding: 18px 32px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .site-logo {
+    font-family: 'Fredoka', sans-serif;
+    font-weight: 700;
+    font-size: 26px;
+    letter-spacing: 1.5px;
+    color: #2a2a2a;
+    text-decoration: none;
+  }
+  .site-nav {
+    display: flex;
+    gap: 22px;
+    font-size: 14px;
+    font-weight: 600;
+    flex-wrap: wrap;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+  .site-nav a {
+    text-decoration: none;
+    color: #555555;
+    padding: 4px 0;
+    border-bottom: 2px solid transparent;
+    transition: color 0.15s, border-color 0.15s;
+    font-family: 'Nunito', sans-serif;
+  }
+  .site-nav a:hover { color: #E55A40; }
+  .menu-btn {
+    display: none;
+    background: none;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 8px 12px;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    cursor: pointer;
+  }
+  @media (max-width: 720px) {
+    .site-header { flex-wrap: nowrap; }
+    .site-nav {
+      display: none;
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      transform: none;
+      background: white;
+      border-bottom: 1px solid #f0f0f0;
+      padding: 16px 24px;
+      flex-direction: column;
+      gap: 12px;
+      z-index: 99;
+    }
+    .site-nav.open { display: flex; }
+    .menu-btn { display: block; }
+  }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <a href="/" class="site-logo">BACILLERNA</a>
+  <button class="menu-btn" onclick="document.querySelector('.site-nav').classList.toggle('open')">Meny</button>
+  <nav class="site-nav">
+    <a href="/karaktarer.html">Karaktärer</a>
+    <a href="/sagor.html">Sagor</a>
+    <a href="/bocker.html">Böcker</a>
+    <a href="/spel.html">Spel</a>
+    <a href="/titta.html">Titta</a>
+    <a href="/foraldrar.html">Föräldrar</a>
+  </nav>
+</header>
+
+<div class="page">
+
+  <div class="container" id="content">
+    <div class="to-label">TILL</div>
+    <div class="recipient" id="recipient">DIG</div>
+    <div class="subtitle" id="subtitle">Du har fått en hemlig hälsning</div>
+
+    <div class="video-wrap" id="video-wrap">
+      <video
+        id="message-video"
+        controls
+        playsinline
+        preload="metadata">
+        Din webbläsare stöder inte video.
+      </video>
+    </div>
+
+    <div class="sender" id="sender-line">
+      från <em id="sender">någon som tänker på dig</em>
+    </div>
+
+    <div class="actions">
+      <a href="/love/" class="action primary" id="reply-button">Skicka tillbaka en hälsning 💖</a>
+      <a href="/love/" class="action secondary">Träffa alla bacillerna</a>
+    </div>
+
+    <div class="footer">
+      Bacillerna · <a href="/">bacillerna.se</a>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  const params = new URLSearchParams(window.location.search);
+  const bacillKey = params.get('bacill') || 'karlek';
+  const messageId = parseInt(params.get('v')) || 1;
+  const till = params.get('till');
+  const fran = params.get('fran');
+
+  fetch('../data/messages.json')
+    .then(r => r.json())
+    .then(data => {
+      const bacill = data.baciller[bacillKey];
+      if (!bacill || !bacill.aktiv) {
+        showError('Den här hälsningen kunde inte hittas.');
+        return;
+      }
+
+      const message = bacill.meddelanden.find(m => m.id === messageId);
+      if (!message) {
+        showError('Det här meddelandet kunde inte hittas.');
+        return;
+      }
+
+      // Apply bacill colors
+      document.documentElement.style.setProperty('--primary', bacill.farg_primar);
+      document.documentElement.style.setProperty('--primary-soft', bacill.farg_mjuk);
+
+      // Set recipient
+      if (till && till.length > 0 && till.length <= 30) {
+        document.getElementById('recipient').textContent = till.toUpperCase();
+        document.title = 'En hälsning till ' + till + ' ' + bacill.emoji;
+      }
+
+      // Set sender
+      if (fran && fran.length > 0 && fran.length <= 30) {
+        document.getElementById('sender').textContent = fran;
+      }
+
+      // Set subtitle with bacill name
+      document.getElementById('subtitle').textContent =
+        bacill.namn_sv + ' har levererat en hälsning till dig';
+
+      // Set video source
+      const video = document.getElementById('message-video');
+      video.src = '../videos/' + message.video_sv;
+      if (message.poster_sv) {
+        video.poster = '../videos/' + message.poster_sv;
+      }
+    })
+    .catch(err => {
+      console.error('Kunde inte ladda meddelandet:', err);
+      showError('Kunde inte ladda hälsningen. Försök igen.');
+    });
+
+  function showError(msg) {
+    document.getElementById('content').innerHTML =
+      '<div class="error">' + msg + '<br><br>' +
+      '<a href="/love/" style="color: #FF6B6B; font-weight: 600; text-decoration: none;">Gå till Bacillerna →</a>' +
+      '</div>';
+  }
+</script>
+
+</body>
+</html>
