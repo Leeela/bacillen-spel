@@ -7,7 +7,6 @@
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
-
   gtag('config', 'G-VPN8T03G8N');
 </script>
 <meta charset="UTF-8">
@@ -19,7 +18,6 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="apple-mobile-web-app-title" content="Bacillerna">
     <link rel="apple-touch-icon" href="/icons/icon-180.png">
-    <!-- iOS Splash Screens -->
     <link rel="apple-touch-startup-image" href="/icons/splash-640x1136.png" media="(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)">
     <link rel="apple-touch-startup-image" href="/icons/splash-750x1334.png" media="(device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)">
     <link rel="apple-touch-startup-image" href="/icons/splash-828x1792.png" media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)">
@@ -40,6 +38,10 @@
 <meta property="og:image" content="https://bacillerna.se/bilder/alla-bacillerna.png" />
 <meta property="og:site_name" content="Bacillerna" />
 <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+<meta name="google-site-verification" content="v_mCFoXSo8yWM_zMYOrxm_uutPYdq2Cx4Pxy-vxGWfQ" />
+<link rel="alternate" hreflang="sv" href="https://bacillerna.se/sagor.html" />
+<link rel="alternate" hreflang="en" href="https://luvbugscollection.com/stories.html" />
+<link rel="alternate" hreflang="x-default" href="https://luvbugscollection.com/stories.html" />
 <style>
   :root {
     --color-bg: #ffffff;
@@ -52,10 +54,10 @@
     --brand-light: #FFD9CE;
     --brand-mid: #FF8A75;
     --brand-deep: #E55A40;
-    --candy: #7BC142; --candy-light: #E5F4D6; --candy-deep: #5C9B22; --candy-text-on-light: #3F6A18;
-    --love: #FF6B9D; --love-deep: #D63A75;
-    --happy: #FFB347; --happy-deep: #C97D00;
-    --tease: #FFD93D; --tease-deep: #B89400;
+    --candy: #7BC142; --candy-light: #E5F4D6; --candy-deep: #5C9B22;
+    --love: #FF6B9D; --love-light: #FFE0EE; --love-deep: #D63A75;
+    --happy: #FFB347; --happy-light: #FFF0D6; --happy-deep: #C97D00;
+    --tease: #FFD93D; --tease-light: #FFFBE0; --tease-deep: #B89400;
     --dance: #4ECDC4; --dance-deep: #2BA89F;
     --wealth: #D4A017; --wealth-deep: #A07A0A;
     --font-heading: 'Fredoka', sans-serif;
@@ -64,13 +66,13 @@
     --char-color: var(--brand-mid);
     --char-color-light: var(--brand-light);
     --char-color-deep: var(--brand-deep);
-    --char-color-text-on-light: #B53B26;
   }
   * { box-sizing: border-box; }
   html { scroll-behavior: smooth; }
   body { font-family: var(--font-body); background: var(--color-bg); color: var(--color-text-primary); margin: 0; padding: 0; line-height: 1.6; }
   a { color: inherit; }
 
+  /* === HEADER === */
   .site-header { background: white; border-bottom: 1px solid var(--color-border); padding: 18px 32px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; position: sticky; top: 0; z-index: 100; }
   .site-logo { font-family: var(--font-heading); font-weight: 700; font-size: 26px; letter-spacing: 1.5px; color: var(--color-text-primary); text-decoration: none; }
   .site-nav { display: flex; gap: 22px; font-size: 14px; font-weight: 600; flex-wrap: wrap; }
@@ -85,57 +87,94 @@
   .breadcrumb a { color: var(--color-text-secondary); text-decoration: none; }
   .breadcrumb a:hover { color: var(--char-color-deep); }
 
-  .hero-char { background: var(--char-color-light); background-image: radial-gradient(circle at 20% 30%, rgba(255,255,255,0.5) 0%, transparent 50%), radial-gradient(circle at 80% 70%, rgba(255,255,255,0.3) 0%, transparent 50%); padding: 80px 32px 100px; text-align: center; position: relative; overflow: hidden; }
-  .hero-eyebrow { font-family: var(--font-body); font-weight: 700; font-size: 13px; letter-spacing: 2px; text-transform: uppercase; color: var(--char-color-deep); margin-bottom: 12px; }
-  .hero-char h1 { font-family: var(--font-heading); font-weight: 700; font-size: 64px; line-height: 1.05; margin: 0 0 18px 0; letter-spacing: 1px; color: var(--color-text-primary); }
-  .hero-tagline { font-family: var(--font-heading); font-weight: 500; font-size: 24px; color: var(--color-text-secondary); max-width: 580px; margin: 0 auto 32px auto; line-height: 1.4; }
+  /* === HERO === */
+  .hero { background: linear-gradient(135deg, #FFF8E1 0%, #E8F5E3 50%, #FCE4EC 100%); padding: 72px 32px 80px; text-align: center; position: relative; overflow: hidden; }
+  .hero::before { content: '🎙️'; font-size: 120px; position: absolute; top: -20px; right: -20px; opacity: 0.08; line-height: 1; }
+  .hero::after { content: '🎧'; font-size: 100px; position: absolute; bottom: -10px; left: 10px; opacity: 0.07; line-height: 1; }
+  .hero-eyebrow { font-family: var(--font-body); font-weight: 700; font-size: 13px; letter-spacing: 2px; text-transform: uppercase; color: #C97D00; margin-bottom: 12px; }
+  .hero h1 { font-family: var(--font-heading); font-weight: 700; font-size: 58px; line-height: 1.05; margin: 0 0 16px 0; color: var(--color-text-primary); }
+  .hero-tagline { font-family: var(--font-heading); font-weight: 500; font-size: 22px; color: var(--color-text-secondary); max-width: 560px; margin: 0 auto 28px auto; line-height: 1.4; }
+  .hero-chars { font-size: 28px; margin-bottom: 28px; letter-spacing: 4px; }
   .hero-ctas { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
 
-  .btn { display: inline-block; padding: 16px 32px; border-radius: var(--radius-pill); font-family: var(--font-body); font-weight: 700; font-size: 16px; text-decoration: none; border: none; cursor: pointer; transition: transform 0.15s, box-shadow 0.15s; }
+  /* === BUTTONS === */
+  .btn { display: inline-flex; align-items: center; gap: 8px; padding: 14px 28px; border-radius: var(--radius-pill); font-family: var(--font-body); font-weight: 700; font-size: 15px; text-decoration: none; border: none; cursor: pointer; transition: transform 0.15s, box-shadow 0.15s; }
   .btn:hover { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(0,0,0,0.15); }
-  .btn-primary { background: var(--char-color); color: white; }
-  .btn-primary:hover { background: var(--char-color-deep); }
-  .btn-secondary { background: white; border: 3px solid var(--char-color); color: var(--char-color-deep); padding: 13px 30px; }
-  .btn-secondary:hover { background: var(--char-color-light); }
-  .btn-ghost { background: white; border: 2px solid var(--color-border-strong); color: var(--color-text-secondary); padding: 14px 28px; }
-  .btn-ghost:hover { border-color: var(--char-color); color: var(--char-color-deep); }
+  .btn-spotify { background: #1DB954; color: white; }
+  .btn-spotify:hover { background: #17a349; }
+  .btn-apple { background: white; border: 2.5px solid #e0e0e0; color: #333; }
+  .btn-apple:hover { border-color: #999; }
+  .btn-ghost { background: white; border: 2px solid var(--color-border-strong); color: var(--color-text-secondary); }
+  .btn-ghost:hover { border-color: #999; }
 
-  section { padding: 80px 32px; }
-  section:nth-child(even) { background: var(--color-bg-soft); }
-  .section-inner { max-width: 900px; margin: 0 auto; }
+  /* === SECTIONS === */
+  section { padding: 72px 32px; }
+  section.bg-soft { background: var(--color-bg-soft); }
+  .section-inner { max-width: 1080px; margin: 0 auto; }
   .section-eyebrow { font-family: var(--font-body); font-weight: 700; font-size: 12px; letter-spacing: 2px; text-transform: uppercase; color: var(--char-color-deep); margin-bottom: 8px; }
-  .section-title { font-family: var(--font-heading); font-weight: 700; font-size: 38px; margin: 0 0 16px 0; color: var(--color-text-primary); line-height: 1.15; }
-  .section-text { font-size: 17px; color: var(--color-text-secondary); max-width: 640px; margin: 0 0 36px 0; line-height: 1.7; }
-
-  /* === AVSNITTSLISTA === */
-  .saga-list { display: flex; flex-direction: column; gap: 4px; }
-  .saga-item { display: grid; grid-template-columns: 56px 1fr auto; align-items: center; gap: 20px; padding: 20px 24px; background: white; border: 2px solid var(--brand-mid); border-radius: var(--radius-lg); transition: border-color 0.15s, box-shadow 0.15s; }
-  .saga-item:hover { border-color: var(--char-color); box-shadow: 0 4px 14px rgba(0,0,0,0.07); }
-  .saga-num { font-family: var(--font-heading); font-weight: 700; font-size: 28px; color: var(--color-border-strong); text-align: center; line-height: 1; }
-  .saga-info .saga-title { font-family: var(--font-heading); font-weight: 600; font-size: 18px; margin: 0 0 4px 0; }
-  .saga-info .saga-meta { font-size: 13px; color: var(--color-text-tertiary); }
+  .section-title { font-family: var(--font-heading); font-weight: 700; font-size: 36px; margin: 0 0 12px 0; color: var(--color-text-primary); }
+  .section-text { font-size: 16px; color: var(--color-text-secondary); max-width: 600px; margin: 0 0 40px 0; line-height: 1.7; }
 
   /* === SPOTIFY EMBED === */
-  .spotify-embed-wrap { margin-top: 48px; border-radius: var(--radius-lg); overflow: hidden; box-shadow: 0 8px 28px rgba(0,0,0,0.10); }
+  .spotify-wrap { border-radius: var(--radius-lg); overflow: hidden; box-shadow: 0 8px 32px rgba(0,0,0,0.10); margin-bottom: 48px; }
 
-  /* === KOMMANDE === */
-  .coming-hint { background: var(--char-color); color: white; border-radius: var(--radius-lg); padding: 32px 36px; text-align: center; margin-top: 48px; }
-  .coming-hint p { font-size: 16px; color: rgba(255,255,255,0.92); margin: 0; line-height: 1.6; }
-  .coming-hint strong { color: white; }
+  /* === EPISODE GRID === */
+  .episode-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
 
-  /* === CTA BLOCK === */
+  .ep-card { background: white; border-radius: var(--radius-lg); overflow: hidden; box-shadow: 0 2px 12px rgba(0,0,0,0.07); transition: transform 0.2s, box-shadow 0.2s; display: flex; flex-direction: column; }
+  .ep-card:hover { transform: translateY(-4px); box-shadow: 0 12px 32px rgba(0,0,0,0.13); }
+
+  .ep-card-img { position: relative; aspect-ratio: 1; overflow: hidden; }
+  .ep-card-img img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.3s; }
+  .ep-card:hover .ep-card-img img { transform: scale(1.04); }
+  .ep-badge { position: absolute; top: 12px; left: 12px; font-family: var(--font-heading); font-weight: 700; font-size: 12px; padding: 4px 10px; border-radius: var(--radius-pill); letter-spacing: 0.5px; }
+  .ep-dur { position: absolute; bottom: 10px; right: 10px; background: rgba(0,0,0,0.62); color: white; font-size: 11px; font-weight: 700; padding: 3px 8px; border-radius: var(--radius-pill); backdrop-filter: blur(4px); }
+
+  .ep-card-body { padding: 18px 20px 20px; flex: 1; display: flex; flex-direction: column; }
+  .ep-char { font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 6px; }
+  .ep-title { font-family: var(--font-heading); font-weight: 600; font-size: 17px; margin: 0 0 8px 0; line-height: 1.3; color: var(--color-text-primary); }
+  .ep-desc { font-size: 13px; color: var(--color-text-secondary); line-height: 1.55; flex: 1; margin: 0 0 16px 0; }
+  .ep-listen { display: inline-flex; align-items: center; gap: 6px; padding: 9px 18px; border-radius: var(--radius-pill); font-family: var(--font-body); font-weight: 700; font-size: 13px; text-decoration: none; color: white; background: #1DB954; transition: background 0.15s, transform 0.15s; align-self: flex-start; }
+  .ep-listen:hover { background: #17a349; transform: translateY(-1px); }
+
+  /* Character color themes */
+  .char-candy .ep-badge { background: var(--candy); color: white; }
+  .char-candy .ep-char { color: var(--candy-deep); }
+  .char-love .ep-badge { background: var(--love); color: white; }
+  .char-love .ep-char { color: var(--love-deep); }
+  .char-happy .ep-badge { background: var(--happy); color: white; }
+  .char-happy .ep-char { color: var(--happy-deep); }
+  .char-tease .ep-badge { background: var(--tease); color: #7a6000; }
+  .char-tease .ep-char { color: var(--tease-deep); }
+
+  /* === COMING SOON === */
+  .coming-block { background: linear-gradient(135deg, var(--candy-light), #FFF0D6); border-radius: var(--radius-xl); padding: 40px 48px; text-align: center; margin-top: 48px; }
+  .coming-block h3 { font-family: var(--font-heading); font-size: 24px; margin: 0 0 10px 0; }
+  .coming-block p { font-size: 16px; color: var(--color-text-secondary); margin: 0; }
+
+  /* === LISTEN SECTION === */
   .listen-ctas { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; margin-top: 36px; }
 
-  @media (max-width: 720px) {
-    .hero-char { padding: 48px 20px 64px; }
-    .hero-char h1 { font-size: 40px; }
+  /* === RESPONSIVE === */
+  @media (max-width: 900px) {
+    .episode-grid { grid-template-columns: repeat(2, 1fr); gap: 18px; }
+    .hero h1 { font-size: 42px; }
     .hero-tagline { font-size: 18px; }
-    .saga-item { grid-template-columns: 40px 1fr; gap: 12px; padding: 16px; }
-    .saga-title { font-size: 15px; }
-    section { padding: 56px 20px; }
-    .section-title { font-size: 28px; }
+  }
+  @media (max-width: 600px) {
+    .episode-grid { grid-template-columns: 1fr; gap: 16px; }
+    .ep-card { flex-direction: row; }
+    .ep-card-img { width: 120px; flex-shrink: 0; aspect-ratio: auto; }
+    .ep-card-img img { height: 100%; }
+    .ep-badge { font-size: 10px; top: 8px; left: 8px; }
+    .ep-dur { font-size: 10px; bottom: 6px; right: 6px; }
+    section { padding: 48px 20px; }
+    .hero { padding: 48px 20px 56px; }
+    .hero h1 { font-size: 34px; }
+    .coming-block { padding: 28px 24px; }
   }
 
+  /* === FOOTER === */
   .site-footer { background: #1a1a1a; color: #999; padding: 48px 32px 32px; }
   .footer-inner { max-width: 1100px; margin: 0 auto; display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 32px; }
   .footer-brand h3 { font-family: var(--font-heading); font-weight: 700; font-size: 22px; color: white; letter-spacing: 1px; margin: 0 0 8px 0; }
@@ -148,18 +187,8 @@
   .footer-bottom { max-width: 1100px; margin: 32px auto 0; padding-top: 24px; border-top: 1px solid #333; text-align: center; font-size: 12px; color: #888; }
   .footer-bottom strong { color: white; letter-spacing: 1px; }
   @media (max-width: 720px) { .footer-inner { grid-template-columns: 1fr 1fr; gap: 24px; } }
-
-  .pwa-tip {
-    font-size: 11px;
-    color: #aaa;
-    margin: 8px 0 0 0;
-    text-align: center;
-  }
+  .pwa-tip { font-size: 11px; color: #aaa; margin: 8px 0 0 0; text-align: center; }
 </style>
-<meta name="google-site-verification" content="v_mCFoXSo8yWM_zMYOrxm_uutPYdq2Cx4Pxy-vxGWfQ" />
-  <link rel="alternate" hreflang="sv" href="https://bacillerna.se/sagor.html" />
-  <link rel="alternate" hreflang="en" href="https://luvbugscollection.com/stories.html" />
-  <link rel="alternate" hreflang="x-default" href="https://luvbugscollection.com/stories.html" />
 </head>
 <body>
 
@@ -181,117 +210,240 @@
     <a href="index.html">Hem</a> · SAGOR
   </div>
 
-  <section class="hero-char">
-    <div class="hero-eyebrow">Podcast</div>
-    <h1>GODISSAGOR MED GODISBACILLEN</h1>
-    <p class="hero-tagline">Tio avsnitt med varma berättelser, mjuka röster och vackra bakgrundsljud, perfekta att somna till.</p>
+  <div class="hero">
+    <div class="hero-eyebrow">Gratis barnpodcast</div>
+    <h1>GODNATTSAGOR MED BACILLERNA</h1>
+    <p class="hero-tagline">Lugna, mysiga sagor med varma röster och vackra bakgrundsljud. Perfekt för läggdags och bilfärden.</p>
+    <div class="hero-chars">🍬 💖 😄 😝</div>
     <div class="hero-ctas">
-      <a class="btn btn-primary" href="https://open.spotify.com/show/2X0WwBDFy6mdud7rfAIzrZ" target="_blank">▶ Lyssna på Spotify</a>
-      <a class="btn btn-secondary" href="https://podcasts.apple.com/se/podcast/godisbacillen/id1890639062" target="_blank">🎵 Apple Podcasts</a>
-      <a class="btn btn-ghost" href="https://anchor.fm/s/110f36784/podcast/rss" target="_blank">RSS-feed</a>
+      <a class="btn btn-spotify" href="https://open.spotify.com/show/2X0WwBDFy6mdud7rfAIzrZ" target="_blank" rel="noopener">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm4.586 14.424a.623.623 0 01-.857.207c-2.348-1.435-5.304-1.76-8.785-.964a.623.623 0 01-.277-1.215c3.809-.87 7.076-.496 9.712 1.115a.623.623 0 01.207.857zm1.223-2.722a.78.78 0 01-1.072.258c-2.687-1.652-6.785-2.131-9.965-1.166a.78.78 0 01-.973-.519.781.781 0 01.52-.974c3.632-1.102 8.147-.568 11.234 1.329a.78.78 0 01.256 1.072zm.105-2.835C14.692 8.95 9.375 8.775 6.297 9.71a.937.937 0 11-.543-1.793c3.527-1.073 9.396-.866 13.105 1.337a.937.937 0 01-.945 1.613z"/></svg>
+        Lyssna på Spotify
+      </a>
+      <a class="btn btn-apple" href="https://podcasts.apple.com/se/podcast/godisbacillen/id1890639062" target="_blank" rel="noopener">🎵 Apple Podcasts</a>
+      <a class="btn btn-ghost" href="https://anchor.fm/s/110f36784/podcast/rss" target="_blank" rel="noopener">RSS</a>
+    </div>
+  </div>
+
+  <section class="bg-soft">
+    <div class="section-inner">
+      <div class="section-eyebrow">Lyssna direkt</div>
+      <h2 class="section-title">Alla avsnitt i spelaren</h2>
+      <div class="spotify-wrap">
+        <iframe src="https://open.spotify.com/embed/show/2X0WwBDFy6mdud7rfAIzrZ"
+          width="100%" height="352" frameborder="0"
+          allow="encrypted-media" loading="lazy"></iframe>
+      </div>
     </div>
   </section>
 
   <section>
     <div class="section-inner">
-      <div class="section-eyebrow">Alla avsnitt</div>
-      <h2 class="section-title">Tio godissagor</h2>
-      <p class="section-text">Varje avsnitt är ett eget lördagsäventyr med Godisbacillen. Lyssna i ordning eller börja med ett favoritämne.</p>
+      <div class="section-eyebrow">11 avsnitt</div>
+      <h2 class="section-title">Välj din favorit-bacill</h2>
+      <p class="section-text">Godisbacillen, Kärleksbacillen, Glädjebacillen och Retbacillen — alla har egna sagor fulla av bus, värme och skratt.</p>
 
-      <div class="spotify-embed-wrap">
-        <iframe src="https://open.spotify.com/embed/show/2X0WwBDFy6mdud7rfAIzrZ"
-          width="100%" height="352" frameborder="0"
-          allow="encrypted-media"></iframe>
+      <div class="episode-grid">
+
+        <!-- Ep 11 (äldst = Avsnitt 1) -->
+        <div class="ep-card char-candy">
+          <div class="ep-card-img">
+            <img src="bilder/sagor/ep11-nattens-hemlighet.jpg" alt="Godisbacillen – Nattens sötaste hemlighet" loading="lazy">
+            <span class="ep-badge">Avsnitt 1</span>
+            <span class="ep-dur">5:29</span>
+          </div>
+          <div class="ep-card-body">
+            <div class="ep-char">Godisbacillen</div>
+            <h3 class="ep-title">Nattens sötaste hemlighet</h3>
+            <p class="ep-desc">Godisbacillen smyger ner till köket när alla sover. Men vad är det som luktar så gott?</p>
+            <a class="ep-listen" href="https://podcasters.spotify.com/pod/show/leila-el/episodes/Avsnitt-1--Godisbacillen-Nattens-staste-hemlighet-e3havs2" target="_blank" rel="noopener">
+              ▶ Lyssna
+            </a>
+          </div>
+        </div>
+
+        <!-- Ep 10 -->
+        <div class="ep-card char-candy">
+          <div class="ep-card-img">
+            <img src="bilder/sagor/ep10-godisberget.jpg" alt="Godisbacillen – Det försvunna Godisberget" loading="lazy">
+            <span class="ep-badge">Avsnitt 2</span>
+            <span class="ep-dur">9:24</span>
+          </div>
+          <div class="ep-card-body">
+            <div class="ep-char">Godisbacillen</div>
+            <h3 class="ep-title">Det försvunna Godisberget</h3>
+            <p class="ep-desc">Godisbacillen vaknar med tomma kinder. Någonstans i huset gömmer sig ett berg av godis — men var?</p>
+            <a class="ep-listen" href="https://podcasters.spotify.com/pod/show/leila-el/episodes/Avsnitt-2---Godisbacillen-och-det-frsvunna-Godisberget-e3he68c" target="_blank" rel="noopener">
+              ▶ Lyssna
+            </a>
+          </div>
+        </div>
+
+        <!-- Ep 9 -->
+        <div class="ep-card char-candy">
+          <div class="ep-card-img">
+            <img src="bilder/sagor/ep09-godisfabriken.jpg" alt="Godisbacillen – Inbrott i Godisfabriken" loading="lazy">
+            <span class="ep-badge">Avsnitt 3</span>
+            <span class="ep-dur">6:36</span>
+          </div>
+          <div class="ep-card-body">
+            <div class="ep-char">Godisbacillen</div>
+            <h3 class="ep-title">Inbrott i Godisfabriken</h3>
+            <p class="ep-desc">Godisbacillen har ett hemligt uppdrag: ta sig in i Stensunds Godisfabrik. Med en dåsig väktare och en mekanisk robot väntar årets busigaste äventyr!</p>
+            <a class="ep-listen" href="https://podcasters.spotify.com/pod/show/leila-el/episodes/Avsnitt-3---Godisbacillen--Inbrott-i-Godisfabriken-e3hh1h3" target="_blank" rel="noopener">
+              ▶ Lyssna
+            </a>
+          </div>
+        </div>
+
+        <!-- Ep 8 -->
+        <div class="ep-card char-candy">
+          <div class="ep-card-img">
+            <img src="bilder/sagor/ep08-mataffaren.jpg" alt="Godisbacillen i mataffären" loading="lazy">
+            <span class="ep-badge">Avsnitt 4</span>
+            <span class="ep-dur">10:41</span>
+          </div>
+          <div class="ep-card-body">
+            <div class="ep-char">Godisbacillen</div>
+            <h3 class="ep-title">Godisbacillen i mataffären</h3>
+            <p class="ep-desc">En lista, en vagn, in och ut. Men Godisbacillen har andra planer. Bakom hyllorna lurar den. Och när familjen når kassan... kaos.</p>
+            <a class="ep-listen" href="https://podcasters.spotify.com/pod/show/leila-el/episodes/Avsnitt-4-Godisbacillen-i-mataffren-e3hob5l" target="_blank" rel="noopener">
+              ▶ Lyssna
+            </a>
+          </div>
+        </div>
+
+        <!-- Ep 7 -->
+        <div class="ep-card char-candy">
+          <div class="ep-card-img">
+            <img src="bilder/sagor/ep07-dagis.jpg" alt="Godisbacillen på dagis" loading="lazy">
+            <span class="ep-badge">Avsnitt 5</span>
+            <span class="ep-dur">5:37</span>
+          </div>
+          <div class="ep-card-body">
+            <div class="ep-char">Godisbacillen</div>
+            <h3 class="ep-title">Godisbacillen på dagis</h3>
+            <p class="ep-desc">Godisbacillen hade en plan, en ryggsäck och ett dagis med en stor blå låda märkt LÖRDAGSGODIS. Det borde ha gått perfekt.</p>
+            <a class="ep-listen" href="https://podcasters.spotify.com/pod/show/leila-el/episodes/Avsnitt-5-Godisbacillen-p-dagis-e3hsncf" target="_blank" rel="noopener">
+              ▶ Lyssna
+            </a>
+          </div>
+        </div>
+
+        <!-- Ep 6 -->
+        <div class="ep-card char-candy">
+          <div class="ep-card-img">
+            <img src="bilder/sagor/ep06-lekparken.jpg" alt="Godisbacillen i lekparken" loading="lazy">
+            <span class="ep-badge">Avsnitt 6</span>
+            <span class="ep-dur">5:00</span>
+          </div>
+          <div class="ep-card-body">
+            <div class="ep-char">Godisbacillen</div>
+            <h3 class="ep-title">Godisbacillen i lekparken</h3>
+            <p class="ep-desc">En solig dag i lekparken, en gammal gubbe som tror han såg något konstigt röra sig vid familjens godispåse.</p>
+            <a class="ep-listen" href="https://podcasters.spotify.com/pod/show/leila-el/episodes/Avsnitt-6-Godisbacillen-i-Lekparken-e3huq5a" target="_blank" rel="noopener">
+              ▶ Lyssna
+            </a>
+          </div>
+        </div>
+
+        <!-- Ep 5 -->
+        <div class="ep-card char-candy">
+          <div class="ep-card-img">
+            <img src="bilder/sagor/ep05-biblioteket.jpg" alt="Godisbacillen i biblioteket" loading="lazy">
+            <span class="ep-badge">Avsnitt 7</span>
+            <span class="ep-dur">6:07</span>
+          </div>
+          <div class="ep-card-body">
+            <div class="ep-char">Godisbacillen</div>
+            <h3 class="ep-title">Godisbacillen i biblioteket</h3>
+            <p class="ep-desc">Godisbacillen smog med till biblioteket. Inget godis — men någonting ännu bättre: en hemlig bok om godis som den måste få med sig hem.</p>
+            <a class="ep-listen" href="https://podcasters.spotify.com/pod/show/leila-el/episodes/Avsnitt-7-Godisbacillen-i-Biblioteket-e3ia9h6" target="_blank" rel="noopener">
+              ▶ Lyssna
+            </a>
+          </div>
+        </div>
+
+        <!-- Ep 4 – Kärleksbacillen 1 -->
+        <div class="ep-card char-love">
+          <div class="ep-card-img">
+            <img src="bilder/sagor/ep04-karleksbacillen-1.jpg" alt="Kärleksbacillen och det ensamma barnet" loading="lazy">
+            <span class="ep-badge">Avsnitt 1</span>
+            <span class="ep-dur">5:54</span>
+          </div>
+          <div class="ep-card-body">
+            <div class="ep-char">Kärleksbacillen</div>
+            <h3 class="ep-title">Kärleksbacillen och det ensamma barnet</h3>
+            <p class="ep-desc">Inne i huset satt lilla Astrid ensam på sitt rum. Kärleksbacillen kände det direkt och svepte ut sin kärleksvåg — tyst, stilla, som morgonljus.</p>
+            <a class="ep-listen" href="https://podcasters.spotify.com/pod/show/leila-el/episodes/Avsnitt-1-Krleksbacillen-och-det-ensamma-barnet-e3isell" target="_blank" rel="noopener">
+              ▶ Lyssna
+            </a>
+          </div>
+        </div>
+
+        <!-- Ep 2 – Kärleksbacillen 2 -->
+        <div class="ep-card char-love">
+          <div class="ep-card-img">
+            <img src="bilder/sagor/ep02-karleksbacillen-2.jpg" alt="Kärleksbacillen och de dumma orden" loading="lazy">
+            <span class="ep-badge">Avsnitt 2</span>
+            <span class="ep-dur">6:36</span>
+          </div>
+          <div class="ep-card-body">
+            <div class="ep-char">Kärleksbacillen</div>
+            <h3 class="ep-title">Kärleksbacillen och de dumma orden</h3>
+            <p class="ep-desc">Liam kom hem från förskolan med en klump i magen. Den kvällen landade Kärleksbacillen och svepte ut sin kärleksvåg — och den nådde längre än någon anade.</p>
+            <a class="ep-listen" href="https://podcasters.spotify.com/pod/show/leila-el/episodes/Avsnitt-2-Krleksbacillen-och-de-dumma-orden-e3j608i" target="_blank" rel="noopener">
+              ▶ Lyssna
+            </a>
+          </div>
+        </div>
+
+        <!-- Ep 3 – Glädjebacillen -->
+        <div class="ep-card char-happy">
+          <div class="ep-card-img">
+            <img src="bilder/sagor/ep03-gladjebacillen.jpg" alt="Glädjebacillen och den tappade glassen" loading="lazy">
+            <span class="ep-badge">Avsnitt 1</span>
+            <span class="ep-dur">5:56</span>
+          </div>
+          <div class="ep-card-body">
+            <div class="ep-char">Glädjebacillen</div>
+            <h3 class="ep-title">Glädjebacillen och den tappade glassen</h3>
+            <p class="ep-desc">Aicha hade den bästa glassen hon någonsin sett — och sedan föll den. Men Glädjebacillen hade ett knep i bakfickan.</p>
+            <a class="ep-listen" href="https://podcasters.spotify.com/pod/show/leila-el/episodes/Avsnitt-1-Gldjebacillen-och-den-tappade-glassen-e3iuesm" target="_blank" rel="noopener">
+              ▶ Lyssna
+            </a>
+          </div>
+        </div>
+
+        <!-- Ep 1 – Retbacillen -->
+        <div class="ep-card char-tease">
+          <div class="ep-card-img">
+            <img src="bilder/sagor/ep01-retbacillen.jpg" alt="Retbacillen och retsuget" loading="lazy">
+            <span class="ep-badge">Avsnitt 1</span>
+            <span class="ep-dur">6:23</span>
+          </div>
+          <div class="ep-card-body">
+            <div class="ep-char">Retbacillen</div>
+            <h3 class="ep-title">Retbacillen och retsuget</h3>
+            <p class="ep-desc">Retbacillen har ett problem. Det kliar inifrån. Och det finns bara ett botemedel — reta någon. Men stenen svarar inte, bänken reagerar inte...</p>
+            <a class="ep-listen" href="https://podcasters.spotify.com/pod/show/leila-el/episodes/Avsnitt-1-Retbacillen-och-retsuget-e3j6k87" target="_blank" rel="noopener">
+              ▶ Lyssna
+            </a>
+          </div>
+        </div>
+
       </div>
 
-      <div style="text-align:center; margin-top: 20px; margin-bottom: 48px;">
-        <a class="btn btn-primary" href="https://open.spotify.com/show/2X0WwBDFy6mdud7rfAIzrZ" target="_blank" rel="noopener" style="background:#1DB954; display:inline-flex; align-items:center; gap:10px;">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="white"><path d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm4.586 14.424a.623.623 0 01-.857.207c-2.348-1.435-5.304-1.76-8.785-.964a.623.623 0 01-.277-1.215c3.809-.87 7.076-.496 9.712 1.115a.623.623 0 01.207.857zm1.223-2.722a.78.78 0 01-1.072.258c-2.687-1.652-6.785-2.131-9.965-1.166a.78.78 0 01-.973-.519.781.781 0 01.52-.974c3.632-1.102 8.147-.568 11.234 1.329a.78.78 0 01.256 1.072zm.105-2.835C14.692 8.95 9.375 8.775 6.297 9.71a.937.937 0 11-.543-1.793c3.527-1.073 9.396-.866 13.105 1.337a.937.937 0 01-.945 1.613z"/></svg>
-          Följ på Spotify
-        </a>
-      </div>
-
-      <div class="saga-list">
-        <div class="saga-item">
-          <div class="saga-num">1</div>
-          <div class="saga-info">
-            <div class="saga-title">Nattens sötaste hemlighet</div>
-            <div class="saga-meta">Godisbacillen smyger ner till köket när alla sover</div>
-          </div>
+      <div class="coming-block">
+        <h3>Fler sagor är på väg 🎙️</h3>
+        <p>Nya avsnitt med alla baciller varje lördag. Följ podden för att inte missa något!</p>
+        <div style="display:flex; gap:12px; justify-content:center; flex-wrap:wrap; margin-top:20px;">
+          <a class="btn btn-spotify" href="https://open.spotify.com/show/2X0WwBDFy6mdud7rfAIzrZ" target="_blank" rel="noopener">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm4.586 14.424a.623.623 0 01-.857.207c-2.348-1.435-5.304-1.76-8.785-.964a.623.623 0 01-.277-1.215c3.809-.87 7.076-.496 9.712 1.115a.623.623 0 01.207.857zm1.223-2.722a.78.78 0 01-1.072.258c-2.687-1.652-6.785-2.131-9.965-1.166a.78.78 0 01-.973-.519.781.781 0 01.52-.974c3.632-1.102 8.147-.568 11.234 1.329a.78.78 0 01.256 1.072zm.105-2.835C14.692 8.95 9.375 8.775 6.297 9.71a.937.937 0 11-.543-1.793c3.527-1.073 9.396-.866 13.105 1.337a.937.937 0 01-.945 1.613z"/></svg>
+            Följ på Spotify
+          </a>
+          <a class="btn btn-apple" href="https://podcasts.apple.com/se/podcast/godisbacillen/id1890639062" target="_blank" rel="noopener">🎵 Apple Podcasts</a>
         </div>
-        <div class="saga-item">
-          <div class="saga-num">2</div>
-          <div class="saga-info">
-            <div class="saga-title">Det försvunna godisberget</div>
-            <div class="saga-meta">Godisberget är borta, och Godisbacillen måste hitta det</div>
-          </div>
-        </div>
-        <div class="saga-item">
-          <div class="saga-num">3</div>
-          <div class="saga-info">
-            <div class="saga-title">Inbrott i godisfabriken</div>
-            <div class="saga-meta">Ett farligt nattäventyr inne i godisfabrikens hemliga gångar</div>
-          </div>
-        </div>
-        <div class="saga-item">
-          <div class="saga-num">4</div>
-          <div class="saga-info">
-            <div class="saga-title">Godisbacillen i mataffären</div>
-            <div class="saga-meta">Vad händer när Godisbacillen får sköta handlingen helt själv?</div>
-          </div>
-        </div>
-        <div class="saga-item">
-          <div class="saga-num">5</div>
-          <div class="saga-info">
-            <div class="saga-title">Godisbacillen på dagis</div>
-            <div class="saga-meta">Nya vänner, nya äventyr och en hel påse godis att gömma</div>
-          </div>
-        </div>
-        <div class="saga-item">
-          <div class="saga-num">6</div>
-          <div class="saga-info">
-            <div class="saga-title">Godisbacillen i lekparken</div>
-            <div class="saga-meta">En solig dag som snabbt tar en söt vändning</div>
-          </div>
-        </div>
-        <div class="saga-item">
-          <div class="saga-num">7</div>
-          <div class="saga-info">
-            <div class="saga-title">Godisbacillen och biblioteket</div>
-            <div class="saga-meta">Tyst på biblioteket, men inte när Godisbacillen är där</div>
-          </div>
-        </div>
-        <div class="saga-item">
-          <div class="saga-num">8</div>
-          <div class="saga-info">
-            <div class="saga-title">Godisbacillen och kalastårtan</div>
-            <div class="saga-meta">Det är kalas, och tårtan ser alldeles för god ut</div>
-          </div>
-        </div>
-        <div class="saga-item">
-          <div class="saga-num">9</div>
-          <div class="saga-info">
-            <div class="saga-title">Godisbacillen och godismiddagen</div>
-            <div class="saga-meta">Vad händer när hela middagen plötsligt förvandlas till godis?</div>
-          </div>
-        </div>
-        <div class="saga-item">
-          <div class="saga-num">10</div>
-          <div class="saga-info">
-            <div class="saga-title">Godisbacillen och tandläkaren</div>
-            <div class="saga-meta">Det värsta som kan hända en godisälskare, eller?</div>
-          </div>
-        </div>
-      </div>
-
-      <div class="coming-hint">
-        <p>Nya avsnitt om alla baciller kommer. <strong>Följ podden för att inte missa något.</strong></p>
-      </div>
-
-      <div class="listen-ctas">
-        <a class="btn btn-primary" href="https://open.spotify.com/show/2X0WwBDFy6mdud7rfAIzrZ" target="_blank">▶ Lyssna på Spotify</a>
-        <a class="btn btn-secondary" href="https://podcasts.apple.com/se/podcast/godisbacillen/id1890639062" target="_blank">🎵 Apple Podcasts</a>
-        <a class="btn btn-ghost" href="https://anchor.fm/s/110f36784/podcast/rss" target="_blank">RSS-feed</a>
       </div>
     </div>
   </section>
@@ -336,10 +488,8 @@
       </div>
     </div>
     <div class="footer-bottom">© 2026 <strong>BACILLERNA</strong> — LuvBugs Collection</div>
-  
     <p class="pwa-tip">💡 Spara Bacillerna som app! Leta efter installationsalternativet i din webbläsares meny 🍬</p>
   </footer>
-
 
 <script src="/pwa-install.js" defer></script>
 </body>
