@@ -183,7 +183,8 @@ function resize(){
 }
 
 function getPos(e){
-  const rect=canvas.getBoundingClientRect(), t=e.touches?e.touches[0]:e;
+  const rect=canvas.getBoundingClientRect();
+  const t=e.changedTouches?.[0]??e.touches?.[0]??e;
   return {x:t.clientX-rect.left, y:t.clientY-rect.top};
 }
 
@@ -235,7 +236,14 @@ function triggerWave(){
     }
   });
   videoOverlay.style.display='flex';
-  loveVideo.currentTime=0; loveVideo.play().catch(()=>{});
+  loveVideo.currentTime=0;
+  loveVideo.play().catch(()=>{
+    setTimeout(()=>{
+      videoOverlay.style.display='none';
+      figureReact=false; figureHearts=[];
+      setTimeout(nextLevel,500);
+    },1500);
+  });
 }
 
 function drawHeart(x,y,size,color,alpha,rot){
