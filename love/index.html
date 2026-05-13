@@ -271,7 +271,7 @@
 </div>
 
 <script>
-  fetch('data/messages.json')
+  fetch('/love/data/messages.json')
     .then(r => r.json())
     .then(data => {
       const grid = document.getElementById('bacill-grid');
@@ -288,7 +288,7 @@
           card.style.borderColor = b.farg_mjuk;
         }
 
-        const imgSrc = b.image_sv || null;
+        const imgSrc = b.image_sv ? '/love/' + b.image_sv : null;
         const visual = imgSrc
           ? '<div class="card-emoji"><img src="' + imgSrc + '" alt="' + b.namn_sv + '"></div>'
           : '<div class="card-emoji">' + b.emoji + '</div>';
