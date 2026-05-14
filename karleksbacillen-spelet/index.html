@@ -179,7 +179,13 @@ function resize(){
   const wrapW=wrap.clientWidth, wrapH=wrap.clientHeight;
   canvas.width=wrapW*dpr; canvas.height=wrapH*dpr;
   applyCanvasSize();
-  ctx.scale(dpr,dpr); initLevel();
+  ctx.scale(dpr,dpr);
+}
+
+let _resizeTimer;
+function onResize(){
+  clearTimeout(_resizeTimer);
+  _resizeTimer=setTimeout(resize, 200);
 }
 
 function getPos(e){
@@ -430,7 +436,11 @@ canvas.addEventListener('mouseup',onUp);
 canvas.addEventListener('touchstart',onDown,{passive:false});
 canvas.addEventListener('touchmove',onMove,{passive:false});
 canvas.addEventListener('touchend',onUp,{passive:false});
-window.addEventListener('resize',resize);
+if(window.visualViewport){
+  window.visualViewport.addEventListener('resize',onResize);
+} else {
+  window.addEventListener('resize',onResize);
+}
 resize();
 </script>
 </body>
