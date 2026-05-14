@@ -110,13 +110,17 @@ let figureReact=false, animating=false, bug={};
 const bugImg = new Image();
 bugImg.src = 'karleksbacillen.jpg';
 
-function cW(){ return canvas.width; }
-function cH(){ return canvas.height; }
+const TOP_PAD = 100; // utrymme för UI-overlay längst upp
+
+function cW(){ return window.innerWidth; }
+function cH(){ return window.innerHeight; }
 function dist(a,b){ return Math.sqrt((a.x-b.x)**2+(a.y-b.y)**2); }
 
 function resize(){
-  canvas.width  = window.innerWidth;
-  canvas.height = window.innerHeight;
+  const dpr = window.devicePixelRatio || 1;
+  canvas.width  = window.innerWidth  * dpr;
+  canvas.height = window.innerHeight * dpr;
+  ctx.scale(dpr, dpr);
 }
 
 let _resizeTimer;
@@ -137,13 +141,14 @@ function initLevel(){
   const idx=Math.min(level-1,2), set=TARGET_SETS[idx];
   totalTargets=set.length;
   bug={x:w/2, y:h*0.76, r:46, pulse:0};
+  const playH = h - TOP_PAD; // spelyta under UI
   const posMap=[
     [{x:.22,y:.10},{x:.78,y:.10},{x:.50,y:.27}],
     [{x:.17,y:.09},{x:.83,y:.09},{x:.30,y:.27},{x:.70,y:.27}],
     [{x:.12,y:.09},{x:.50,y:.07},{x:.88,y:.09},{x:.25,y:.26},{x:.75,y:.26}]
   ];
   targets=posMap[idx].map((p,i)=>({
-    x:p.x*w, y:p.y*h, r:28,
+    x:p.x*w, y:TOP_PAD + p.y*playH, r:28,
     sad:set[i].sad, happy:set[i].happy,
     connected:false, bounce:0
   }));
