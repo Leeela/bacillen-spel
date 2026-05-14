@@ -280,7 +280,7 @@ function drawBug(){
     const aspect=bugImg.naturalWidth/bugImg.naturalHeight;
     let dw=size, dh=size/aspect;
     if(dh<size){dh=size; dw=size*aspect;}
-    ctx.drawImage(bugImg,x-dw/2,y-dh*.72,dw,dh);
+    ctx.drawImage(bugImg,x-dw/2,y-r*.05-dh/2,dw,dh);
   } else {
     ctx.beginPath(); ctx.arc(x,y,r,0,Math.PI*2);
     ctx.fillStyle='#e8548a'; ctx.fill();
