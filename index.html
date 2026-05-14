@@ -589,6 +589,61 @@
     margin: 8px 0 0 0;
     text-align: center;
   }
+
+  /* === ETSY SHOP === */
+  .etsy-section { background: #FFF8F5; }
+  .etsy-product-card {
+    display: flex;
+    gap: 48px;
+    align-items: center;
+    max-width: 860px;
+    margin: 40px auto 0;
+    background: white;
+    border-radius: var(--radius-lg);
+    padding: 40px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+  }
+  .etsy-product-img {
+    width: 260px;
+    flex-shrink: 0;
+    border-radius: var(--radius-md);
+    object-fit: cover;
+    display: block;
+  }
+  .etsy-product-info { flex: 1; }
+  .etsy-product-info h3 {
+    font-family: var(--font-heading);
+    font-size: 26px;
+    font-weight: 700;
+    margin: 8px 0 12px;
+    color: var(--color-text-primary);
+  }
+  .etsy-product-info p {
+    color: var(--color-text-secondary);
+    margin: 0 0 4px;
+    font-size: 15px;
+    line-height: 1.6;
+  }
+  .btn-etsy {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: #F1641E;
+    color: white;
+    padding: 16px 32px;
+    border-radius: var(--radius-pill);
+    font-family: var(--font-body);
+    font-weight: 700;
+    font-size: 16px;
+    text-decoration: none;
+    margin-top: 20px;
+    transition: transform 0.15s, box-shadow 0.15s, background 0.15s;
+  }
+  .btn-etsy:hover { background: #d4521a; transform: translateY(-2px); box-shadow: 0 6px 18px rgba(241,100,30,0.3); }
+  @media (max-width: 720px) {
+    .etsy-product-card { flex-direction: column; gap: 24px; padding: 24px; }
+    .etsy-product-img { width: 100%; max-width: 320px; margin: 0 auto; }
+  }
 </style>
 <meta name="google-site-verification" content="v_mCFoXSo8yWM_zMYOrxm_uutPYdq2Cx4Pxy-vxGWfQ" />
   <link rel="alternate" hreflang="sv" href="https://bacillerna.se/index.html" />
@@ -631,6 +686,7 @@
       <a href="spel.html">Spel</a>
       <a href="#titta">Titta</a>
       <a href="#foraldrar">Föräldrar</a>
+      <a href="#shop" style="color:#F1641E;font-weight:700;">🛒 Shop</a>
     </nav>
     <a href="https://luvbugscollection.com" class="site-lang" title="English version">SV / EN</a>
   </header>
@@ -819,6 +875,25 @@
     </div>
   </section>
 
+  <!-- ETSY SHOP -->
+  <section id="shop" class="etsy-section">
+    <div class="section-inner">
+      <div class="section-eyebrow">Vår butik</div>
+      <h2 class="section-title">Handla på Etsy</h2>
+      <p class="section-text">Ladda ner och skriv ut direkt hemma – perfekt för en regnig eftermiddag!</p>
+      <div class="etsy-product-card">
+        <img src="bilder/Aktivitetsblad Bacillerna.png" alt="Bacillerna Aktivitetsblad – 6 baciller att rita med" class="etsy-product-img">
+        <div class="etsy-product-info">
+          <div class="section-eyebrow">Digital nedladdning · Skriv ut hemma</div>
+          <h3>Aktivitetsblad – 6 baciller att rita med</h3>
+          <p>Rita och färglägg alla sex baciller! Perfekt aktivitet för barn 3–8 år.</p>
+          <p>Ladda ner direkt efter köp – skriv ut och rita!</p>
+          <a href="https://www.etsy.com/se-en/listing/4505002460/bacillerna-aktivitetsblad-o-6-karaktarer" target="_blank" rel="noopener" class="btn btn-etsy">🛒 Köp nu på Etsy</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <!-- FOOTER -->
   <footer class="site-footer">
     <div class="footer-inner">
@@ -834,6 +909,7 @@
           <li><a href="#bocker">Böcker</a></li>
           <li><a href="spel.html">Spel</a></li>
           <li><a href="#titta">Titta</a></li>
+          <li><a href="#shop">Shop</a></li>
         </ul>
       </div>
       <div class="footer-col">
