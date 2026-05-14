@@ -122,7 +122,7 @@ function resize(){
 let _resizeTimer;
 function onResize(){
   clearTimeout(_resizeTimer);
-  _resizeTimer=setTimeout(()=>{ resize(); initLevel(); }, 200);
+  _resizeTimer=setTimeout(resize, 200);
 }
 
 function getPos(e){
