@@ -175,7 +175,7 @@
   let selectedMessage = null;
   let bacillData = null;
 
-  fetch('../data/messages.json')
+  fetch('../data/messages.json?v=2')
     .then(r => r.json())
     .then(data => {
       bacillData = data.baciller.dans;
