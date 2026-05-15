@@ -272,12 +272,6 @@
 </div>
 
 <script>
-  const BILDER = {
-    karlek:   '/love/images/karleksbacillen.png',
-    ret:      '/love/images/retbacillen.png',
-    godis:    '/love/images/godisbacillen.png'
-  };
-
   fetch('/love/data/messages.json?v=2')
     .then(r => r.json())
     .then(data => {
@@ -295,7 +289,7 @@
           card.style.borderColor = b.farg_mjuk;
         }
 
-        const imgSrc = BILDER[key] || null;
+        const imgSrc = b.image_sv ? '/love/' + b.image_sv : null;
         const visual = imgSrc
           ? '<div class="card-emoji"><img src="' + imgSrc + '" alt="' + b.namn_sv + '"></div>'
           : '<div class="card-emoji">' + b.emoji + '</div>';
