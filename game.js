@@ -273,7 +273,7 @@ function handleStart() {
   });
 
   bugLoop.play().catch(() => {});
-  startMusic();
+  // startMusic(); // Bakgrundsmusik borttagen på begäran
   startScreen.style.display = 'none';
   setTimeout(preloadVideos, 1000);
 }
@@ -421,7 +421,7 @@ const crash = {
 
       if (level < 3) {
         level++;
-        updateMusicTempo();
+        // updateMusicTempo();
         candyEaten = 0;
         candies = [];
         for (let i = 0; i < 5; i++) candies.push(new Candy(true));
@@ -462,7 +462,7 @@ window.restartGame = function() {
   level = 1;
   isNewRecord = false;
   newRecordTimer = 0;
-  updateMusicTempo();
+  // updateMusicTempo();
   for (let i = 0; i < 5; i++) candies.push(new Candy(true));
 };
 
