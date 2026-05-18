@@ -100,7 +100,7 @@
   /* === BUTTONS === */
   .btn { display: inline-flex; align-items: center; gap: 8px; padding: 14px 28px; border-radius: var(--radius-pill); font-family: var(--font-body); font-weight: 700; font-size: 15px; text-decoration: none; border: none; cursor: pointer; transition: transform 0.15s, box-shadow 0.15s; }
   .btn:hover { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(0,0,0,0.15); }
-  .btn-spotify { background: #1DB954; color: white; }
+  .btn-spotify { background: #1DB954; color: #222; }
   .btn-spotify:hover { background: #17a349; }
   .btn-apple { background: white; border: 2.5px solid #e0e0e0; color: #333; }
   .btn-apple:hover { border-color: #999; }
@@ -128,21 +128,21 @@
   .ep-card-img img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.3s; }
   .ep-card:hover .ep-card-img img { transform: scale(1.04); }
   .ep-badge { position: absolute; top: 12px; left: 12px; font-family: var(--font-heading); font-weight: 700; font-size: 12px; padding: 4px 10px; border-radius: var(--radius-pill); letter-spacing: 0.5px; }
-  .ep-dur { position: absolute; bottom: 10px; right: 10px; background: rgba(0,0,0,0.62); color: white; font-size: 11px; font-weight: 700; padding: 3px 8px; border-radius: var(--radius-pill); backdrop-filter: blur(4px); }
+  .ep-dur { position: absolute; bottom: 10px; right: 10px; background: rgba(0,0,0,0.62); color: #222; font-size: 11px; font-weight: 700; padding: 3px 8px; border-radius: var(--radius-pill); backdrop-filter: blur(4px); }
 
   .ep-card-body { padding: 18px 20px 20px; flex: 1; display: flex; flex-direction: column; }
   .ep-char { font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 6px; }
   .ep-title { font-family: var(--font-heading); font-weight: 600; font-size: 17px; margin: 0 0 8px 0; line-height: 1.3; color: var(--color-text-primary); }
   .ep-desc { font-size: 13px; color: var(--color-text-secondary); line-height: 1.55; flex: 1; margin: 0 0 16px 0; }
-  .ep-listen { display: inline-flex; align-items: center; gap: 6px; padding: 9px 18px; border-radius: var(--radius-pill); font-family: var(--font-body); font-weight: 700; font-size: 13px; text-decoration: none; color: white; background: #1DB954; transition: background 0.15s, transform 0.15s; align-self: flex-start; }
+  .ep-listen { display: inline-flex; align-items: center; gap: 6px; padding: 9px 18px; border-radius: var(--radius-pill); font-family: var(--font-body); font-weight: 700; font-size: 13px; text-decoration: none; color: #222; background: #1DB954; transition: background 0.15s, transform 0.15s; align-self: flex-start; }
   .ep-listen:hover { background: #17a349; transform: translateY(-1px); }
 
   /* Character color themes */
-  .char-candy .ep-badge { background: var(--candy); color: white; }
+  .char-candy .ep-badge { background: var(--candy); color: #222; }
   .char-candy .ep-char { color: var(--candy-deep); }
-  .char-love .ep-badge { background: var(--love); color: white; }
+  .char-love .ep-badge { background: var(--love); color: #222; }
   .char-love .ep-char { color: var(--love-deep); }
-  .char-happy .ep-badge { background: var(--happy); color: white; }
+  .char-happy .ep-badge { background: var(--happy); color: #222; }
   .char-happy .ep-char { color: var(--happy-deep); }
   .char-tease .ep-badge { background: var(--tease); color: #7a6000; }
   .char-tease .ep-char { color: var(--tease-deep); }
@@ -175,19 +175,19 @@
   }
 
   /* === FOOTER === */
-  .site-footer { background: #1a1a1a; color: #999; padding: 48px 32px 32px; }
+  .site-footer { background: #f2f2f2; color: #999; padding: 48px 32px 32px; }
   .footer-inner { max-width: 1100px; margin: 0 auto; display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 32px; }
-  .footer-brand h3 { font-family: var(--font-heading); font-weight: 700; font-size: 22px; color: white; letter-spacing: 1px; margin: 0 0 8px 0; }
+  .footer-brand h3 { font-family: var(--font-heading); font-weight: 700; font-size: 22px; color: #222; letter-spacing: 1px; margin: 0 0 8px 0; }
   .footer-brand p { font-size: 13px; line-height: 1.6; margin: 0; }
-  .footer-col h4 { font-family: var(--font-heading); font-weight: 600; font-size: 14px; color: white; margin: 0 0 12px 0; letter-spacing: 0.5px; }
+  .footer-col h4 { font-family: var(--font-heading); font-weight: 600; font-size: 14px; color: #222; margin: 0 0 12px 0; letter-spacing: 0.5px; }
   .footer-col ul { list-style: none; padding: 0; margin: 0; }
   .footer-col li { margin-bottom: 8px; }
-  .footer-col a { text-decoration: none; color: #aaa; font-size: 13px; transition: color 0.15s; }
+  .footer-col a { text-decoration: none; color: #555; font-size: 13px; transition: color 0.15s; }
   .footer-col a:hover { color: var(--brand-mid); }
-  .footer-bottom { max-width: 1100px; margin: 32px auto 0; padding-top: 24px; border-top: 1px solid #333; text-align: center; font-size: 12px; color: #888; }
-  .footer-bottom strong { color: white; letter-spacing: 1px; }
+  .footer-bottom { max-width: 1100px; margin: 32px auto 0; padding-top: 24px; border-top: 1px solid #ddd; text-align: center; font-size: 12px; color: #444; }
+  .footer-bottom strong { color: #222; letter-spacing: 1px; }
   @media (max-width: 720px) { .footer-inner { grid-template-columns: 1fr 1fr; gap: 24px; } }
-  .pwa-tip { font-size: 11px; color: #aaa; margin: 8px 0 0 0; text-align: center; }
+  .pwa-tip { font-size: 11px; color: #555; margin: 8px 0 0 0; text-align: center; }
 </style>
 </head>
 <body>

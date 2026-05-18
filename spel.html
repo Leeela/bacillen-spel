@@ -80,7 +80,7 @@
 
   .btn { display: inline-block; padding: 16px 32px; border-radius: var(--radius-pill); font-family: var(--font-body); font-weight: 700; font-size: 16px; text-decoration: none; border: none; cursor: pointer; transition: transform 0.15s, box-shadow 0.15s; }
   .btn:hover { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(0,0,0,0.15); }
-  .btn-primary { background: var(--char-color); color: white; }
+  .btn-primary { background: var(--char-color); color: #222; }
   .btn-primary:hover { background: var(--char-color-deep); }
 
   section { padding: 80px 32px; }
@@ -99,8 +99,8 @@
   .game-card.brand { border-color: var(--candy); }
   .game-card.love { border-color: var(--love); }
   .game-card.love .game-thumb { background: #FFE5F0; }
-  .game-card.love .game-age { background: var(--love); color: white; }
-  .btn-love { background: var(--love); color: white; }
+  .game-card.love .game-age { background: var(--love); color: #222; }
+  .btn-love { background: var(--love); color: #222; }
   .btn-love:hover { background: var(--love-deep); }
 
   .game-thumb { width: 140px; height: 140px; border-radius: var(--radius-lg); flex-shrink: 0; object-fit: contain; display: block; }
@@ -109,18 +109,18 @@
   .game-card.brand .game-thumb { background: var(--candy-light); }
 
   .game-age { display: inline-block; padding: 4px 12px; border-radius: var(--radius-pill); font-size: 11px; font-weight: 700; margin-bottom: 10px; }
-  .game-card.candy .game-age { background: var(--candy); color: white; }
-  .game-card.dance .game-age { background: var(--brand-mid); color: white; }
-  .game-card.brand .game-age { background: var(--candy); color: white; }
+  .game-card.candy .game-age { background: var(--candy); color: #222; }
+  .game-card.dance .game-age { background: var(--brand-mid); color: #222; }
+  .game-card.brand .game-age { background: var(--candy); color: #222; }
 
   .game-title { font-family: var(--font-heading); font-weight: 700; font-size: 26px; margin: 0 0 8px 0; }
   .game-desc { font-size: 15px; color: var(--color-text-secondary); line-height: 1.6; margin-bottom: 20px; }
   .game-tags { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px; }
   .game-tag { font-size: 12px; font-weight: 600; color: var(--color-text-tertiary); background: var(--color-bg-soft); border: 1px solid var(--color-border); padding: 4px 10px; border-radius: var(--radius-pill); }
 
-  .btn-candy { background: var(--candy); color: white; }
+  .btn-candy { background: var(--candy); color: #222; }
   .btn-candy:hover { background: var(--candy-deep); }
-  .btn-dance { background: var(--dance); color: white; }
+  .btn-dance { background: var(--dance); color: #222; }
   .btn-dance:hover { background: var(--dance-deep); }
 
   /* ── Desktop spelportal-grid ── */
@@ -187,22 +187,22 @@
     .section-title { font-size: 28px; }
   }
 
-  .site-footer { background: #1a1a1a; color: #999; padding: 48px 32px 32px; }
+  .site-footer { background: #f2f2f2; color: #999; padding: 48px 32px 32px; }
   .footer-inner { max-width: 1100px; margin: 0 auto; display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 32px; }
-  .footer-brand h3 { font-family: var(--font-heading); font-weight: 700; font-size: 22px; color: white; letter-spacing: 1px; margin: 0 0 8px 0; }
+  .footer-brand h3 { font-family: var(--font-heading); font-weight: 700; font-size: 22px; color: #222; letter-spacing: 1px; margin: 0 0 8px 0; }
   .footer-brand p { font-size: 13px; line-height: 1.6; margin: 0; }
-  .footer-col h4 { font-family: var(--font-heading); font-weight: 600; font-size: 14px; color: white; margin: 0 0 12px 0; letter-spacing: 0.5px; }
+  .footer-col h4 { font-family: var(--font-heading); font-weight: 600; font-size: 14px; color: #222; margin: 0 0 12px 0; letter-spacing: 0.5px; }
   .footer-col ul { list-style: none; padding: 0; margin: 0; }
   .footer-col li { margin-bottom: 8px; }
-  .footer-col a { text-decoration: none; color: #aaa; font-size: 13px; transition: color 0.15s; }
+  .footer-col a { text-decoration: none; color: #555; font-size: 13px; transition: color 0.15s; }
   .footer-col a:hover { color: var(--brand-mid); }
-  .footer-bottom { max-width: 1100px; margin: 32px auto 0; padding-top: 24px; border-top: 1px solid #333; text-align: center; font-size: 12px; color: #888; }
-  .footer-bottom strong { color: white; letter-spacing: 1px; }
+  .footer-bottom { max-width: 1100px; margin: 32px auto 0; padding-top: 24px; border-top: 1px solid #ddd; text-align: center; font-size: 12px; color: #444; }
+  .footer-bottom strong { color: #222; letter-spacing: 1px; }
   @media (max-width: 720px) { .footer-inner { grid-template-columns: 1fr 1fr; gap: 24px; } }
 
   .pwa-tip {
     font-size: 11px;
-    color: #aaa;
+    color: #555;
     margin: 8px 0 0 0;
     text-align: center;
   }
