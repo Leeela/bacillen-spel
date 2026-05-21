@@ -278,7 +278,7 @@
     const till = document.getElementById('till').value.trim();
     const fran = document.getElementById('fran').value.trim();
     if (!till) return;
-    const enc = s => encodeURIComponent(s || '').replace(/\./g, '%2E');
+    const enc = s => (s || '').replace(/[.#\s]/gu, c => '%' + c.charCodeAt(0).toString(16).padStart(2, '0').toUpperCase());
     const hashParts = ['godis', selectedMessage, enc(till)];
     if (fran) hashParts.push(enc(fran));
     const base = window.location.origin + '/love/k/';
