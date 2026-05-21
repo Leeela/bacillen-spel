@@ -1,4 +1,4 @@
-const CACHE_NAME = 'bacillerna-v1';
+const CACHE_NAME = 'bacillerna-v2';
 
 // Filer som cachas vid installation
 const PRECACHE_URLS = [
@@ -41,6 +41,10 @@ function isHTMLRequest(request) {
   return accept.includes('text/html') || request.url.endsWith('.html') || request.url.endsWith('/');
 }
 
+function isNetworkFirstRequest(request) {
+  return isHTMLRequest(request) || request.url.endsWith('.json');
+}
+
 // Install: precacha viktiga filer
 self.addEventListener('install', event => {
   event.waitUntil(
@@ -79,8 +83,8 @@ self.addEventListener('fetch', event => {
     return;
   }
 
-  // HTML: network-first, fallback till cache
-  if (isHTMLRequest(event.request)) {
+  // HTML och JSON: network-first, fallback till cache
+  if (isNetworkFirstRequest(event.request)) {
     event.respondWith(
       fetch(event.request)
         .then(response => {
