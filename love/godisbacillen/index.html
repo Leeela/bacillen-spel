@@ -278,21 +278,18 @@
     const till = document.getElementById('till').value.trim();
     const fran = document.getElementById('fran').value.trim();
     if (!till) return;
-    const params = new URLSearchParams();
-    params.set('bacill', 'godis');
-    params.set('v', selectedMessage);
-    params.set('till', till);
-    if (fran) params.set('fran', fran);
+    const enc = s => encodeURIComponent(s || '').replace(/\./g, '%2E');
+    const hashParts = ['godis', selectedMessage, enc(till)];
+    if (fran) hashParts.push(enc(fran));
     const base = window.location.origin + '/love/k/';
-    const fullLink = base + '?' + params.toString();
+    const fullLink = base + '#' + hashParts.join('.');
     document.getElementById('link-display').textContent = fullLink;
     document.getElementById('preview-link').href = fullLink;
-    const smsText = till + ' 🍬 du har fått en hemlig hälsning från mig: ' + fullLink;
-    const emailSubject = 'En söt hälsning till dig 🍬';
-    const emailBody = 'Hej ' + till + '!\n\nJag har skickat en hemlig söt hälsning till dig:\n' + fullLink + '\n\n' + (fran ? '— ' + fran : '');
-    document.getElementById('share-sms').href = 'sms:?body=' + encodeURIComponent(smsText);
-    document.getElementById('share-whatsapp').href = 'https://wa.me/?text=' + encodeURIComponent(smsText);
-    document.getElementById('share-email').href = 'mailto:?subject=' + encodeURIComponent(emailSubject) + '&body=' + encodeURIComponent(emailBody);
+    const shareText = 'Jag har skickat en hälsning till dig från Bacillerna — en animerad film 💛 Det är en ny hemsida med sagor, spel och animationer för barn. Inga riktiga baciller :D ' + fullLink;
+    const emailSubject = 'En hälsning från Bacillerna 💛';
+    document.getElementById('share-sms').href = 'sms:?body=' + encodeURIComponent(shareText);
+    document.getElementById('share-whatsapp').href = 'https://wa.me/?text=' + encodeURIComponent(shareText);
+    document.getElementById('share-email').href = 'mailto:?subject=' + encodeURIComponent(emailSubject) + '&body=' + encodeURIComponent(shareText);
 
     // event: share-click tracking (godisbacillen)
     ['sms','whatsapp','email'].forEach(function(method) {

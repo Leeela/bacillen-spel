@@ -409,11 +409,21 @@
 </div>
 
 <script>
-  const params = new URLSearchParams(window.location.search);
-  const bacillKey = params.get('bacill') || 'karlek';
-  const messageId = parseInt(params.get('v')) || 1;
-  const till = params.get('till');
-  const fran = params.get('fran');
+  let bacillKey, messageId, till, fran;
+  const hashRaw = window.location.hash.slice(1);
+  if (hashRaw) {
+    const parts = hashRaw.split('.').map(p => { try { return decodeURIComponent(p); } catch(e) { return p; } });
+    bacillKey = parts[0] || 'karlek';
+    messageId = parseInt(parts[1]) || 1;
+    till = parts[2] || null;
+    fran = parts[3] || null;
+  } else {
+    const params = new URLSearchParams(window.location.search);
+    bacillKey = params.get('bacill') || 'karlek';
+    messageId = parseInt(params.get('v')) || 1;
+    till = params.get('till');
+    fran = params.get('fran');
+  }
 
   fetch('../data/messages.json')
     .then(r => r.json())
