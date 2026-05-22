@@ -167,6 +167,7 @@
     }
 
     .accessory-item:active { transform: scale(0.92); }
+    .accessory-item img { width: 40px; height: 40px; object-fit: contain; pointer-events: none; }
 
     /* Spara-knapp */
     #save-btn {
@@ -204,6 +205,7 @@
       transition: none;
     }
     .ghost[data-id="sunglasses"] { font-size: 192px; }
+    .ghost img { width: 220px; height: 220px; object-fit: contain; pointer-events: none; display: block; }
 
     /* Placerad accessoar på spelplanen */
     .placed-accessory {
@@ -216,6 +218,11 @@
       z-index: 10;
     }
     .placed-accessory[data-id="sunglasses"] { font-size: 192px; }
+    .placed-accessory img { width: 220px; height: 220px; object-fit: contain; pointer-events: none; display: block; }
+
+    /* Bananglasögonen extra stora */
+    .placed-accessory[data-id="banana-glasses"] img,
+    .ghost[data-id="banana-glasses"] img { width: 300px; height: 300px; }
 
     .placed-accessory.removing {
       animation: poff 0.3s ease-out forwards;
@@ -293,18 +300,19 @@
 
   <script>
 const ACCESSORIES = [
-  { id: 'hat',        emoji: '🎩', label: 'Hatt' },
-  { id: 'crown',      emoji: '👑', label: 'Krona' },
-  { id: 'sunglasses', emoji: '🕶️', label: 'Solglasögon' },
-  { id: 'bow',        emoji: '🎀', label: 'Rosett' },
-  { id: 'star',       emoji: '⭐', label: 'Stjärna' },
-  { id: 'flower',     emoji: '🌸', label: 'Blomma' },
-  { id: 'glasses',    emoji: '🤓', label: 'Glasögon' },
-  { id: 'rainbow',    emoji: '🌈', label: 'Regnbåge' },
-  { id: 'butterfly',  emoji: '🦋', label: 'Fjäril' },
-  { id: 'guitar',     emoji: '🎸', label: 'Gitarr' },
-  { id: 'heart',      emoji: '❤️', label: 'Hjärta' },
-  { id: 'mustache',   emoji: '🥸', label: 'Mustasch' },
+  { id: 'hat',           emoji: '🎩', label: 'Hatt' },
+  { id: 'partyhatt',     src: 'bilder/Partyhatt.png', label: 'Partyhatt' },
+  { id: 'crown',         emoji: '👑', label: 'Krona' },
+  { id: 'sunglasses',    emoji: '🕶️', label: 'Solglasögon' },
+  { id: 'banana-glasses',src: 'bilder/Bananglasögonen_ska_användas_om_accessoar_202605222149.png', label: 'Bananglasögon' },
+  { id: 'egg-glasses',   src: 'bilder/eggglasogon.png', label: 'Äggglasögon' },
+  { id: 'bow',           emoji: '🎀', label: 'Rosett' },
+  { id: 'star',          emoji: '⭐', label: 'Stjärna' },
+  { id: 'flower',        emoji: '🌸', label: 'Blomma' },
+  { id: 'rainbow',       emoji: '🌈', label: 'Regnbåge' },
+  { id: 'butterfly',     emoji: '🦋', label: 'Fjäril' },
+  { id: 'guitar',        emoji: '🎸', label: 'Gitarr' },
+  { id: 'heart',         emoji: '❤️', label: 'Hjärta' },
 ];
 
 const CHARACTERS = {
@@ -321,10 +329,18 @@ function renderAccessoryPanel() {
     const el = document.createElement('div');
     el.className = 'accessory-item';
     el.dataset.id = acc.id;
-    el.dataset.emoji = acc.emoji;
     el.setAttribute('aria-label', acc.label);
     el.setAttribute('role', 'button');
-    el.textContent = acc.emoji;
+    if (acc.src) {
+      const img = document.createElement('img');
+      img.src = acc.src;
+      img.alt = acc.label;
+      img.draggable = false;
+      el.appendChild(img);
+    } else {
+      el.dataset.emoji = acc.emoji;
+      el.textContent = acc.emoji;
+    }
     panel.appendChild(el);
   });
 }
@@ -351,15 +367,22 @@ document.querySelectorAll('.char-btn').forEach(btn => {
 });
 
 let ghost = null;
-let ghostEmoji = '';
-let ghostId = '';
+let ghostAcc = null;
 let draggingPlaced = null;
 
-function createGhost(emoji, id, x, y) {
+function createGhost(acc, x, y) {
   ghost = document.createElement('div');
   ghost.className = 'ghost';
-  ghost.dataset.id = id;
-  ghost.textContent = emoji;
+  ghost.dataset.id = acc.id;
+  if (acc.src) {
+    const img = document.createElement('img');
+    img.src = acc.src;
+    img.alt = acc.label;
+    img.draggable = false;
+    ghost.appendChild(img);
+  } else {
+    ghost.textContent = acc.emoji;
+  }
   ghost.style.left = x + 'px';
   ghost.style.top = y + 'px';
   document.body.appendChild(ghost);
@@ -391,13 +414,21 @@ function isOverStage(x, y) {
   return x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom;
 }
 
-function placeAccessory(emoji, id, x, y) {
+function placeAccessory(acc, x, y) {
   const stage = document.getElementById('stage');
   const rect = stage.getBoundingClientRect();
   const el = document.createElement('div');
   el.className = 'placed-accessory';
-  el.dataset.id = id;
-  el.textContent = emoji;
+  el.dataset.id = acc.id;
+  if (acc.src) {
+    const img = document.createElement('img');
+    img.src = acc.src;
+    img.alt = acc.label;
+    img.draggable = false;
+    el.appendChild(img);
+  } else {
+    el.textContent = acc.emoji;
+  }
   el.style.left = (x - rect.left) + 'px';
   el.style.top  = (y - rect.top) + 'px';
   stage.appendChild(el);
@@ -407,10 +438,11 @@ function placeAccessory(emoji, id, x, y) {
 
 function onPanelDragStart(e, itemEl) {
   e.preventDefault();
-  ghostEmoji = itemEl.dataset.emoji;
-  ghostId = itemEl.dataset.id;
+  const id = itemEl.dataset.id;
+  ghostAcc = ACCESSORIES.find(a => a.id === id);
+  if (!ghostAcc) return;
   const { x, y } = getClientXY(e);
-  createGhost(ghostEmoji, ghostId, x, y);
+  createGhost(ghostAcc, x, y);
 }
 
 document.getElementById('accessory-panel').addEventListener('mousedown', e => {
@@ -438,13 +470,12 @@ document.addEventListener('touchmove', e => {
 }, { passive: false });
 
 function onDrop(x, y) {
-  if (ghost && ghostEmoji) {
+  if (ghost && ghostAcc) {
     if (isOverStage(x, y)) {
-      placeAccessory(ghostEmoji, ghostId, x, y);
+      placeAccessory(ghostAcc, x, y);
     }
     removeGhost();
-    ghostEmoji = '';
-    ghostId = '';
+    ghostAcc = null;
   }
   draggingPlaced = null;
 }
