@@ -347,6 +347,106 @@ function switchCharacter(charKey) {
 document.querySelectorAll('.char-btn').forEach(btn => {
   btn.addEventListener('click', () => switchCharacter(btn.dataset.char));
 });
+
+let ghost = null;
+let ghostEmoji = '';
+let draggingPlaced = null;
+
+function createGhost(emoji, x, y) {
+  ghost = document.createElement('div');
+  ghost.className = 'ghost';
+  ghost.textContent = emoji;
+  ghost.style.left = x + 'px';
+  ghost.style.top = y + 'px';
+  document.body.appendChild(ghost);
+}
+
+function moveGhost(x, y) {
+  if (!ghost) return;
+  ghost.style.left = x + 'px';
+  ghost.style.top = y + 'px';
+}
+
+function removeGhost() {
+  if (ghost) { ghost.remove(); ghost = null; }
+}
+
+function getClientXY(e) {
+  if (e.touches && e.touches.length > 0) {
+    return { x: e.touches[0].clientX, y: e.touches[0].clientY };
+  }
+  if (e.changedTouches && e.changedTouches.length > 0) {
+    return { x: e.changedTouches[0].clientX, y: e.changedTouches[0].clientY };
+  }
+  return { x: e.clientX, y: e.clientY };
+}
+
+function isOverStage(x, y) {
+  const stage = document.getElementById('stage');
+  const rect = stage.getBoundingClientRect();
+  return x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom;
+}
+
+function placeAccessory(emoji, x, y) {
+  const stage = document.getElementById('stage');
+  const rect = stage.getBoundingClientRect();
+  const el = document.createElement('div');
+  el.className = 'placed-accessory';
+  el.textContent = emoji;
+  el.style.left = (x - rect.left) + 'px';
+  el.style.top  = (y - rect.top) + 'px';
+  stage.appendChild(el);
+  initPlacedDrag(el);
+  initLongPress(el);
+}
+
+function onPanelDragStart(e, itemEl) {
+  e.preventDefault();
+  ghostEmoji = itemEl.dataset.emoji;
+  const { x, y } = getClientXY(e);
+  createGhost(ghostEmoji, x, y);
+}
+
+document.getElementById('accessory-panel').addEventListener('mousedown', e => {
+  const item = e.target.closest('.accessory-item');
+  if (!item) return;
+  onPanelDragStart(e, item);
+});
+
+document.getElementById('accessory-panel').addEventListener('touchstart', e => {
+  const item = e.target.closest('.accessory-item');
+  if (!item) return;
+  onPanelDragStart(e, item);
+}, { passive: false });
+
+document.addEventListener('mousemove', e => {
+  moveGhost(e.clientX, e.clientY);
+  if (draggingPlaced) movePlaced(e.clientX, e.clientY);
+});
+
+document.addEventListener('touchmove', e => {
+  e.preventDefault();
+  const { x, y } = getClientXY(e);
+  moveGhost(x, y);
+  if (draggingPlaced) movePlaced(x, y);
+}, { passive: false });
+
+function onDrop(x, y) {
+  if (ghost && ghostEmoji) {
+    if (isOverStage(x, y)) {
+      placeAccessory(ghostEmoji, x, y);
+    }
+    removeGhost();
+    ghostEmoji = '';
+  }
+  draggingPlaced = null;
+}
+
+document.addEventListener('mouseup', e => onDrop(e.clientX, e.clientY));
+document.addEventListener('touchend', e => {
+  const { x, y } = getClientXY(e);
+  onDrop(x, y);
+});
   </script>
 
 </body>
