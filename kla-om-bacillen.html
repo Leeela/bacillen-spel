@@ -289,5 +289,46 @@
   <!-- Stjärnregn-overlay (visas vid sparande) -->
   <div id="star-rain" aria-hidden="true"></div>
 
+  <script>
+const ACCESSORIES = [
+  { id: 'hat',        emoji: '🎩', label: 'Hatt' },
+  { id: 'crown',      emoji: '👑', label: 'Krona' },
+  { id: 'sunglasses', emoji: '🕶️', label: 'Solglasögon' },
+  { id: 'bow',        emoji: '🎀', label: 'Rosett' },
+  { id: 'star',       emoji: '⭐', label: 'Stjärna' },
+  { id: 'flower',     emoji: '🌸', label: 'Blomma' },
+  { id: 'glasses',    emoji: '🤓', label: 'Glasögon' },
+  { id: 'rainbow',    emoji: '🌈', label: 'Regnbåge' },
+  { id: 'butterfly',  emoji: '🦋', label: 'Fjäril' },
+  { id: 'guitar',     emoji: '🎸', label: 'Gitarr' },
+  { id: 'heart',      emoji: '❤️', label: 'Hjärta' },
+  { id: 'mustache',   emoji: '🥸', label: 'Mustasch' },
+];
+
+const CHARACTERS = {
+  godis:  { src: 'bilder/godisbacillen.png',   alt: 'Godisbacillen' },
+  karlek: { src: 'bilder/karleksbacillen.png', alt: 'Kärleksbacillen' },
+};
+
+let activeChar = 'godis';
+
+function renderAccessoryPanel() {
+  const panel = document.getElementById('accessory-panel');
+  panel.innerHTML = '';
+  ACCESSORIES.forEach(acc => {
+    const el = document.createElement('div');
+    el.className = 'accessory-item';
+    el.dataset.id = acc.id;
+    el.dataset.emoji = acc.emoji;
+    el.setAttribute('aria-label', acc.label);
+    el.setAttribute('role', 'button');
+    el.textContent = acc.emoji;
+    panel.appendChild(el);
+  });
+}
+
+renderAccessoryPanel();
+  </script>
+
 </body>
 </html>
