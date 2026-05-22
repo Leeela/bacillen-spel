@@ -527,7 +527,9 @@ function showStarRain() {
   setTimeout(() => { container.innerHTML = ''; }, 1800);
 }
 
-document.getElementById('save-btn').addEventListener('click', () => {
+document.getElementById('save-btn').addEventListener('click', (e) => {
+  const btn = e.currentTarget;
+  btn.disabled = true;
   const stage = document.getElementById('stage');
   html2canvas(stage, {
     backgroundColor: '#ffffff',
@@ -543,6 +545,8 @@ document.getElementById('save-btn').addEventListener('click', () => {
   }).catch(err => {
     console.error('html2canvas misslyckades:', err);
     alert('Kunde inte spara bilden. Prova att ta en skärmdump istället! 📸');
+  }).finally(() => {
+    btn.disabled = false;
   });
 });
   </script>
