@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="UTF-8">
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-VPN8T03G8N"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-VPN8T03G8N');
+  </script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#7BC142">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Bacillerna">
+  <link rel="apple-touch-icon" href="/icons/icon-180.png">
+  <title>Klä om Bacillen – Gratis barnspel | Bacillerna</title>
+  <meta name="description" content="Klä på Godisbacillen och Kärleksbacillen roliga accessoarer och spara din skapelse som bild! Gratis barnspel för 3–6 år.">
+  <link rel="canonical" href="https://bacillerna.se/kla-om-bacillen.html" />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://bacillerna.se/kla-om-bacillen.html" />
+  <meta property="og:title" content="Klä om Bacillen – Gratis barnspel | Bacillerna" />
+  <meta property="og:description" content="Klä på Bacillerna roliga accessoarer och spara din skapelse!" />
+  <meta property="og:image" content="https://bacillerna.se/bilder/godisbacillen.png" />
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&display=swap" rel="stylesheet">
+  <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+</head>
+<body>
+
+  <!-- Karaktärsväljare -->
+  <div id="char-picker">
+    <button class="char-btn active" data-char="godis" aria-label="Välj Godisbacillen">
+      <img src="bilder/godisbacillen.png" alt="Godisbacillen">
+      <span>Godisbacillen</span>
+    </button>
+    <button class="char-btn" data-char="karlek" aria-label="Välj Kärleksbacillen">
+      <img src="bilder/karleksbacillen.png" alt="Kärleksbacillen">
+      <span>Kärleksbacillen</span>
+    </button>
+  </div>
+
+  <!-- Spelplan -->
+  <div id="stage">
+    <img id="character-img" src="bilder/godisbacillen.png" alt="Bacillen" draggable="false">
+    <!-- Placerade accessoarer läggs hit dynamiskt -->
+  </div>
+
+  <!-- Accessoar-panel + spara-knapp -->
+  <div id="bottom-bar">
+    <div id="accessory-panel">
+      <!-- Accessoarerna renderas med JS -->
+    </div>
+    <button id="save-btn" aria-label="Spara som bild">
+      📷
+      <span>Spara</span>
+    </button>
+  </div>
+
+  <!-- Stjärnregn-overlay (visas vid sparande) -->
+  <div id="star-rain" aria-hidden="true"></div>
+
+</body>
+</html>
