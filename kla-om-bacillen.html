@@ -448,6 +448,12 @@ document.addEventListener('touchend', e => {
   onDrop(x, y);
 });
 
+document.addEventListener('touchcancel', () => {
+  removeGhost();
+  ghostEmoji = '';
+  draggingPlaced = null;
+});
+
 let placedOffsetX = 0;
 let placedOffsetY = 0;
 let longPressTimer = null;
@@ -456,6 +462,7 @@ function initPlacedDrag(el) {
   function startDrag(e) {
     e.preventDefault();
     e.stopPropagation();
+    clearTimeout(longPressTimer);
     const { x, y } = getClientXY(e);
     const stage = document.getElementById('stage');
     const stageRect = stage.getBoundingClientRect();
@@ -481,6 +488,7 @@ function movePlaced(x, y) {
 }
 
 function removeAccessory(el) {
+  if (draggingPlaced === el) draggingPlaced = null;
   el.classList.add('removing');
   el.addEventListener('animationend', () => el.remove(), { once: true });
 }
