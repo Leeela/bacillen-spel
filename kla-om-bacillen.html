@@ -510,6 +510,41 @@ function initLongPress(el) {
   el.addEventListener('touchend', cancelLong);
   el.addEventListener('touchmove', cancelLong);
 }
+
+function showStarRain() {
+  const container = document.getElementById('star-rain');
+  container.innerHTML = '';
+  const stars = ['⭐','🌟','✨','💫'];
+  for (let i = 0; i < 20; i++) {
+    const star = document.createElement('div');
+    star.className = 'star';
+    star.textContent = stars[i % stars.length];
+    star.style.left = Math.random() * 100 + 'vw';
+    star.style.animationDelay = Math.random() * 0.6 + 's';
+    star.style.fontSize = (24 + Math.random() * 24) + 'px';
+    container.appendChild(star);
+  }
+  setTimeout(() => { container.innerHTML = ''; }, 1800);
+}
+
+document.getElementById('save-btn').addEventListener('click', () => {
+  const stage = document.getElementById('stage');
+  html2canvas(stage, {
+    backgroundColor: '#ffffff',
+    scale: 2,
+    useCORS: true,
+    allowTaint: false,
+  }).then(canvas => {
+    const link = document.createElement('a');
+    link.download = 'min-bacill.png';
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+    showStarRain();
+  }).catch(err => {
+    console.error('html2canvas misslyckades:', err);
+    alert('Kunde inte spara bilden. Prova att ta en skärmdump istället! 📸');
+  });
+});
   </script>
 
 </body>
