@@ -328,6 +328,25 @@ function renderAccessoryPanel() {
 }
 
 renderAccessoryPanel();
+
+function switchCharacter(charKey) {
+  if (charKey === activeChar) return;
+  activeChar = charKey;
+
+  const img = document.getElementById('character-img');
+  img.src = CHARACTERS[charKey].src;
+  img.alt = CHARACTERS[charKey].alt;
+
+  document.querySelectorAll('.char-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.char === charKey);
+  });
+
+  document.querySelectorAll('.placed-accessory').forEach(el => el.remove());
+}
+
+document.querySelectorAll('.char-btn').forEach(btn => {
+  btn.addEventListener('click', () => switchCharacter(btn.dataset.char));
+});
   </script>
 
 </body>
