@@ -447,6 +447,61 @@ document.addEventListener('touchend', e => {
   const { x, y } = getClientXY(e);
   onDrop(x, y);
 });
+
+let placedOffsetX = 0;
+let placedOffsetY = 0;
+let longPressTimer = null;
+
+function initPlacedDrag(el) {
+  function startDrag(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    const { x, y } = getClientXY(e);
+    const stage = document.getElementById('stage');
+    const stageRect = stage.getBoundingClientRect();
+    const elLeft = parseFloat(el.style.left);
+    const elTop  = parseFloat(el.style.top);
+    placedOffsetX = x - (stageRect.left + elLeft);
+    placedOffsetY = y - (stageRect.top  + elTop);
+    draggingPlaced = el;
+  }
+
+  el.addEventListener('mousedown', startDrag);
+  el.addEventListener('touchstart', startDrag, { passive: false });
+}
+
+function movePlaced(x, y) {
+  if (!draggingPlaced) return;
+  const stage = document.getElementById('stage');
+  const rect = stage.getBoundingClientRect();
+  const newLeft = x - rect.left - placedOffsetX;
+  const newTop  = y - rect.top  - placedOffsetY;
+  draggingPlaced.style.left = newLeft + 'px';
+  draggingPlaced.style.top  = newTop  + 'px';
+}
+
+function removeAccessory(el) {
+  el.classList.add('removing');
+  el.addEventListener('animationend', () => el.remove(), { once: true });
+}
+
+function initLongPress(el) {
+  function startLong(e) {
+    longPressTimer = setTimeout(() => {
+      removeAccessory(el);
+    }, 500);
+  }
+  function cancelLong() {
+    clearTimeout(longPressTimer);
+  }
+
+  el.addEventListener('mousedown', startLong);
+  el.addEventListener('mouseup', cancelLong);
+  el.addEventListener('mousemove', cancelLong);
+  el.addEventListener('touchstart', startLong, { passive: true });
+  el.addEventListener('touchend', cancelLong);
+  el.addEventListener('touchmove', cancelLong);
+}
   </script>
 
 </body>
