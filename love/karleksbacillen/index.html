@@ -704,7 +704,7 @@
     // event: share-click tracking (karleksbacillen)
     ['sms','whatsapp','email'].forEach(function(method) {
       var el = document.getElementById('share-' + method);
-      if (el) el.addEventListener('click', function() {
+      if (el) el.onclick = function() {
         if (typeof gtag === 'function') {
           gtag('event', 'share', {
             method: method,
@@ -712,7 +712,7 @@
             content_type: 'love_greeting'
           });
         }
-      }, { once: true });
+      };
     });
 
     document.getElementById('share-copy').onclick = function() {

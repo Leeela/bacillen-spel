@@ -476,15 +476,17 @@
       if (message.poster_sv) {
         video.poster = '../videos/' + message.poster_sv;
       }
+      let videoTracked = false;
       video.addEventListener('play', function() {
-        if (typeof gtag === 'function') {
+        if (!videoTracked && typeof gtag === 'function') {
+          videoTracked = true;
           gtag('event', 'message_video_play', {
             bug_type: bacillKey,
             message_id: messageId,
             content_type: 'love_greeting'
           });
         }
-      }, { once: true });
+      });
     })
     .catch(err => {
       console.error('Kunde inte ladda meddelandet:', err);
