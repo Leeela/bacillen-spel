@@ -402,10 +402,14 @@
     background: white;
     border: 2px solid var(--brand-mid);
     border-radius: var(--radius-lg);
-    padding: 24px;
+    overflow: hidden;
     transition: transform 0.2s, box-shadow 0.2s;
   }
   .saga-card:hover { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(0,0,0,0.08); }
+  .saga-card-img { height: 160px; overflow: hidden; }
+  .saga-card-img img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.3s; }
+  .saga-card:hover .saga-card-img img { transform: scale(1.04); }
+  .saga-card-body { padding: 20px; }
   .saga-num {
     font-family: var(--font-heading);
     font-weight: 700;
@@ -795,22 +799,37 @@
 
       <div class="saga-list">
         <div class="saga-card">
-          <div class="saga-num">Avsnitt 1</div>
-          <div class="saga-title">Nattens sötaste hemlighet</div>
-          <div class="saga-meta">8 min · godisbacillen smyger ner till köket</div>
-          <a class="saga-listen" href="https://open.spotify.com/show/2X0WwBDFy6mdud7rfAIzrZ" target="_blank">▶ Lyssna på Spotify</a>
+          <div class="saga-card-img">
+            <img src="bilder/sagor/ep11-nattens-hemlighet.jpg" alt="Nattens sötaste hemlighet" loading="lazy">
+          </div>
+          <div class="saga-card-body">
+            <div class="saga-num">Avsnitt 1</div>
+            <div class="saga-title">Nattens sötaste hemlighet</div>
+            <div class="saga-meta">8 min · godisbacillen smyger ner till köket</div>
+            <a class="saga-listen" href="https://open.spotify.com/show/2X0WwBDFy6mdud7rfAIzrZ" target="_blank">▶ Lyssna på Spotify</a>
+          </div>
         </div>
         <div class="saga-card">
-          <div class="saga-num">Avsnitt 3</div>
-          <div class="saga-title">Inbrott i godisfabriken</div>
-          <div class="saga-meta">9 min · ett farligt äventyr i nattens fabriksvärld</div>
-          <a class="saga-listen" href="https://open.spotify.com/show/2X0WwBDFy6mdud7rfAIzrZ" target="_blank">▶ Lyssna på Spotify</a>
+          <div class="saga-card-img">
+            <img src="bilder/sagor/ep09-godisfabriken.jpg" alt="Inbrott i godisfabriken" loading="lazy">
+          </div>
+          <div class="saga-card-body">
+            <div class="saga-num">Avsnitt 3</div>
+            <div class="saga-title">Inbrott i godisfabriken</div>
+            <div class="saga-meta">9 min · ett farligt äventyr i nattens fabriksvärld</div>
+            <a class="saga-listen" href="https://open.spotify.com/show/2X0WwBDFy6mdud7rfAIzrZ" target="_blank">▶ Lyssna på Spotify</a>
+          </div>
         </div>
         <div class="saga-card">
-          <div class="saga-num">Avsnitt 9</div>
-          <div class="saga-title">Godisbacillen och godismiddagen</div>
-          <div class="saga-meta">8 min · när hela middagen blir godis</div>
-          <a class="saga-listen" href="https://open.spotify.com/show/2X0WwBDFy6mdud7rfAIzrZ" target="_blank">▶ Lyssna på Spotify</a>
+          <div class="saga-card-img">
+            <img src="bilder/sagor/ep07-dagis.jpg" alt="Godisbacillen på dagis" loading="lazy">
+          </div>
+          <div class="saga-card-body">
+            <div class="saga-num">Avsnitt 5</div>
+            <div class="saga-title">Godisbacillen på dagis</div>
+            <div class="saga-meta">6 min · Godisbacillen hade en plan och ett dagis fullt av godis</div>
+            <a class="saga-listen" href="https://podcasters.spotify.com/pod/show/leila-el/episodes/Avsnitt-5-Godisbacillen-p-dagis-e3hsncf" target="_blank">▶ Lyssna på Spotify</a>
+          </div>
         </div>
       </div>
 
