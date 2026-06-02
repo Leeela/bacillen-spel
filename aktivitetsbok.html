@@ -166,6 +166,13 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--ink);}
   .dotcanvas{min-height:200px;}
 }
 
+/* ===== NEDLADDNINGSBANNER ===== */
+.dl-bar{display:flex;align-items:center;justify-content:center;gap:14px;background:linear-gradient(90deg,#fff8f5,#fff3ee);border-bottom:2px solid #FFD0BC;padding:12px 20px;flex-wrap:wrap;}
+.dl-bar-text{font-family:'Baloo 2',cursive;font-size:0.92rem;font-weight:800;color:#b34a1e;}
+.dl-bar-sub{font-size:0.78rem;font-weight:700;color:#c8663a;opacity:0.8;}
+.dl-btn{display:inline-flex;align-items:center;gap:7px;background:#FF7F50;color:white;font-family:'Baloo 2',cursive;font-size:0.88rem;font-weight:800;padding:9px 20px;border-radius:100px;text-decoration:none;transition:background 0.2s,transform 0.15s;white-space:nowrap;box-shadow:0 3px 10px rgba(255,127,80,0.35);}
+.dl-btn:hover{background:#e8653a;transform:translateY(-1px);}
+@media(max-width:767px){.dl-bar{gap:8px;padding:10px 14px;}.dl-bar-text{font-size:0.84rem;}.dl-btn{font-size:0.82rem;padding:8px 16px;}}
 /* ===== PRINT / PDF: hela boken som ett dokument, en karaktär per sida ===== */
 @media print {
   @page { size: A4 portrait; margin: 12mm; }
@@ -206,6 +213,13 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--ink);}
   <button class="tab" data-c="disco"  onclick="show('disco',this)">🎉 Dansbacillen</button>
   <button class="tab" data-c="rich"   onclick="show('rich',this)">💰 Rikedomsbacillen</button>
 </nav>
+<div class="dl-bar">
+  <div>
+    <div class="dl-bar-text">📥 Ladda ner aktivitetsboken som PDF – helt gratis!</div>
+    <div class="dl-bar-sub">Skriv ut och pyssla hemma med alla sex baciller</div>
+  </div>
+  <a class="dl-btn" href="bacillerna-aktivitetsbok-gratis.pdf" download>⬇ Ladda ner PDF</a>
+</div>
 <div class="content">
 
 <!-- GODISBACILLEN -->
