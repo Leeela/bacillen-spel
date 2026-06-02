@@ -1,6 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-6CYV4QCNBS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-6CYV4QCNBS');
+</script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Luv Bugs – Activity Book</title>
@@ -222,7 +230,7 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--ink);}
     <div class="dl-bar-text">📥 Download the activity book as PDF – completely free!</div>
     <div class="dl-bar-sub">Print and play at home with all six Luv Bugs</div>
   </div>
-  <a class="dl-btn" href="luvbugs-activity-book-free.pdf" download>⬇ Download PDF</a>
+  <a class="dl-btn" href="luvbugs-activity-book-free.pdf" download onclick="gtag('event','file_download',{file_name:'luvbugs-activity-book-free.pdf',file_extension:'pdf',link_url:'https://luvbugscollection.com/luvbugs-activity-book-free.pdf'});">⬇ Download PDF</a>
 </div>
 <div class="content">
 
