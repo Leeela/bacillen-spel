@@ -1,0 +1,10 @@
+[{
+  "relation": ["delegate_permission/common.handle_all_urls"],
+  "target": {
+    "namespace": "android_app",
+    "package_name": "se.bacillerna.app",
+    "sha256_cert_fingerprints": [
+      "CA:98:3A:3E:1D:FC:F6:D1:E1:8F:A7:9E:8F:93:7B:8A:FC:0B:7D:5A:86:7D:28:FD:9A:56:AB:45:FB:49:B4:2C"
+    ]
+  }
+}]
