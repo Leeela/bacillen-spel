@@ -93,7 +93,7 @@
       <div class="player-wrap">
         <div class="player-frame">
           <iframe
-            src="https://www.youtube-nocookie.com/embed/hcPc4J6GdFw?list=PL-8MlwtgM26Sl4nag7JBZUfXYEhE-rlY3&rel=0&iv_load_policy=3&modestbranding=1"
+            data-src="https://www.youtube-nocookie.com/embed/hcPc4J6GdFw?list=PL-8MlwtgM26Sl4nag7JBZUfXYEhE-rlY3&rel=0&iv_load_policy=3&modestbranding=1"
             title="Bacillerna — alla videos"
             allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
             referrerpolicy="strict-origin-when-cross-origin"
@@ -132,6 +132,14 @@
     <a href="/app/spel.html"><span class="ni">🎮</span>Spel</a>
     <a href="/app/halsning.html"><span class="ni">💌</span>Hälsning</a>
   </nav>
+
+  <script src="/app/age-gate.js"></script>
+  <script>
+    BacillAgeGate.protect(function () {
+      var f = document.querySelector('.player-frame iframe');
+      if (f && f.dataset.src) f.src = f.dataset.src;
+    });
+  </script>
 
 </body>
 </html>
