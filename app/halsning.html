@@ -386,9 +386,14 @@
         return;
       }
       const list = MSGS[selOccasion.id] || [];
-      container.innerHTML = list.map(m =>
-        `<button class="msg-btn" onclick="pickMsg(${JSON.stringify(m)}, this)">${m}</button>`
+      container.innerHTML = list.map((m, i) =>
+        `<button class="msg-btn" type="button" data-idx="${i}">${m}</button>`
       ).join('');
+      container.querySelectorAll('.msg-btn').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          pickMsg(list[parseInt(btn.dataset.idx, 10)], btn);
+        });
+      });
     }
 
     function pickMsg(text, el) {
