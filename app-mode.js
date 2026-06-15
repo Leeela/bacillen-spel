@@ -25,6 +25,17 @@
           a.setAttribute('href', '/app/');
         }
       });
+
+      // Barnsäkert: dölj Brevo/e-postprenumerationsformulär i appläge
+      // (t.ex. på mottagarsidan /love/k/). Visas fortfarande på webben.
+      document.querySelectorAll(
+        '#recipient-subscribe, .recipient-subscribe, ' +
+        '#sib-form-container, .sib-form-container, ' +
+        '#sib-container, #sib-form, .sib-form, ' +
+        '.subscribe-box, .subscribe-box-wrap'
+      ).forEach(function (el) {
+        el.style.display = 'none';
+      });
     });
     return;
   }
