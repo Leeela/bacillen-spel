@@ -39,6 +39,8 @@
 
     /* ── SPOTIFY EMBED ── */
     .spotify-wrap { border-radius: 16px; overflow: hidden; box-shadow: 0 6px 24px rgba(0,0,0,0.10); }
+    #spotify-player { min-height: 352px; }
+    #spotify-player iframe { display: block; width: 100%; border: 0; }
 
     /* ── EPISODE GRID ── */
     .episode-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
@@ -119,15 +121,11 @@
   <section class="bg-soft" id="player">
     <div class="section-inner">
       <div class="section-label">Lyssna nu</div>
-      <h2 class="section-title">Alla avsnitt i spelaren</h2>
+      <h2 class="section-title">Spelaren</h2>
       <div class="spotify-wrap">
-        <iframe
-          src="https://open.spotify.com/embed/show/2X0WwBDFy6mdud7rfAIzrZ"
-          width="100%" height="520" frameborder="0"
-          allow="encrypted-media" loading="lazy"
-          title="Bacillerna – sagor på Spotify"></iframe>
+        <div id="spotify-player"></div>
       </div>
-      <p class="player-hint">▶ Tryck på play och bläddra bland avsnitten — allt spelas direkt här i appen, utan att öppna Spotify.</p>
+      <p class="player-hint">▶ Tryck på en saga längre ner så spelas den här — eller bläddra direkt i spelaren.</p>
     </div>
   </section>
 
@@ -149,6 +147,7 @@
     <a href="/app/halsning.html"><span class="ni">💌</span>Hälsning</a>
   </nav>
 
+  <script src="https://open.spotify.com/embed/iframe-api/v1" async></script>
   <script>
     (function () {
       var list = document.getElementById('episode-list');
@@ -156,6 +155,50 @@
 
       function goPlayer(e) {
         if (e) e.preventDefault();
+        player.scrollIntoView({ block: 'start' });
+      }
+
+      // Spotify-ID per "säsong.avsnitt" → spela just det avsnittet (räknas som Spotify-stream)
+      var EP_IDS = {
+        '1.1': '7fbSv4wGULkUjDNaw2Ll8P', '1.2': '0agvRBPyohB5BgFRMvZv3a', '1.3': '2tt6JfTXRNWMqtuF7aYFLA',
+        '1.4': '0RSKJ0tTXXbP11a86E0niX', '1.5': '0EC4bAqqPyLDFhGX29lKc8', '1.6': '76xxSPXKbzcxQDjOJDUcj6',
+        '1.7': '5RiVZCzbtuFXHegX2hjfi8', '1.8': '4HRnyrnMXjunOLIXUAULUR',
+        '2.1': '52cwX0Oq4qeJ0uKSKwKKJk', '2.2': '6BuXsV6kF1LOiEyG1sHzsn',
+        '3.1': '1PYRTEvTqIQUYe1jJiuDE4', '3.2': '1LqXJAI0d1jmxdSffKbqzv',
+        '4.1': '53EFTIbYIYNY1uxbcN1B2Y',
+        '5.1': '0Y0pq9SrElBUROTl6Ia9J2', '5.2': '20w0SkoiQraCfJBxvNWvbA',
+        '6.1': '26k63BFOeW8gsD5RAnn2rL', '6.2': '5fhRcpVzz8Se3k02IPDy0r'
+      };
+
+      // Spotify iframe-API: spelaren går att styra → tryck på en saga spelar den
+      var spotifyController = null, pendingUri = null;
+      window.onSpotifyIframeApiReady = function (IFrameAPI) {
+        IFrameAPI.createController(
+          document.getElementById('spotify-player'),
+          { width: '100%', height: 520, uri: 'spotify:show:2X0WwBDFy6mdud7rfAIzrZ' },
+          function (ctrl) {
+            spotifyController = ctrl;
+            if (pendingUri) { ctrl.loadUri(pendingUri); ctrl.play(); pendingUri = null; }
+          }
+        );
+      };
+      // Reserv: om iframe-API:t inte laddar inom 4s, visa en vanlig show-embed
+      setTimeout(function () {
+        var host = document.getElementById('spotify-player');
+        if (!spotifyController && host && !host.querySelector('iframe')) {
+          host.innerHTML = '<iframe src="https://open.spotify.com/embed/show/2X0WwBDFy6mdud7rfAIzrZ" width="100%" height="520" frameborder="0" allow="encrypted-media" loading="lazy" title="Bacillerna – sagor"></iframe>';
+        }
+      }, 4000);
+
+      function playEpisode(id) {
+        if (spotifyController) {
+          spotifyController.loadUri('spotify:episode:' + id);
+          spotifyController.play();
+        } else {
+          var ifr = document.querySelector('#spotify-player iframe');
+          if (ifr) ifr.src = 'https://open.spotify.com/embed/episode/' + id;
+          else pendingUri = 'spotify:episode:' + id;
+        }
         player.scrollIntoView({ block: 'start' });
       }
 
@@ -216,6 +259,7 @@
         var ren = cleanTitle(it.title, b.namn !== 'Bacillerna' ? b.namn : '');
         var img = it.image || '/bilder/alla-bacillerna.png';
         var badgeTxt = it.episode ? ('Avsnitt ' + it.episode) : badge(it.title);
+        var epId = EP_IDS[it.season + '.' + it.episode];
         return '<div class="ep-card ' + b.cls + '">' +
             '<div class="ep-card-img">' +
               '<img src="' + esc(img) + '" alt="' + esc(b.namn) + '" loading="lazy">' +
@@ -225,7 +269,7 @@
             '<div class="ep-card-body">' +
               '<h3 class="ep-title">' + esc(ren) + '</h3>' +
               '<p class="ep-desc">' + esc(it.desc || '') + '</p>' +
-              '<button class="ep-listen" type="button">▶ Spela ovan</button>' +
+              '<button class="ep-listen" type="button"' + (epId ? ' data-ep="' + epId + '"' : '') + '>▶ ' + (epId ? 'Spela' : 'Spela ovan') + '</button>' +
             '</div>' +
           '</div>';
       }
@@ -253,7 +297,8 @@
         }).join('');
 
         list.querySelectorAll('.ep-listen').forEach(function (btn) {
-          btn.addEventListener('click', goPlayer);
+          var ep = btn.getAttribute('data-ep');
+          btn.addEventListener('click', ep ? function () { playEpisode(ep); } : goPlayer);
         });
       }
 
