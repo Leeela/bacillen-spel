@@ -73,7 +73,18 @@
     .char-default .ep-badge { background: #bbb; color: #fff; }
     .char-default .ep-char { color: #888; }
 
-    .grid-note { color: #999; font-size: 14px; text-align: center; padding: 20px; grid-column: 1 / -1; }
+    .grid-note { color: #999; font-size: 14px; text-align: center; padding: 20px; }
+
+    /* ── BACILL-GRUPPER ── */
+    .bacill-group { margin-bottom: 30px; }
+    .bacill-heading { font-family: var(--font-heading); font-size: 20px; font-weight: 700; margin-bottom: 14px; padding-left: 12px; border-left: 5px solid currentColor; line-height: 1.2; }
+    .bacill-heading.char-candy  { color: #5C9B22; }
+    .bacill-heading.char-love   { color: #D63A75; }
+    .bacill-heading.char-happy  { color: #C97D00; }
+    .bacill-heading.char-tease  { color: #B89400; }
+    .bacill-heading.char-dance  { color: #2BA89F; }
+    .bacill-heading.char-wealth { color: #A07A0A; }
+    .bacill-heading.char-default { color: #888; }
 
     /* ── BOTTOM NAV ── */
     .app-nav {
@@ -124,7 +135,7 @@
     <div class="section-inner">
       <div class="section-label" id="ep-count">Avsnitten</div>
       <h2 class="section-title">Alla sagor</h2>
-      <div class="episode-grid" id="episode-grid">
+      <div id="episode-list">
         <p class="grid-note">Laddar avsnitten…</p>
       </div>
     </div>
@@ -140,7 +151,7 @@
 
   <script>
     (function () {
-      var grid = document.getElementById('episode-grid');
+      var list = document.getElementById('episode-list');
       var player = document.getElementById('player');
 
       function goPlayer(e) {
@@ -191,36 +202,57 @@
         return t || title;
       }
 
+      function detect(title) {
+        for (var i = 0; i < BACILLER.length; i++) { if (BACILLER[i].re.test(title)) return BACILLER[i]; }
+        return { cls: 'char-default', namn: 'Bacillerna' };
+      }
+
       function showFallback() {
-        grid.innerHTML = '<p class="grid-note">Kunde inte ladda avsnittslistan just nu — använd spelaren ovan för att lyssna. ▶</p>';
+        list.innerHTML = '<p class="grid-note">Kunde inte ladda avsnittslistan just nu — använd spelaren ovan för att lyssna. ▶</p>';
+      }
+
+      function cardHtml(it) {
+        var b = it._b;
+        var ren = cleanTitle(it.title, b.namn !== 'Bacillerna' ? b.namn : '');
+        var img = it.image || '/bilder/alla-bacillerna.png';
+        var badgeTxt = it.episode ? ('Avsnitt ' + it.episode) : badge(it.title);
+        return '<div class="ep-card ' + b.cls + '">' +
+            '<div class="ep-card-img">' +
+              '<img src="' + esc(img) + '" alt="' + esc(b.namn) + '" loading="lazy">' +
+              '<span class="ep-badge">' + esc(badgeTxt) + '</span>' +
+              (it.dur ? '<span class="ep-dur">' + esc(it.dur) + '</span>' : '') +
+            '</div>' +
+            '<div class="ep-card-body">' +
+              '<h3 class="ep-title">' + esc(ren) + '</h3>' +
+              '<p class="ep-desc">' + esc(it.desc || '') + '</p>' +
+              '<button class="ep-listen" type="button">▶ Spela ovan</button>' +
+            '</div>' +
+          '</div>';
       }
 
       function render(items) {
         if (!items.length) { showFallback(); return; }
         document.getElementById('ep-count').textContent = items.length + ' avsnitt';
-        grid.innerHTML = items.map(function (it) {
-          var title = (it.title || '').trim();
-          var b = null;
-          for (var i = 0; i < BACILLER.length; i++) { if (BACILLER[i].re.test(title)) { b = BACILLER[i]; break; } }
-          var cls = b ? b.cls : 'char-default';
-          var namn = b ? b.namn : 'Bacillerna';
-          var ren = cleanTitle(title, b ? b.namn : '');
-          var img = it.image || '/bilder/alla-bacillerna.png';
-          return '<div class="ep-card ' + cls + '">' +
-              '<div class="ep-card-img">' +
-                '<img src="' + esc(img) + '" alt="' + esc(namn) + '" loading="lazy">' +
-                '<span class="ep-badge">' + esc(badge(title)) + '</span>' +
-                (it.dur ? '<span class="ep-dur">' + esc(it.dur) + '</span>' : '') +
-              '</div>' +
-              '<div class="ep-card-body">' +
-                '<div class="ep-char">' + esc(namn) + '</div>' +
-                '<h3 class="ep-title">' + esc(ren) + '</h3>' +
-                '<p class="ep-desc">' + esc(it.desc || '') + '</p>' +
-                '<button class="ep-listen" type="button">▶ Spela ovan</button>' +
-              '</div>' +
+
+        // gruppera per säsong (= bacill); ordna grupper på säsongsnr, kort på avsnittsnr
+        var groups = {};
+        items.forEach(function (it) {
+          it._b = detect((it.title || '').trim());
+          var key = it.season || 99;
+          (groups[key] = groups[key] || []).push(it);
+        });
+        var keys = Object.keys(groups).map(Number).sort(function (a, b) { return a - b; });
+
+        list.innerHTML = keys.map(function (k) {
+          var grp = groups[k].sort(function (a, b) { return (a.episode || 99) - (b.episode || 99); });
+          var b = grp[0]._b;
+          return '<div class="bacill-group">' +
+              '<h3 class="bacill-heading ' + b.cls + '">' + esc(b.namn) + '</h3>' +
+              '<div class="episode-grid">' + grp.map(cardHtml).join('') + '</div>' +
             '</div>';
         }).join('');
-        grid.querySelectorAll('.ep-listen').forEach(function (btn) {
+
+        list.querySelectorAll('.ep-listen').forEach(function (btn) {
           btn.addEventListener('click', goPlayer);
         });
       }
@@ -245,11 +277,15 @@
               var descEl = it.getElementsByTagName('description')[0] || it.getElementsByTagNameNS(ns, 'summary')[0];
               var durEl = it.getElementsByTagNameNS(ns, 'duration')[0];
               var imgEl = it.getElementsByTagNameNS(ns, 'image')[0];
+              var seasonEl = it.getElementsByTagNameNS(ns, 'season')[0];
+              var epEl = it.getElementsByTagNameNS(ns, 'episode')[0];
               return {
                 title: titleEl ? titleEl.textContent : '',
                 desc: descEl ? stripHtml(descEl.textContent) : '',
                 dur: durEl ? fmtDur(durEl.textContent.trim()) : '',
-                image: imgEl ? imgEl.getAttribute('href') : ''
+                image: imgEl ? imgEl.getAttribute('href') : '',
+                season: seasonEl ? parseInt(seasonEl.textContent, 10) : 0,
+                episode: epEl ? parseInt(epEl.textContent, 10) : 0
               };
             });
             render(items);
