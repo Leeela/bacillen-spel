@@ -17,12 +17,19 @@
         }
       });
 
-      // Skicka "Hem"-knappar tillbaka till app-startsidan (/app/),
-      // inte huvudsajtens startsida (som har header med Shop/meny).
+      // Håll kvar navigeringen i appen: skriv om länkar till huvudsajtens sidor
+      // (Hem, Fler spel, Titta, Sagor) till app-versionerna — annars hamnar man
+      // på bacillerna.se med header/Shop/meny.
+      var APP_MAP = {
+        '/': '/app/',
+        '/index.html': '/app/',
+        '/spel.html': '/app/spel.html',
+        '/titta.html': '/app/titta.html',
+        '/sagor.html': '/app/sagor.html'
+      };
       document.querySelectorAll('a').forEach(function (a) {
-        if (a.origin === location.origin &&
-            (a.pathname === '/' || a.pathname === '/index.html')) {
-          a.setAttribute('href', '/app/');
+        if (a.origin === location.origin && APP_MAP[a.pathname]) {
+          a.setAttribute('href', APP_MAP[a.pathname]);
         }
       });
 
