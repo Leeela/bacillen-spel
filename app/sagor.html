@@ -281,7 +281,7 @@
       var player = document.getElementById('player');
       function goPlayer(e) {
         if (e) e.preventDefault();
-        player.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        player.scrollIntoView({ block: 'start' });
       }
       document.querySelectorAll('.ep-listen').forEach(function (b) {
         b.textContent = '▶ Spela ovan';

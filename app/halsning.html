@@ -271,7 +271,7 @@
 
     function scrollToId(id) {
       setTimeout(function () {
-        document.getElementById(id).scrollIntoView({ behavior: 'smooth', block: 'start' });
+        document.getElementById(id).scrollIntoView({ block: 'start' });
       }, 100);
     }
 
@@ -433,7 +433,7 @@
     function showFallback(link) {
       document.getElementById('fallback-box').textContent = link;
       document.getElementById('fallback-area').style.display = 'block';
-      document.getElementById('fallback-area').scrollIntoView({ behavior: 'smooth' });
+      document.getElementById('fallback-area').scrollIntoView();
     }
 
     document.getElementById('copy-btn').addEventListener('click', function () {
