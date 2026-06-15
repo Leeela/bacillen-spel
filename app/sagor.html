@@ -44,7 +44,7 @@
     .episode-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
 
     .ep-card { background: white; border-radius: 16px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.07); display: flex; flex-direction: column; }
-    .ep-card-img { position: relative; aspect-ratio: 1; overflow: hidden; }
+    .ep-card-img { position: relative; aspect-ratio: 1; overflow: hidden; background: #f0f0f0; }
     .ep-card-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
     .ep-badge { position: absolute; top: 10px; left: 10px; font-family: var(--font-heading); font-weight: 700; font-size: 11px; padding: 3px 9px; border-radius: 999px; }
     .ep-dur { position: absolute; bottom: 8px; right: 8px; background: rgba(0,0,0,0.6); color: white; font-size: 11px; font-weight: 700; padding: 2px 7px; border-radius: 999px; }
@@ -66,6 +66,14 @@
     .char-happy .ep-char { color: #C97D00; }
     .char-tease .ep-badge { background: #FFD93D; color: #333; }
     .char-tease .ep-char { color: #B89400; }
+    .char-dance .ep-badge { background: #40E0D0; color: #064f49; }
+    .char-dance .ep-char { color: #2BA89F; }
+    .char-wealth .ep-badge { background: #D4AF37; color: #fff; }
+    .char-wealth .ep-char { color: #A07A0A; }
+    .char-default .ep-badge { background: #bbb; color: #fff; }
+    .char-default .ep-char { color: #888; }
+
+    .grid-note { color: #999; font-size: 14px; text-align: center; padding: 20px; grid-column: 1 / -1; }
 
     /* ── BOTTOM NAV ── */
     .app-nav {
@@ -114,183 +122,13 @@
 
   <section>
     <div class="section-inner">
-      <div class="section-label">11 avsnitt</div>
-      <h2 class="section-title">Välj din favoritbacill</h2>
-      <div class="episode-grid">
-
-        <div class="ep-card char-candy">
-          <div class="ep-card-img">
-            <img src="/bilder/sagor/ep11-nattens-hemlighet.jpg" alt="Godisbacillen – Nattens sötaste hemlighet" loading="lazy">
-            <span class="ep-badge">Avsnitt 1</span>
-            <span class="ep-dur">5:29</span>
-          </div>
-          <div class="ep-card-body">
-            <div class="ep-char">Godisbacillen</div>
-            <h3 class="ep-title">Nattens sötaste hemlighet</h3>
-            <p class="ep-desc">Godisbacillen smyger ner till köket när alla sover. Men vad luktar det så gott?</p>
-            <a class="ep-listen" href="https://open.spotify.com/episode/7fbSv4wGULkUjDNaw2Ll8P" target="_blank" rel="noopener">▶ Lyssna</a>
-          </div>
-        </div>
-
-        <div class="ep-card char-candy">
-          <div class="ep-card-img">
-            <img src="/bilder/sagor/ep10-godisberget.jpg" alt="Godisbacillen – Det försvunna Godisberget" loading="lazy">
-            <span class="ep-badge">Avsnitt 2</span>
-            <span class="ep-dur">9:24</span>
-          </div>
-          <div class="ep-card-body">
-            <div class="ep-char">Godisbacillen</div>
-            <h3 class="ep-title">Det försvunna Godisberget</h3>
-            <p class="ep-desc">Godisbacillen vaknar med tomma kinder. Någonstans i huset gömmer sig ett Godisberg — men var?</p>
-            <a class="ep-listen" href="https://podcasters.spotify.com/pod/show/leila-el/episodes/Avsnitt-2---Godisbacillen-och-det-frsvunna-Godisberget-e3he68c" target="_blank" rel="noopener">▶ Lyssna</a>
-          </div>
-        </div>
-
-        <div class="ep-card char-candy">
-          <div class="ep-card-img">
-            <img src="/bilder/sagor/ep09-godisfabriken.jpg" alt="Godisbacillen – Godisfabrikens inbrott" loading="lazy">
-            <span class="ep-badge">Avsnitt 3</span>
-            <span class="ep-dur">6:36</span>
-          </div>
-          <div class="ep-card-body">
-            <div class="ep-char">Godisbacillen</div>
-            <h3 class="ep-title">Godisfabrikens inbrott</h3>
-            <p class="ep-desc">Godisbacillen har ett hemligt uppdrag: ta sig in i Godisfabriken. Årets busigaste äventyr!</p>
-            <a class="ep-listen" href="https://open.spotify.com/episode/2tt6JfTXRNWMqtuF7aYFLA" target="_blank" rel="noopener">▶ Lyssna</a>
-          </div>
-        </div>
-
-        <div class="ep-card char-candy">
-          <div class="ep-card-img">
-            <img src="/bilder/sagor/ep08-mataffaren.jpg" alt="Godisbacillen i mataffären" loading="lazy">
-            <span class="ep-badge">Avsnitt 4</span>
-            <span class="ep-dur">10:41</span>
-          </div>
-          <div class="ep-card-body">
-            <div class="ep-char">Godisbacillen</div>
-            <h3 class="ep-title">Godisbacillen i mataffären</h3>
-            <p class="ep-desc">En lista, en vagn, in och ut. Men Godisbacillen har andra planer.</p>
-            <a class="ep-listen" href="https://podcasters.spotify.com/pod/show/leila-el/episodes/Avsnitt-4-Godisbacillen-i-mataffren-e3hob5l" target="_blank" rel="noopener">▶ Lyssna</a>
-          </div>
-        </div>
-
-        <div class="ep-card char-candy">
-          <div class="ep-card-img">
-            <img src="/bilder/sagor/ep07-dagis.jpg" alt="Godisbacillen på dagis" loading="lazy">
-            <span class="ep-badge">Avsnitt 5</span>
-            <span class="ep-dur">5:37</span>
-          </div>
-          <div class="ep-card-body">
-            <div class="ep-char">Godisbacillen</div>
-            <h3 class="ep-title">Godisbacillen på dagis</h3>
-            <p class="ep-desc">Godisbacillen hade en plan, en ryggsäck och ett dagis med en stor blå låda märkt LÖRDAGSGODIS.</p>
-            <a class="ep-listen" href="https://open.spotify.com/episode/0EC4bAqqPyLDFhGX29lKc8" target="_blank" rel="noopener">▶ Lyssna</a>
-          </div>
-        </div>
-
-        <div class="ep-card char-candy">
-          <div class="ep-card-img">
-            <img src="/bilder/sagor/ep06-lekparken.jpg" alt="Godisbacillen i lekparken" loading="lazy">
-            <span class="ep-badge">Avsnitt 6</span>
-            <span class="ep-dur">5:00</span>
-          </div>
-          <div class="ep-card-body">
-            <div class="ep-char">Godisbacillen</div>
-            <h3 class="ep-title">Godisbacillen i lekparken</h3>
-            <p class="ep-desc">En solig dag i lekparken och en gubbe som tror sig ha sett något konstigt röra sig.</p>
-            <a class="ep-listen" href="https://podcasters.spotify.com/pod/show/leila-el/episodes/Avsnitt-6-Godisbacillen-i-Lekparken-e3huq5a" target="_blank" rel="noopener">▶ Lyssna</a>
-          </div>
-        </div>
-
-        <div class="ep-card char-candy">
-          <div class="ep-card-img">
-            <img src="/bilder/sagor/ep05-biblioteket.jpg" alt="Godisbacillen i biblioteket" loading="lazy">
-            <span class="ep-badge">Avsnitt 7</span>
-            <span class="ep-dur">6:07</span>
-          </div>
-          <div class="ep-card-body">
-            <div class="ep-char">Godisbacillen</div>
-            <h3 class="ep-title">Godisbacillen i biblioteket</h3>
-            <p class="ep-desc">Inget godis på biblioteket — men något ännu bättre: en hemlig bok om godis!</p>
-            <a class="ep-listen" href="https://podcasters.spotify.com/pod/show/leila-el/episodes/Avsnitt-7-Godisbacillen-i-Biblioteket-e3ia9h6" target="_blank" rel="noopener">▶ Lyssna</a>
-          </div>
-        </div>
-
-        <div class="ep-card char-love">
-          <div class="ep-card-img">
-            <img src="/bilder/sagor/ep04-karleksbacillen-1.jpg" alt="Kärleksbacillen och det ensamma barnet" loading="lazy">
-            <span class="ep-badge">Avsnitt 8</span>
-            <span class="ep-dur">5:54</span>
-          </div>
-          <div class="ep-card-body">
-            <div class="ep-char">Kärleksbacillen</div>
-            <h3 class="ep-title">Kärleksbacillen och det ensamma barnet</h3>
-            <p class="ep-desc">Lilla Astrid satt ensam i sitt rum. Kärleksbacillen kände det direkt.</p>
-            <a class="ep-listen" href="https://podcasters.spotify.com/pod/show/leila-el/episodes/Avsnitt-1-Krleksbacillen-och-det-ensamma-barnet-e3isell" target="_blank" rel="noopener">▶ Lyssna</a>
-          </div>
-        </div>
-
-        <div class="ep-card char-love">
-          <div class="ep-card-img">
-            <img src="/bilder/sagor/ep02-karleksbacillen-2.jpg" alt="Kärleksbacillen och de dumma orden" loading="lazy">
-            <span class="ep-badge">Avsnitt 9</span>
-            <span class="ep-dur">6:36</span>
-          </div>
-          <div class="ep-card-body">
-            <div class="ep-char">Kärleksbacillen</div>
-            <h3 class="ep-title">Kärleksbacillen och de dumma orden</h3>
-            <p class="ep-desc">Liam kom hem från dagis med en tung känsla. Den kvällen kom Kärleksbacillen.</p>
-            <a class="ep-listen" href="https://podcasters.spotify.com/pod/show/leila-el/episodes/Avsnitt-2-Krleksbacillen-och-de-dumma-orden-e3j608i" target="_blank" rel="noopener">▶ Lyssna</a>
-          </div>
-        </div>
-
-        <div class="ep-card char-happy">
-          <div class="ep-card-img">
-            <img src="/bilder/sagor/ep03-gladjebacillen.jpg" alt="Glädjebacillen och glasstrutet" loading="lazy">
-            <span class="ep-badge">Avsnitt 10</span>
-            <span class="ep-dur">5:56</span>
-          </div>
-          <div class="ep-card-body">
-            <div class="ep-char">Glädjebacillen</div>
-            <h3 class="ep-title">Glädjebacillen och glasstrutet</h3>
-            <p class="ep-desc">Glasstrutet föll. Men Glädjebacillen visste att glädje alltid hittar en väg.</p>
-            <a class="ep-listen" href="https://podcasters.spotify.com/pod/show/leila-el/episodes/Avsnitt-1-Gldjebacillen-och-den-tappade-glassen-e3iuesm" target="_blank" rel="noopener">▶ Lyssna</a>
-          </div>
-        </div>
-
-        <div class="ep-card char-tease">
-          <div class="ep-card-img">
-            <img src="/bilder/sagor/ep01-retbacillen.jpg" alt="Retbacillen och retsuget" loading="lazy">
-            <span class="ep-badge">Avsnitt 11</span>
-            <span class="ep-dur">6:23</span>
-          </div>
-          <div class="ep-card-body">
-            <div class="ep-char">Retbacillen</div>
-            <h3 class="ep-title">Retbacillen och retsuget</h3>
-            <p class="ep-desc">Retbacillen har ett problem — det kliar inifrån. Det finns bara ett botemedel: reta någon!</p>
-            <a class="ep-listen" href="https://podcasters.spotify.com/pod/show/leila-el/episodes/Avsnitt-1-Retbacillen-och-retsuget-e3j6k87" target="_blank" rel="noopener">▶ Lyssna</a>
-          </div>
-        </div>
-
+      <div class="section-label" id="ep-count">Avsnitten</div>
+      <h2 class="section-title">Alla sagor</h2>
+      <div class="episode-grid" id="episode-grid">
+        <p class="grid-note">Laddar avsnitten…</p>
       </div>
     </div>
   </section>
-
-  <script>
-    (function () {
-      var player = document.getElementById('player');
-      function goPlayer(e) {
-        if (e) e.preventDefault();
-        player.scrollIntoView({ block: 'start' });
-      }
-      document.querySelectorAll('.ep-listen').forEach(function (b) {
-        b.textContent = '▶ Spela ovan';
-        b.removeAttribute('href');
-        b.removeAttribute('target');
-        b.addEventListener('click', goPlayer);
-      });
-    })();
-  </script>
 
   <nav class="app-nav">
     <a href="/app/"><span class="ni">🏠</span>Start</a>
@@ -299,6 +137,129 @@
     <a href="/app/spel.html"><span class="ni">🎮</span>Spel</a>
     <a href="/app/halsning.html"><span class="ni">💌</span>Hälsning</a>
   </nav>
+
+  <script>
+    (function () {
+      var grid = document.getElementById('episode-grid');
+      var player = document.getElementById('player');
+
+      function goPlayer(e) {
+        if (e) e.preventDefault();
+        player.scrollIntoView({ block: 'start' });
+      }
+
+      // Känn igen bacillen från avsnittstiteln → färgtema
+      var BACILLER = [
+        { re: /godisbacill/i,        cls: 'char-candy',  namn: 'Godisbacillen' },
+        { re: /k(ä|a)rleksbacill/i,  cls: 'char-love',   namn: 'Kärleksbacillen' },
+        { re: /gl(ä|a)djebacill/i,   cls: 'char-happy',  namn: 'Glädjebacillen' },
+        { re: /retbacill/i,          cls: 'char-tease',  namn: 'Retbacillen' },
+        { re: /dansbacill/i,         cls: 'char-dance',  namn: 'Dansbacillen' },
+        { re: /rikedomsbacill/i,     cls: 'char-wealth', namn: 'Rikedomsbacillen' }
+      ];
+
+      function fmtDur(d) {
+        if (!d) return '';
+        var p = d.split(':').map(function (n) { return parseInt(n, 10) || 0; });
+        if (p.length === 3) return (p[0] * 60 + p[1]) + ':' + String(p[2]).padStart(2, '0');
+        if (p.length === 2) return p[0] + ':' + String(p[1]).padStart(2, '0');
+        return Math.floor(p[0] / 60) + ':' + String(p[0] % 60).padStart(2, '0');
+      }
+
+      function esc(s) {
+        return (s || '').replace(/[&<>"]/g, function (c) {
+          return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c];
+        });
+      }
+
+      function stripHtml(s) {
+        var d = document.createElement('div');
+        d.innerHTML = s || '';
+        var t = (d.textContent || '').replace(/\s+/g, ' ').trim();
+        return t.length > 120 ? t.slice(0, 117).trim() + '…' : t;
+      }
+
+      function badge(title) {
+        var m = title.match(/Avsnitt\s*(\d+)/i);
+        return m ? ('Avsnitt ' + m[1]) : 'Avsnitt';
+      }
+
+      function cleanTitle(title, namn) {
+        var t = title.replace(/^\s*Avsnitt\s*\d+\s*[–\-:.,]*\s*/i, '');
+        if (namn) t = t.replace(new RegExp('^\\s*' + namn + '\\s*[–\\-:.,"]*\\s*', 'i'), '');
+        t = t.replace(/^\s*och\s+/i, '').replace(/^["'\s]+|["'\s]+$/g, '').trim();
+        return t || title;
+      }
+
+      function showFallback() {
+        grid.innerHTML = '<p class="grid-note">Kunde inte ladda avsnittslistan just nu — använd spelaren ovan för att lyssna. ▶</p>';
+      }
+
+      function render(items) {
+        if (!items.length) { showFallback(); return; }
+        document.getElementById('ep-count').textContent = items.length + ' avsnitt';
+        grid.innerHTML = items.map(function (it) {
+          var title = (it.title || '').trim();
+          var b = null;
+          for (var i = 0; i < BACILLER.length; i++) { if (BACILLER[i].re.test(title)) { b = BACILLER[i]; break; } }
+          var cls = b ? b.cls : 'char-default';
+          var namn = b ? b.namn : 'Bacillerna';
+          var ren = cleanTitle(title, b ? b.namn : '');
+          var img = it.image || '/bilder/alla-bacillerna.png';
+          return '<div class="ep-card ' + cls + '">' +
+              '<div class="ep-card-img">' +
+                '<img src="' + esc(img) + '" alt="' + esc(namn) + '" loading="lazy">' +
+                '<span class="ep-badge">' + esc(badge(title)) + '</span>' +
+                (it.dur ? '<span class="ep-dur">' + esc(it.dur) + '</span>' : '') +
+              '</div>' +
+              '<div class="ep-card-body">' +
+                '<div class="ep-char">' + esc(namn) + '</div>' +
+                '<h3 class="ep-title">' + esc(ren) + '</h3>' +
+                '<p class="ep-desc">' + esc(it.desc || '') + '</p>' +
+                '<button class="ep-listen" type="button">▶ Spela ovan</button>' +
+              '</div>' +
+            '</div>';
+        }).join('');
+        grid.querySelectorAll('.ep-listen').forEach(function (btn) {
+          btn.addEventListener('click', goPlayer);
+        });
+      }
+
+      function load() {
+        var RSS = 'https://anchor.fm/s/110f36784/podcast/rss';
+        var PROXY = 'https://api.allorigins.win/get?url=' + encodeURIComponent(RSS);
+        fetch(PROXY)
+          .then(function (r) { return r.json(); })
+          .then(function (data) {
+            var raw = data.contents || '';
+            // allorigins kan returnera en base64 data-URL → avkoda via fetch
+            if (raw.indexOf('data:') === 0) return fetch(raw).then(function (r) { return r.text(); });
+            return raw;
+          })
+          .then(function (raw) {
+            var xml = new DOMParser().parseFromString(raw, 'text/xml');
+            if (xml.querySelector('parsererror')) throw new Error('parse');
+            var ns = 'http://www.itunes.com/dtds/podcast-1.0.dtd';
+            var items = [].slice.call(xml.getElementsByTagName('item')).map(function (it) {
+              var titleEl = it.getElementsByTagName('title')[0];
+              var descEl = it.getElementsByTagName('description')[0] || it.getElementsByTagNameNS(ns, 'summary')[0];
+              var durEl = it.getElementsByTagNameNS(ns, 'duration')[0];
+              var imgEl = it.getElementsByTagNameNS(ns, 'image')[0];
+              return {
+                title: titleEl ? titleEl.textContent : '',
+                desc: descEl ? stripHtml(descEl.textContent) : '',
+                dur: durEl ? fmtDur(durEl.textContent.trim()) : '',
+                image: imgEl ? imgEl.getAttribute('href') : ''
+              };
+            });
+            render(items);
+          })
+          .catch(function () { showFallback(); });
+      }
+
+      load();
+    })();
+  </script>
 
 </body>
 </html>
