@@ -47,57 +47,53 @@
     .step-title { font-family: var(--font-heading); font-size: 21px; font-weight: 700; }
 
     /* ── CHARACTER GRID ── */
-    .char-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .char-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
     .char-btn {
       display: flex; flex-direction: column; align-items: center; gap: 8px;
       background: white; border: 3px solid #eee; border-radius: 18px;
-      padding: 16px 10px; cursor: pointer;
+      padding: 14px 8px; cursor: pointer;
       transition: border-color 0.15s, background 0.15s;
       -webkit-tap-highlight-color: transparent; user-select: none;
     }
-    .char-btn img { width: 76px; height: 76px; object-fit: contain; display: block; }
-    .char-btn .char-name { font-family: var(--font-heading); font-size: 15px; font-weight: 700; text-align: center; line-height: 1.2; }
-    .char-btn.sel-candy  { border-color: var(--candy);      background: var(--candy-light); }
-    .char-btn.sel-love   { border-color: var(--love);       background: var(--love-light); }
-    .char-btn.sel-happy  { border-color: var(--happy);      background: var(--happy-light); }
-    .char-btn.sel-tease  { border-color: var(--tease-deep); background: var(--tease-light); }
-
-    /* ── OCCASION GRID ── */
-    .occasion-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
-    .occasion-btn {
-      display: flex; flex-direction: column; align-items: center; gap: 4px;
-      background: white; border: 3px solid #eee; border-radius: 16px;
-      padding: 13px 6px; cursor: pointer;
-      font-family: var(--font-heading); font-size: 13px; font-weight: 700; text-align: center;
-      -webkit-tap-highlight-color: transparent; user-select: none;
-      transition: border-color 0.15s, background 0.15s;
-    }
-    .occasion-btn .oc-icon { font-size: 28px; line-height: 1; }
-    .occasion-btn.selected { border-color: var(--love); background: var(--love-light); }
+    .char-btn img { width: 64px; height: 64px; object-fit: contain; display: block; }
+    .char-btn .char-name { font-family: var(--font-heading); font-size: 12px; font-weight: 700; text-align: center; line-height: 1.2; }
+    .loading-note { color: #bbb; font-size: 14px; grid-column: 1 / -1; text-align: center; padding: 12px; }
 
     /* ── MESSAGE OPTIONS ── */
     .msg-options { display: flex; flex-direction: column; gap: 10px; }
     .msg-placeholder { color: #bbb; font-size: 14px; }
     .msg-btn {
+      display: flex; flex-direction: column; gap: 4px;
       background: white; border: 3px solid #eee; border-radius: 14px;
-      padding: 15px 16px; cursor: pointer; text-align: left;
-      font-family: var(--font-body); font-size: 15px; font-weight: 600; line-height: 1.5;
-      color: #2a2a2a; width: 100%;
+      padding: 14px 16px; cursor: pointer; text-align: left; width: 100%;
       -webkit-tap-highlight-color: transparent; user-select: none;
       transition: border-color 0.15s, background 0.15s;
     }
     .msg-btn.selected { border-color: var(--candy); background: var(--candy-light); }
+    .msg-title { font-family: var(--font-heading); font-size: 16px; font-weight: 700; color: #2a2a2a; }
+    .msg-prev { font-size: 13px; color: #666; line-height: 1.5; }
 
     /* ── PREVIEW + SEND ── */
     .preview-area { max-width: 600px; margin: 0 auto; padding: 20px 16px; }
     .preview-label { font-family: var(--font-heading); font-size: 12px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #aaa; margin-bottom: 10px; }
-    .preview-card {
-      background: linear-gradient(135deg, var(--love-light) 0%, var(--happy-light) 100%);
-      border-radius: 18px; padding: 20px 22px;
-      font-size: 15px; line-height: 1.8; color: #2a2a2a;
-      margin-bottom: 16px; white-space: pre-line;
-      border: 2px solid rgba(255,107,157,0.2);
+    .preview-video {
+      display: block; width: 100%; max-width: 240px; margin: 0 auto 14px;
+      aspect-ratio: 9 / 16; background: #000; border-radius: 16px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.18);
     }
+    .preview-title { font-family: var(--font-heading); font-size: 19px; font-weight: 700; text-align: center; margin-bottom: 6px; }
+    .preview-text { font-size: 14px; color: #555; line-height: 1.6; text-align: center; margin-bottom: 18px; }
+
+    .name-fields { display: flex; flex-direction: column; gap: 10px; margin-bottom: 18px; }
+    .name-fields label { font-size: 13px; font-weight: 700; color: #777; display: block; margin-bottom: 4px; }
+    .name-fields input {
+      width: 100%; border: 2px solid #e0e0e0; border-radius: 12px;
+      padding: 12px 14px; font-family: var(--font-body); font-size: 15px; outline: none;
+      transition: border-color 0.15s;
+    }
+    .name-fields input:focus { border-color: var(--love); }
+    .hint { font-weight: 600; color: #aaa; font-size: 12px; }
+
     .send-btn {
       display: block; width: 100%;
       background: linear-gradient(135deg, var(--love), var(--love-deep));
@@ -113,7 +109,7 @@
     /* ── FALLBACK ── */
     .fallback-area { max-width: 600px; margin: 0 auto; padding: 0 16px 20px; }
     .fallback-label { font-family: var(--font-heading); font-size: 12px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: #aaa; margin-bottom: 8px; }
-    .fallback-box { background: #f7f7f7; border: 2px solid #eee; border-radius: 12px; padding: 16px; font-size: 14px; line-height: 1.8; white-space: pre-line; color: #333; margin-bottom: 12px; }
+    .fallback-box { background: #f7f7f7; border: 2px solid #eee; border-radius: 12px; padding: 16px; font-size: 13px; line-height: 1.7; word-break: break-all; color: #333; margin-bottom: 12px; }
     .copy-btn { background: var(--candy); color: white; border: none; border-radius: 999px; font-family: var(--font-heading); font-size: 17px; font-weight: 700; padding: 12px 28px; cursor: pointer; }
 
     /* ── GATE OVERLAY ── */
@@ -176,103 +172,62 @@
     }
     .app-nav a .ni { font-size: 22px; }
     .app-nav a.active { color: var(--love-deep); }
-
-    @media (max-width: 360px) {
-      .occasion-grid { grid-template-columns: 1fr 1fr; }
-      .char-btn img { width: 60px; height: 60px; }
-    }
   </style>
 </head>
 <body>
 
   <div class="page-hero">
     <h1>💌 Skicka en hälsning</h1>
-    <p>Välj en bacill, ett tillfälle och ett meddelande. En vuxen hjälper till att skicka!</p>
+    <p>Välj en bacill och en hälsning. En vuxen hjälper till att skicka animationen!</p>
   </div>
 
-  <!-- STEP 1: VÄLJ BACILL -->
+  <!-- STEG 1: VÄLJ BACILL -->
   <div class="step" id="step1">
     <div class="step-head">
       <div class="step-num done" id="num1">1</div>
       <div class="step-title">Välj en bacill</div>
     </div>
-    <div class="char-grid">
-      <button class="char-btn" id="char-candy"
-        onclick="pickChar('candy','Godisbacillen','🍬','/bilder/godisbacillen.png')">
-        <img src="/bilder/godisbacillen.png" alt="Godisbacillen">
-        <span class="char-name">Godisbacillen</span>
-      </button>
-      <button class="char-btn" id="char-love"
-        onclick="pickChar('love','Kärleksbacillen','💖','/bilder/karleksbacillen.png')">
-        <img src="/bilder/karleksbacillen.png" alt="Kärleksbacillen">
-        <span class="char-name">Kärleksbacillen</span>
-      </button>
-      <button class="char-btn" id="char-happy"
-        onclick="pickChar('happy','Glädgebacillen','😄','/bilder/gladjebacillen.png')">
-        <img src="/bilder/gladjebacillen.png" alt="Glädgebacillen">
-        <span class="char-name">Glädgebacillen</span>
-      </button>
-      <button class="char-btn" id="char-tease"
-        onclick="pickChar('tease','Retbacillen','😝','/bilder/retbacillen.png')">
-        <img src="/bilder/retbacillen.png" alt="Retbacillen">
-        <span class="char-name">Retbacillen</span>
-      </button>
+    <div class="char-grid" id="char-grid">
+      <p class="loading-note">Laddar bacillerna…</p>
     </div>
   </div>
 
-  <!-- STEP 2: VÄLJ TILLFÄLLE -->
+  <!-- STEG 2: VÄLJ HÄLSNING -->
   <div class="step" id="step2">
     <div class="step-head">
       <div class="step-num pending" id="num2">2</div>
-      <div class="step-title">Vilket tillfälle?</div>
-    </div>
-    <div class="occasion-grid">
-      <button class="occasion-btn" id="oc-birthday"  onclick="pickOccasion('birthday','Födelsedag','🎂')">
-        <span class="oc-icon">🎂</span><span>Födelsedag</span>
-      </button>
-      <button class="occasion-btn" id="oc-hugs"      onclick="pickOccasion('hugs','Kramar','🤗')">
-        <span class="oc-icon">🤗</span><span>Kramar</span>
-      </button>
-      <button class="occasion-btn" id="oc-goodluck"  onclick="pickOccasion('goodluck','Lycka till','⭐')">
-        <span class="oc-icon">⭐</span><span>Lycka till</span>
-      </button>
-      <button class="occasion-btn" id="oc-mothersday" onclick="pickOccasion('mothersday','Mors dag','🌸')">
-        <span class="oc-icon">🌸</span><span>Mors dag</span>
-      </button>
-      <button class="occasion-btn" id="oc-congrats"  onclick="pickOccasion('congrats','Grattis','🎉')">
-        <span class="oc-icon">🎉</span><span>Grattis</span>
-      </button>
-      <button class="occasion-btn" id="oc-justbecause" onclick="pickOccasion('justbecause','Bara för att','🌈')">
-        <span class="oc-icon">🌈</span><span>Bara för att</span>
-      </button>
-    </div>
-  </div>
-
-  <!-- STEP 3: VÄLJ MEDDELANDE -->
-  <div class="step" id="step3">
-    <div class="step-head">
-      <div class="step-num pending" id="num3">3</div>
-      <div class="step-title">Välj ett meddelande</div>
+      <div class="step-title">Välj en hälsning</div>
     </div>
     <div class="msg-options" id="msg-options">
-      <p class="msg-placeholder">Välj bacill och tillfälle ovan först.</p>
+      <p class="msg-placeholder">Välj en bacill ovan först.</p>
     </div>
   </div>
 
-  <!-- FÖRHANDSVISNING + SKICKA-KNAPP -->
+  <!-- FÖRHANDSVISNING + SKICKA -->
   <div class="preview-area" id="preview-area" style="display:none;">
     <div class="preview-label">Förhandsvisning</div>
-    <div class="preview-card" id="preview-card"></div>
+    <video class="preview-video" id="preview-video" controls playsinline preload="metadata"></video>
+    <div class="preview-title" id="preview-title"></div>
+    <div class="preview-text" id="preview-text"></div>
+    <div class="name-fields">
+      <div>
+        <label for="till">Till vem? <span class="hint">(valfritt)</span></label>
+        <input type="text" id="till" maxlength="30" autocomplete="off" placeholder="t.ex. Mormor">
+      </div>
+      <div>
+        <label for="fran">Från vem? <span class="hint">(valfritt)</span></label>
+        <input type="text" id="fran" maxlength="30" autocomplete="off" placeholder="t.ex. Alva">
+      </div>
+    </div>
     <button class="send-btn" id="send-btn">Skicka hälsningen 💌</button>
   </div>
 
   <!-- RESERVLÖSNING (när Web Share saknas) -->
   <div class="fallback-area" id="fallback-area" style="display:none;">
-    <div class="fallback-label">Kopiera och klistra in i en app:</div>
+    <div class="fallback-label">Kopiera länken och klistra in i en app:</div>
     <div class="fallback-box" id="fallback-box"></div>
-    <button class="copy-btn" id="copy-btn" onclick="copyFallback()">Kopiera text 📋</button>
+    <button class="copy-btn" id="copy-btn">Kopiera länken 📋</button>
   </div>
-
 
   <!-- FÖRÄLDRAGRIND -->
   <div class="gate-overlay" id="gate-overlay">
@@ -302,222 +257,195 @@
 
   <script>
     /* ── DATA ── */
-    const MSGS = {
-      birthday: [
-        'Grattis på födelsedagen! Hoppas du får massor av godis och roliga presenter! 🎂🍬',
-        'Yay, det är din dag idag! Du är superspeciell och jag tänker på dig! 🎉💖',
-        'Stor kram på din födelsedag! Hoppas det blir en magisk dag! 🎂🤗',
-      ],
-      hugs: [
-        'Skickar en jättestor kram rakt till dig! 🤗💖',
-        'Du förtjänar en hel hög med kramar — här är de! 🤗🤗🤗',
-        'Kramar från mig till dig, precis när du behöver det som mest! 💖',
-      ],
-      goodluck: [
-        'Du klarar det! Jag tror på dig med hela mitt hjärta! ⭐💪',
-        'Lycka till, hjälte! Du är modigare än du tror! ⭐🌟',
-        'Tummen upp! Du är fantastisk och du klarar precis allt! 💪⭐',
-      ],
-      mothersday: [
-        'Grattis på mors dag! Du är världens bästa mamma och jag älskar dig! 🌸💖',
-        'Tack för allt du gör! Du är min superhjälte varje dag! 🌸⭐',
-        'Stor kram och massor av pussar på mors dag! Du är underbar! 🌸🤗',
-      ],
-      congrats: [
-        'WOW! GRATTIS! Det du gjort är verkligen fantastiskt! 🎉⭐',
-        'Grattis, grattis, GRATTIS! Du är bäst! 🎉🎊🎉',
-        'Hurra för dig! Jag är så stolt och glad! 🎉💖',
-      ],
-      justbecause: [
-        'Jag tänker på dig just nu och ville bara säga hej! 💖🌈',
-        'Hoppas du har en riktigt bra dag! Du är speciell! 🌈😊',
-        'Du är världens bästa — det ville jag bara berätta! 💖⭐',
-      ],
-    };
+    var DATA = null;
+    var selKey = null, selBacill = null, selMsg = null;
+    var gateA = 0, gateB = 0;
 
-    /* ── STATE ── */
-    let selChar = null;       // { id, name, emoji }
-    let selOccasion = null;   // { id, name, emoji }
-    let selMsg = null;        // string
-    let gateA = 0, gateB = 0;
-
-    /* ── STEP 1: CHARACTER ── */
-    function pickChar(id, name, emoji) {
-      selChar = { id, name, emoji };
-      selMsg = null;
-
-      document.querySelectorAll('.char-btn').forEach(b => {
-        b.className = 'char-btn';
+    fetch('/love/data/messages.json')
+      .then(function (r) { return r.json(); })
+      .then(function (data) { DATA = data; renderBaciller(); })
+      .catch(function () {
+        document.getElementById('char-grid').innerHTML =
+          '<p class="loading-note">Kunde inte ladda bacillerna. Kontrollera internet och försök igen.</p>';
       });
-      document.getElementById('char-' + id).classList.add('sel-' + id);
+
+    function scrollToId(id) {
+      setTimeout(function () {
+        document.getElementById(id).scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 100);
+    }
+
+    /* ── STEG 1: BACILL ── */
+    function renderBaciller() {
+      var grid = document.getElementById('char-grid');
+      var entries = Object.keys(DATA.baciller).filter(function (k) { return DATA.baciller[k].aktiv; });
+      grid.innerHTML = entries.map(function (k) {
+        var b = DATA.baciller[k];
+        return '<button class="char-btn" type="button" data-key="' + k + '">' +
+                 '<img src="/love/' + b.image_sv + '" alt="' + b.namn_sv + '">' +
+                 '<span class="char-name">' + b.namn_sv + '</span>' +
+               '</button>';
+      }).join('');
+      grid.querySelectorAll('.char-btn').forEach(function (btn) {
+        btn.addEventListener('click', function () { pickBacill(btn.dataset.key, btn); });
+      });
+    }
+
+    function pickBacill(key, btn) {
+      selKey = key; selBacill = DATA.baciller[key]; selMsg = null;
+      document.querySelectorAll('#char-grid .char-btn').forEach(function (b) {
+        b.style.borderColor = '#eee'; b.style.background = '#fff';
+      });
+      btn.style.borderColor = selBacill.farg_primar;
+      btn.style.background = selBacill.farg_mjuk;
       document.getElementById('num1').classList.remove('pending');
       document.getElementById('num1').classList.add('done');
-
-      renderMsgOptions();
+      renderMessages();
       updatePreview();
-
-      setTimeout(() => {
-        document.getElementById('step2').scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }, 80);
+      scrollToId('step2');
     }
 
-    /* ── STEP 2: OCCASION ── */
-    function pickOccasion(id, name, emoji) {
-      selOccasion = { id, name, emoji };
-      selMsg = null;
-
-      document.querySelectorAll('.occasion-btn').forEach(b => b.classList.remove('selected'));
-      document.getElementById('oc-' + id).classList.add('selected');
-      document.getElementById('num2').classList.remove('pending');
-
-      renderMsgOptions();
-      updatePreview();
-
-      setTimeout(() => {
-        document.getElementById('step3').scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }, 100);
-    }
-
-    /* ── STEP 3: MESSAGE ── */
-    function renderMsgOptions() {
-      const container = document.getElementById('msg-options');
-      if (!selChar || !selOccasion) {
-        container.innerHTML = '<p class="msg-placeholder">Välj bacill och tillfälle ovan först.</p>';
+    /* ── STEG 2: HÄLSNING ── */
+    function renderMessages() {
+      var c = document.getElementById('msg-options');
+      if (!selBacill) {
+        c.innerHTML = '<p class="msg-placeholder">Välj en bacill ovan först.</p>';
         return;
       }
-      const list = MSGS[selOccasion.id] || [];
-      container.innerHTML = list.map((m, i) =>
-        `<button class="msg-btn" type="button" data-idx="${i}">${m}</button>`
-      ).join('');
-      container.querySelectorAll('.msg-btn').forEach(function (btn) {
+      var msgs = selBacill.meddelanden.filter(function (m) { return m.aktiv; });
+      c.innerHTML = msgs.map(function (m, i) {
+        return '<button class="msg-btn" type="button" data-idx="' + i + '">' +
+                 '<span class="msg-title">' + m.titel_sv + '</span>' +
+                 '<span class="msg-prev">' + m.forhandsvisning_sv + '</span>' +
+               '</button>';
+      }).join('');
+      c.querySelectorAll('.msg-btn').forEach(function (btn) {
         btn.addEventListener('click', function () {
-          pickMsg(list[parseInt(btn.dataset.idx, 10)], btn);
+          pickMsg(msgs[parseInt(btn.dataset.idx, 10)], btn);
         });
       });
+      document.getElementById('num2').classList.remove('pending');
     }
 
-    function pickMsg(text, el) {
-      selMsg = text;
-      document.querySelectorAll('.msg-btn').forEach(b => b.classList.remove('selected'));
-      el.classList.add('selected');
-      document.getElementById('num3').classList.remove('pending');
+    function pickMsg(m, btn) {
+      selMsg = m;
+      document.querySelectorAll('#msg-options .msg-btn').forEach(function (b) { b.classList.remove('selected'); });
+      btn.classList.add('selected');
+      document.getElementById('num2').classList.add('done');
       updatePreview();
-      setTimeout(() => {
-        document.getElementById('preview-area').scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }, 100);
+      scrollToId('preview-area');
     }
 
-    /* ── PREVIEW ── */
-    function buildText() {
-      return (
-        'Hälsning från ' + selChar.name + ' ' + selChar.emoji + '\n\n' +
-        selOccasion.emoji + ' ' + selOccasion.name + '\n\n' +
-        '“' + selMsg + '”' + '\n\n' +
-        '— Skickat med Bacillerna-appen'
-      );
-    }
-
+    /* ── FÖRHANDSVISNING ── */
     function updatePreview() {
-      const area = document.getElementById('preview-area');
-      const fb   = document.getElementById('fallback-area');
-      if (selChar && selOccasion && selMsg) {
-        document.getElementById('preview-card').textContent = buildText();
+      var area = document.getElementById('preview-area');
+      if (selBacill && selMsg) {
+        var v = document.getElementById('preview-video');
+        v.src = '/love/videos/' + selMsg.video_sv;
+        document.getElementById('preview-title').textContent = selMsg.titel_sv;
+        document.getElementById('preview-text').textContent = selMsg.forhandsvisning_sv;
         area.style.display = 'block';
-        fb.style.display = 'none';
+        document.getElementById('fallback-area').style.display = 'none';
       } else {
         area.style.display = 'none';
-        fb.style.display = 'none';
+        document.getElementById('fallback-area').style.display = 'none';
       }
     }
 
-    /* ── GATE ── */
+    /* ── LÄNK TILL ANIMATIONEN (samma format som /love/k/) ── */
+    function buildLink() {
+      var till = document.getElementById('till').value.trim();
+      var fran = document.getElementById('fran').value.trim();
+      var enc = function (s) {
+        return (s || '')
+          .replace(/[åÅ]/g, 'a').replace(/[äÄ]/g, 'a').replace(/[öÖ]/g, 'o')
+          .replace(/[.#\s]/gu, function (c) {
+            return '%' + c.charCodeAt(0).toString(16).padStart(2, '0').toUpperCase();
+          });
+      };
+      var parts = [selKey, String(selMsg.id)];
+      if (till || fran) parts.push(enc(till));   // platshållare för mottagare
+      if (fran) parts.push(enc(fran));
+      return location.origin + '/love/k/#' + parts.join('.');
+    }
+
+    /* ── FÖRÄLDRAGRIND ── */
     function newProblem() {
-      /* ensure product is at least 12 so single-key guessing is hard */
       do {
         gateA = Math.floor(Math.random() * 8) + 2;
         gateB = Math.floor(Math.random() * 8) + 2;
       } while (gateA * gateB < 12);
-
       document.getElementById('gate-problem').textContent = gateA + ' \xD7 ' + gateB + ' = ?';
-      const inp = document.getElementById('gate-input');
+      var inp = document.getElementById('gate-input');
       inp.value = '';
       inp.classList.remove('shake');
       document.getElementById('gate-error').textContent = '';
     }
 
     function openGate() {
+      if (!selBacill || !selMsg) return;
       newProblem();
       document.getElementById('gate-overlay').classList.add('open');
     }
-
     function closeGate() {
       document.getElementById('gate-overlay').classList.remove('open');
     }
 
     document.getElementById('send-btn').addEventListener('click', openGate);
     document.getElementById('gate-cancel').addEventListener('click', closeGate);
-
     document.getElementById('gate-confirm').addEventListener('click', checkGate);
-    document.getElementById('gate-input').addEventListener('keydown', function(e) {
+    document.getElementById('gate-input').addEventListener('keydown', function (e) {
       if (e.key === 'Enter') checkGate();
+    });
+    document.getElementById('gate-overlay').addEventListener('click', function (e) {
+      if (e.target === this) e.stopPropagation();
     });
 
     function checkGate() {
-      const inp = document.getElementById('gate-input');
-      const val = parseInt(inp.value, 10);
+      var inp = document.getElementById('gate-input');
+      var val = parseInt(inp.value, 10);
       if (val === gateA * gateB) {
         closeGate();
         doShare();
       } else {
         inp.classList.add('shake');
         document.getElementById('gate-error').textContent = 'Fel svar — försök igen!';
-        setTimeout(() => {
-          newProblem();
-        }, 700);
+        setTimeout(newProblem, 700);
       }
     }
 
-    /* Tapping outside the gate card does nothing — gate must be solved */
-    document.getElementById('gate-overlay').addEventListener('click', function(e) {
-      if (e.target === this) e.stopPropagation();
-    });
-
-    /* ── SHARE ── */
-    async function doShare() {
-      const text = buildText();
-      const url  = 'https://bacillerna.se/app/';
+    /* ── DELA ── */
+    function doShare() {
+      var link = buildLink();
+      var shareText = 'Jag har skickat en hälsning till dig från Bacillerna — en animerad film 💛';
       try {
         if (navigator.share) {
-          await navigator.share({
-            title: 'Hälsning från ' + selChar.name,
-            text: text,
-            url: url,
-          });
+          navigator.share({ title: 'En hälsning från Bacillerna', text: shareText, url: link })
+            .catch(function (err) { if (err && err.name !== 'AbortError') showFallback(link); });
         } else {
-          showFallback(text);
+          showFallback(link);
         }
-      } catch (err) {
-        if (err.name !== 'AbortError') showFallback(text);
+      } catch (e) {
+        showFallback(link);
       }
     }
 
-    function showFallback(text) {
-      document.getElementById('fallback-box').textContent = text;
+    function showFallback(link) {
+      document.getElementById('fallback-box').textContent = link;
       document.getElementById('fallback-area').style.display = 'block';
       document.getElementById('fallback-area').scrollIntoView({ behavior: 'smooth' });
     }
 
-    let fallbackText = '';
-    function copyFallback() {
-      const text = document.getElementById('fallback-box').textContent;
-      const btn  = document.getElementById('copy-btn');
+    document.getElementById('copy-btn').addEventListener('click', function () {
+      var link = document.getElementById('fallback-box').textContent;
+      var btn = document.getElementById('copy-btn');
       if (navigator.clipboard) {
-        navigator.clipboard.writeText(text).then(function() {
+        navigator.clipboard.writeText(link).then(function () {
           btn.textContent = 'Kopierat! ✅';
-          setTimeout(function() { btn.textContent = 'Kopiera text 📋'; }, 2500);
+          setTimeout(function () { btn.textContent = 'Kopiera länken 📋'; }, 2500);
         });
       }
-    }
+    });
   </script>
 
 </body>
