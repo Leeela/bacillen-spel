@@ -236,6 +236,9 @@
 </head>
 <body>
 
+  <!-- Tillbaka till spelen -->
+  <a href="/spel.html" style="align-self:flex-start;background:#e91e63;color:#fff;border-radius:50px;padding:8px 18px;font-size:14px;font-weight:900;text-decoration:none;margin-bottom:10px;box-shadow:0 3px 8px rgba(0,0,0,0.15);">← Tillbaka till spelen</a>
+
   <!-- Header -->
   <div class="header">
     <img src="../godisbacillen.png" alt="Godisbacillen">
@@ -300,6 +303,23 @@
     let seconds = 0;
     let gameStarted = false;
 
+    /* ── Ljud (Web Audio, samma stil som Sprid kärleken) ── */
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    function playPling(freq = 660, dur = 0.35) {
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.connect(gain); gain.connect(audioCtx.destination);
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(freq * 1.33, audioCtx.currentTime + 0.12);
+      gain.gain.setValueAtTime(0.25, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + dur);
+      osc.start(audioCtx.currentTime);
+      osc.stop(audioCtx.currentTime + dur);
+    }
+    function playMatch() { playPling(700); setTimeout(() => playPling(950), 110); }
+    function playWin()   { [523, 659, 784, 1047].forEach((f, i) => setTimeout(() => playPling(f, 0.4), i * 140)); }
+
     function setDifficulty(d) {
       difficulty = d;
       document.querySelectorAll('.diff-btn').forEach(b => b.classList.remove('active'));
@@ -363,6 +383,7 @@
     }
 
     function flipCard(card) {
+      if (audioCtx.state === 'suspended') audioCtx.resume();
       if (locked) return;
       if (card.classList.contains('flipped') || card.classList.contains('matched')) return;
       if (flipped.length >= 2) return;
@@ -383,6 +404,7 @@
       const [a, b] = flipped;
       if (a.dataset.img === b.dataset.img) {
         // Match!
+        playMatch();
         setTimeout(() => {
           a.classList.add('matched');
           b.classList.add('matched');
@@ -417,6 +439,7 @@
 
     function showWin() {
       clearInterval(timerInterval);
+      playWin();
       const stars = getStars();
       document.getElementById('win-stars').textContent = stars;
       document.getElementById('win-score').textContent =
