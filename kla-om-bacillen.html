@@ -263,6 +263,10 @@
     .placed-accessory[data-id="banana-glasses"] img,
     .ghost[data-id="banana-glasses"] img { width: 300px; height: 300px; }
 
+    /* Skor lite mindre — fot-proportionerliga */
+    .placed-accessory[data-id^="shoe-"] img,
+    .ghost[data-id^="shoe-"] img { width: 150px; height: 150px; }
+
     .placed-accessory.removing {
       animation: poff 0.3s ease-out forwards;
     }
@@ -373,6 +377,10 @@ const ACCESSORIES = [
   { id: 'wand',          emoji: '🪄', label: 'Trollstav' },
   { id: 'lollipop',      emoji: '🍭', label: 'Klubba' },
   { id: 'balloon',       emoji: '🎈', label: 'Ballong' },
+  { id: 'shoe-clown-left',  src: 'bilder/shoe-clown-left.png',  label: 'Clownsko (vänster)' },
+  { id: 'shoe-clown-right', src: 'bilder/shoe-clown-right.png', label: 'Clownsko (höger)' },
+  { id: 'shoe-red-left',    src: 'bilder/shoe-red-left.png',    label: 'Röd sko (vänster)' },
+  { id: 'shoe-red-right',   src: 'bilder/shoe-red-right.png',   label: 'Röd sko (höger)' },
 ];
 
 const CHARACTERS = {
