@@ -130,3 +130,31 @@ Divergerad dubblett av luvbugscollection.com-filer låg i bacillen-spel-repot oc
 ## Återstående
 - [ ] Android-testprotokoll (test 1–7) genomförs och signeras
 - [ ] Data Safety-formuläret fylls i och skickas in i Google Play Console
+
+---
+
+## Android Developer Verification
+
+**Uppdaterad:** 2026-06-18 | 12:02 | CET | Stockholm
+
+Android developer verification genomförd och bekräftad direkt i Play Console per 2026-06-18.
+
+**Identitetsverifiering**
+- Verifierad 2026-06-13. Kontotyp: Personal account, ej organisation.
+- Search Console-webbplats och D-U-N-S gäller inte för personkonton.
+
+**Paketnamn**
+- `se.bacillerna.app` (visningsnamn "Bacillerna, Svenska, Barnapp"). Status: Registered, 1 nyckel, registrerat 2026-06-14.
+- Ingen ownership-snippet genererades. Ingen repo-ändring krävdes för verifieringen.
+
+**Mejlet 2026-06-18 ("1 app requires registration")**
+Speglade endast auto-registrering och låg efter den manuella registreringen 06-14. Konsolen är auktoritativ.
+
+**Geografi**
+- Enforcement 2026-09-30 gäller endast Brasilien, Indonesien, Singapore och Thailand.
+- EU och Sverige utanför 2026-vågen. Global utrullning 2027 och framåt.
+- Bevaka inför EN-appen.
+- Källa: Googles publicerade dokumentation, ej konsolen.
+
+**TODO (ej verifiering)**
+- [ ] Appen står som Draft/Internal testing, "Not yet sent for review". Closed testing, 12 testare, deadline ca 2026-06-30. Detta är det brådskande spåret.
