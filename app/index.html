@@ -9,6 +9,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <title>Bacillerna</title>
   <link rel="manifest" href="/app/manifest.json">
+  <link rel="preload" as="image" href="/bilder/alla-bacillerna.webp" type="image/webp">
   <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
     :root {
@@ -82,7 +83,10 @@
 <body>
 
   <div class="hero">
-    <img src="/bilder/alla-bacillerna.png" alt="Bacillerna">
+    <picture>
+      <source srcset="/bilder/alla-bacillerna.webp" type="image/webp">
+      <img src="/bilder/alla-bacillerna.png" alt="Bacillerna" width="1338" height="740" fetchpriority="high" loading="eager">
+    </picture>
     <h1>Bacillerna</h1>
   </div>
 
