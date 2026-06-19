@@ -259,23 +259,25 @@ function handleStart() {
   if (gameStarted) return;
   gameStarted = true;
 
-  video.muted = true;
-  video.src = VIDEOS.chomp;
-  video.play().then(() => {
-    video.pause();
-    video.muted = false;
-    video.removeAttribute('src');
-    video.load();
-  }).catch(() => {
-    video.muted = false;
-    video.removeAttribute('src');
-    video.load();
-  });
-
-  bugLoop.play().catch(() => {});
-  // startMusic(); // Bakgrundsmusik borttagen på begäran
   startScreen.style.display = 'none';
-  setTimeout(preloadVideos, 1000);
+
+  setTimeout(() => {
+    video.muted = true;
+    video.src = VIDEOS.chomp;
+    video.play().then(() => {
+      video.pause();
+      video.muted = false;
+      video.removeAttribute('src');
+      video.load();
+    }).catch(() => {
+      video.muted = false;
+      video.removeAttribute('src');
+      video.load();
+    });
+
+    bugLoop.play().catch(() => {});
+    setTimeout(preloadVideos, 1000);
+  }, 0);
 }
 startBtn?.addEventListener('click', e => { e.stopPropagation(); handleStart(); });
 startScreen.addEventListener('click', handleStart);
