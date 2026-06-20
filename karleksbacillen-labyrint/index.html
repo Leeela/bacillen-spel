@@ -561,6 +561,58 @@ function drawMaze() {
   drawBug(bx, by, Math.min(cellW,cellH)*0.34, bugAnim);
 }
 
+let audioCtx;
+function getAudioCtx() {
+  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  return audioCtx;
+}
+
+function playStep() {
+  try {
+    const ac = getAudioCtx();
+    const osc = ac.createOscillator();
+    const gain = ac.createGain();
+    osc.connect(gain); gain.connect(ac.destination);
+    osc.type = 'sine';
+    osc.frequency.value = 520;
+    const t = ac.currentTime;
+    gain.gain.setValueAtTime(0.18, t);
+    gain.gain.exponentialRampToValueAtTime(0.001, t + 0.08);
+    osc.start(t); osc.stop(t + 0.09);
+  } catch(e) {}
+}
+
+function playLoveWave() {
+  try {
+    const ac = getAudioCtx();
+    const t = ac.currentTime;
+    const base = [523, 659, 784, 988, 1047];
+    base.forEach((freq, i) => {
+      const osc = ac.createOscillator();
+      const gain = ac.createGain();
+      osc.connect(gain); gain.connect(ac.destination);
+      osc.type = 'sine';
+      osc.frequency.value = freq;
+      const start = t + i * 0.18;
+      gain.gain.setValueAtTime(0.22, start);
+      gain.gain.exponentialRampToValueAtTime(0.001, start + 0.9);
+      osc.start(start); osc.stop(start + 0.95);
+    });
+    const sparkle = [2093, 2637, 3136, 2637, 2093, 3136];
+    sparkle.forEach((freq, i) => {
+      const osc = ac.createOscillator();
+      const gain = ac.createGain();
+      osc.connect(gain); gain.connect(ac.destination);
+      osc.type = 'sine';
+      osc.frequency.value = freq;
+      const start = t + i * 0.15 + 0.1;
+      gain.gain.setValueAtTime(0.09, start);
+      gain.gain.exponentialRampToValueAtTime(0.001, start + 0.4);
+      osc.start(start); osc.stop(start + 0.45);
+    });
+  } catch(e) {}
+}
+
 function tryMove(dr, dc) {
   if(won) return;
   const nr=playerR+dr, nc=playerC+dc;
@@ -571,11 +623,13 @@ function tryMove(dr, dc) {
   if(dr=== 1&&cell.walls[2]) return;
   if(dc===-1&&cell.walls[3]) return;
   playerR=nr; playerC=nc;
+  playStep();
   if(playerR===goalR&&playerC===goalC) triggerWin();
 }
 
 function triggerWin() {
   won = true;
+  playLoveWave();
   setTimeout(()=>{
     showLoveWave();
     spawnHearts();
