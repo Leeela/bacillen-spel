@@ -371,6 +371,13 @@ function playCoinSound() {
   } catch(e) {}
 }
 
+function playVoice(name) {
+  try {
+    const audio = new Audio('/ljud/' + name + '.mp3');
+    audio.play().catch(() => {});
+  } catch(e) {}
+}
+
 function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
 function shuffle(arr) {
   const a = [...arr];
@@ -447,6 +454,7 @@ function answer(bought) {
       fb.className = 'feedback good';
       fb.textContent = `🎉 Bra affär! ${item.name} är värd 🟡${item.worth} — du tjänade ${gain} mynt!`;
       document.getElementById('bubble').textContent = pick(BUBBLES_GOOD);
+      playVoice('wow');
       playCoinSound();
     } else {
       coins -= item.price;
@@ -463,6 +471,7 @@ function answer(bought) {
       fb.className = 'feedback good';
       fb.textContent = `✅ Smart! ${item.name} var inte värt ett enda mynt. Bra val!`;
       document.getElementById('bubble').textContent = pick(BUBBLES_SMART);
+      playVoice('smart');
       playCoinSound();
     }
   }
