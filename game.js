@@ -478,9 +478,13 @@ window.restartGame = function() {
 // ==========================================
 const DIR = 'Godisar och veggies/';
 
+function deferProcess(fn) {
+  'requestIdleCallback' in window ? requestIdleCallback(fn, { timeout: 2000 }) : setTimeout(fn, 50);
+}
+
 function loadImg(file) {
   const obj = { raw: new Image(), processed: null };
-  obj.raw.onload = () => { obj.processed = processImage(obj.raw); };
+  obj.raw.onload = () => { deferProcess(() => { obj.processed = processImage(obj.raw); }); };
   obj.raw.src = DIR + file;
   return obj;
 }
@@ -506,7 +510,7 @@ const YUCKY_IMGS = [
 const SALIM_IMG  = loadImg('Salim.png');
 // Selma.png ligger i rotmappen, inte i Godisar och veggies/
 const SELMA_IMG  = { raw: new Image(), processed: null };
-SELMA_IMG.raw.onload = () => { SELMA_IMG.processed = processImage(SELMA_IMG.raw); };
+SELMA_IMG.raw.onload = () => { deferProcess(() => { SELMA_IMG.processed = processImage(SELMA_IMG.raw); }); };
 SELMA_IMG.raw.src = 'Selma.png';
 
 class Candy {
