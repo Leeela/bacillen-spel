@@ -246,6 +246,7 @@ function drawLevelTransition() {
 const startBtn  = document.querySelector('.start-btn');
 const startBug  = document.getElementById('start-bug');
 let gameStarted = false;
+let loopStarted = false;
 
 bugLoop.addEventListener('canplay', () => {
   if (!startBug.src && !startBug.currentSrc) {
@@ -260,6 +261,10 @@ function handleStart() {
   gameStarted = true;
 
   startScreen.style.display = 'none';
+
+  // Starta den tunga spel-loopen FÖRST när spelet startar — annars ritar den
+  // (med dyr getImageData per frame) bakom startskärmen och gör START-knappen trög.
+  if (!loopStarted) { loopStarted = true; requestAnimationFrame(loop); }
 
   setTimeout(() => {
     video.muted = true;
@@ -909,4 +914,5 @@ function loop() {
   requestAnimationFrame(loop);
 }
 
-loop();
+// Loopen startas i handleStart() — inte direkt vid sidladdning — så att den tunga
+// per-frame-bearbetningen inte blockerar första trycket (INP) bakom startskärmen.
