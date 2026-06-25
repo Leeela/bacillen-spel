@@ -351,6 +351,35 @@ body {
   transition: opacity 0.4s;
 }
 .bonus-score-flash.show { opacity: 1; }
+
+/* ── NIVÅ-BLIXT ── */
+.level-flash {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  font-family: 'Fredoka', sans-serif;
+  font-weight: 700;
+  font-size: clamp(28px, 8vmin, 56px);
+  color: var(--gold-deep, #BF360C);
+  text-shadow: 0 2px 10px rgba(255,215,0,0.55), 0 0 4px #fff;
+  pointer-events: none;
+  z-index: 120;
+  text-align: center;
+  white-space: nowrap;
+  animation: levelPop 1.5s ease-out forwards;
+}
+.level-flash span {
+  display: block;
+  font-size: 0.55em;
+  color: #F9A825;
+}
+@keyframes levelPop {
+  0%   { opacity: 0; transform: translate(-50%, -50%) scale(0.5); }
+  15%  { opacity: 1; transform: translate(-50%, -50%) scale(1.12); }
+  30%  { transform: translate(-50%, -50%) scale(1); }
+  80%  { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+  100% { opacity: 0; transform: translate(-50%, -55%) scale(0.95); }
+}
 </style>
 </head>
 <body>
@@ -444,6 +473,7 @@ function stop(key) {
 /* ── STATE ── */
 let mode = 'easy';
 let score = 0;
+let level = 1;
 let goldCount = 0;
 let silverCount = 0;
 let coinsMinted = 0;
@@ -457,6 +487,18 @@ const GOLD_PTS   = 5;
 const SILVER_PTS = 2;
 const BONUS_PTS  = 3;
 
+/* ── SVÅRIGHET: kortare falltid per nivå (en nivå per pengaregn) ── */
+const SPEED_DECAY = 0.84;  // 16 % kortare tid per nivå
+const MIN_FALL    = 650;   // golv för vanliga mynt (ms)
+const MIN_SPECIAL = 950;   // golv för special-myntet (ms) – behåller marginal
+const MIN_LIFE    = 750;   // golv för tryck-myntets livslängd, lätt-läge (ms)
+const MIN_SP_LIFE = 1100;  // golv för special i lätt-läge (ms)
+
+// Multiplikator som krymper med nivån (1.0 på nivå 1, mindre högre upp)
+function speedFactor() {
+  return Math.pow(SPEED_DECAY, level - 1);
+}
+
 function rnd(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
@@ -469,7 +511,7 @@ function show(id) {
 /* ── START / MENY ── */
 function startGame(selectedMode) {
   mode = selectedMode;
-  score = 0; goldCount = 0; silverCount = 0; coinsMinted = 0;
+  score = 0; level = 1; goldCount = 0; silverCount = 0; coinsMinted = 0;
   gameActive = true;
   activeFallingCoins = [];
   nextSpecialAt = rnd(8, 12);
@@ -596,9 +638,10 @@ function spawnCoin() {
     el.style.top  = rnd(8, 72) + '%';
     el.addEventListener('pointerdown', () => catchCoin(el));
     area.appendChild(el);
-    setTimeout(() => { if (el.parentNode) el.remove(); }, 2600);
+    const life = Math.max(MIN_LIFE, Math.round(2600 * speedFactor()));
+    setTimeout(() => { if (el.parentNode) el.remove(); }, life);
   } else {
-    const dur = rnd(2000, 3600);
+    const dur = Math.max(MIN_FALL, Math.round(rnd(2000, 3600) * speedFactor()));
     el.style.setProperty('--fall-dur', dur + 'ms');
     el.style.left = rnd(4, 84) + '%';
     el.classList.add('falling');
@@ -621,9 +664,10 @@ function spawnSpecial(area) {
     el.style.top  = rnd(10, 68) + '%';
     el.addEventListener('pointerdown', () => catchSpecial(el));
     area.appendChild(el);
-    setTimeout(() => { if (el.parentNode) el.remove(); }, 4000);
+    const life = Math.max(MIN_SP_LIFE, Math.round(4000 * speedFactor()));
+    setTimeout(() => { if (el.parentNode) el.remove(); }, life);
   } else {
-    const dur = rnd(3000, 4500);
+    const dur = Math.max(MIN_SPECIAL, Math.round(rnd(3000, 4500) * speedFactor()));
     el.style.setProperty('--fall-dur', dur + 'ms');
     el.style.left = rnd(4, 84) + '%';
     el.classList.add('falling');
@@ -833,11 +877,23 @@ function endBonusRound() {
 }
 
 function returnToGame() {
+  level++;                       // varje pengaregn = en nivå snabbare
   gameActive = true;
   activeFallingCoins = [];
   clearGameArea();
   show('screen-game');
+  showLevelFlash();
   startSpawning();
+}
+
+/* ── NIVÅ-BLIXT: glad feedback, ingen "game over" ── */
+function showLevelFlash() {
+  const area = document.getElementById('game-area');
+  const flash = document.createElement('div');
+  flash.className = 'level-flash';
+  flash.innerHTML = `Nivå ${level} <span>⚡ Snabbare!</span>`;
+  area.appendChild(flash);
+  setTimeout(() => flash.remove(), 1500);
 }
 </script>
 </body>
