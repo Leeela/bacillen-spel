@@ -103,61 +103,84 @@ let isShowingVideo = false;
 let candyEaten = 0;
 
 // ==========================================
-//  BAKGRUNDSMUSIK (Web Audio API)
+//  BAKGRUNDSMUSIK (MP3-loop)
+// --------------------------------------------------------------------------
+//  Lägg en gratis, loopbar instrumentallåt i ljud/spelmusik.mp3
+//  (t.ex. från pixabay.com/music — ingen kreditering krävs).
+//  Saknas filen händer inget — spelet funkar precis som vanligt.
 // ==========================================
-let audioCtx = null;
+const MUSIC_KEY = 'bacillerna-musik';        // 'on' (standard) eller 'off'
+let bgMusic = null;
 let musicPlaying = false;
-let currentBPM = 160;
-let musicTimeout = null;
+let musicBtn = null;
+
+function wantsMusic() { return localStorage.getItem(MUSIC_KEY) !== 'off'; }
+
+function buildMusicButton() {
+  if (musicBtn) return;
+  musicBtn = document.createElement('button');
+  musicBtn.type = 'button';
+  musicBtn.setAttribute('aria-label', 'Slå på eller av musik');
+  musicBtn.style.cssText =
+    'position:fixed;z-index:99999;bottom:14px;left:14px;' +
+    'width:54px;height:54px;border-radius:50%;border:none;cursor:pointer;' +
+    'font-size:26px;line-height:54px;text-align:center;padding:0;' +
+    'background:rgba(255,255,255,0.9);color:#2D8659;' +
+    'box-shadow:0 3px 10px rgba(0,0,0,0.2);' +
+    '-webkit-tap-highlight-color:transparent;transition:transform .1s;';
+  musicBtn.onpointerdown = () => { musicBtn.style.transform = 'scale(0.9)'; };
+  musicBtn.onpointerup   = () => { musicBtn.style.transform = 'scale(1)'; };
+  musicBtn.addEventListener('click', e => { e.stopPropagation(); toggleMusic(); });
+  document.body.appendChild(musicBtn);
+  renderMusicButton();
+}
+
+function renderMusicButton() {
+  if (!musicBtn) return;
+  musicBtn.textContent = wantsMusic() ? '🎵' : '🔇';
+  musicBtn.style.opacity = wantsMusic() ? '1' : '0.6';
+}
 
 function startMusic() {
-  if (musicPlaying) return;
-  musicPlaying = true;
-  audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-  currentBPM = getLevelConfig().bpm;
-  // iOS Safari startar AudioContext i suspended-läge — vi måste resumea den
-  if (audioCtx.state === 'suspended') {
-    audioCtx.resume().then(() => playMelodyLoop());
-  } else {
-    playMelodyLoop();
+  buildMusicButton();
+  if (!bgMusic) {
+    bgMusic = new Audio('ljud/musik-godisbacillen.mp3');
+    bgMusic.loop = true;
+    bgMusic.volume = 0.25;
+    bgMusic.preload = 'auto';
   }
+  updateMusicTempo();
+  if (!wantsMusic()) return;
+  musicPlaying = true;
+  const p = bgMusic.play();
+  if (p) p.catch(() => {});   // blockeras tills nästa touch — spelaren tappar inte
 }
 
+function toggleMusic() {
+  if (wantsMusic()) {
+    localStorage.setItem(MUSIC_KEY, 'off');
+    if (bgMusic) bgMusic.pause();
+    musicPlaying = false;
+  } else {
+    localStorage.setItem(MUSIC_KEY, 'on');
+    startMusic();
+  }
+  renderMusicButton();
+}
+
+// Snäppa tempot uppåt en gnutta per nivå — håller energin uppe utan ny låt.
 function updateMusicTempo() {
-  currentBPM = getLevelConfig().bpm;
+  if (!bgMusic) return;
+  const lvl = (typeof level === 'number') ? level : 1;
+  bgMusic.playbackRate = Math.min(1 + (lvl - 1) * 0.05, 1.2);
 }
 
-function playMelodyLoop() {
-  if (!musicPlaying || !audioCtx) return;
-  const BPM  = currentBPM;
-  const BEAT = 60 / BPM;
-  const notes = [
-    [523, 1],[659,1],[784,1],[659,1],[698,1],[880,1],[784,2],
-    [659,1],[784,1],[1047,2],[784,1],[698,1],[659,1],[587,1],[523,2],
-    [523,1],[659,1],[784,1],[659,1],[698,1],[880,1],[784,2],
-    [659,1],[784,1],[1047,2],[784,1],[698,1],[659,1],[587,1],[523,3],
-  ];
-
-  let t = audioCtx.currentTime + 0.1;
-  notes.forEach(([freq, beats]) => {
-    const dur = beats * BEAT * 0.85;
-    const osc = audioCtx.createOscillator();
-    const env = audioCtx.createGain();
-    osc.connect(env); env.connect(audioCtx.destination);
-    osc.type = 'triangle';
-    osc.frequency.setValueAtTime(freq, t);
-    env.gain.setValueAtTime(0, t);
-    env.gain.linearRampToValueAtTime(0.05, t + 0.02);
-    env.gain.linearRampToValueAtTime(0.03, t + dur * 0.6);
-    env.gain.linearRampToValueAtTime(0, t + dur);
-    osc.start(t); osc.stop(t + dur);
-    t += beats * BEAT;
-  });
-  const totalTime = notes.reduce((s, [, b]) => s + b * BEAT, 0);
-  if (musicTimeout) clearTimeout(musicTimeout);
-  musicTimeout = setTimeout(() => { if (musicPlaying) playMelodyLoop(); },
-    (totalTime - 0.3) * 1000);
-}
+// Pausa när fliken/appen göms, återuppta när man kommer tillbaka.
+document.addEventListener('visibilitychange', () => {
+  if (!bgMusic) return;
+  if (document.hidden) { bgMusic.pause(); }
+  else if (musicPlaying && wantsMusic()) { bgMusic.play().catch(() => {}); }
+});
 
 // ==========================================
 //  INSTRUKTIONSTEXT (visas i 4 sek vid start)
@@ -274,6 +297,7 @@ function handleStart() {
     });
 
     bugLoop.play().catch(() => {});
+    startMusic();
     setTimeout(preloadVideos, 1000);
   }, 0);
 }
@@ -424,7 +448,7 @@ const crash = {
 
       if (level < 3) {
         level++;
-        // updateMusicTempo();
+        updateMusicTempo();
         candyEaten = 0;
         candies = [];
         for (let i = 0; i < 5; i++) candies.push(new Candy(true));
@@ -462,7 +486,7 @@ window.restartGame = function() {
   particles = [];
   brokenTeeth = 0;
   level = 1;
-  // updateMusicTempo();
+  updateMusicTempo();
   for (let i = 0; i < 5; i++) candies.push(new Candy(true));
 };
 
