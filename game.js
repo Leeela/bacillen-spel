@@ -122,7 +122,7 @@ function buildMusicButton() {
   musicBtn.type = 'button';
   musicBtn.setAttribute('aria-label', 'Slå på eller av musik');
   musicBtn.style.cssText =
-    'position:fixed;z-index:99999;bottom:14px;left:14px;' +
+    'position:fixed;z-index:99999;bottom:80px;left:16px;' +   // ovanför "Se mer!"-knappen
     'width:54px;height:54px;border-radius:50%;border:none;cursor:pointer;' +
     'font-size:26px;line-height:54px;text-align:center;padding:0;' +
     'background:rgba(255,255,255,0.9);color:#2D8659;' +
@@ -146,7 +146,7 @@ function startMusic() {
   if (!bgMusic) {
     bgMusic = new Audio('ljud/musik-godisbacillen.mp3');
     bgMusic.loop = true;
-    bgMusic.volume = 0.25;
+    bgMusic.volume = 0.15;
     bgMusic.preload = 'auto';
   }
   updateMusicTempo();
@@ -813,7 +813,7 @@ function eatCandy(candy) {
   if (candy.kind === 'yucky') {
     healTooth();
     spawnParticles(candy.x, candy.y, 'heal');
-    playReaction(VIDEOS.wow);
+    playReaction(VIDEOS.yuck);   // "Nej, jag vill ha godis!"
     return;
   }
 
