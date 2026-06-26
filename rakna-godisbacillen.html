@@ -454,14 +454,14 @@ function stopVoice() {
 }
 // Spela en sekvens klipp i följd; avbryter pågående ljud först.
 // Faller tillbaka på TTS om något klipp saknas.
-function sayClips(keys, ttsFallback) {
+function sayClips(keys, ttsFallback, onDone) {
   stopVoice();
-  if (!keys.every(clipReady)) { speak(ttsFallback); return; }
+  if (!keys.every(clipReady)) { speak(ttsFallback); if (onDone) setTimeout(onDone, 1600); return; }
   let i = 0;
   (function next() {
-    if (i >= keys.length) return;
+    if (i >= keys.length) { if (onDone) onDone(); return; }
     let a;
-    try { a = voiceEls[keys[i]].cloneNode(); } catch (e) { return; }
+    try { a = voiceEls[keys[i]].cloneNode(); } catch (e) { if (onDone) onDone(); return; }
     i++;
     voiceActive.push(a);
     a.addEventListener('ended', next, { once: true });
@@ -620,20 +620,12 @@ function win() {
   starPop();
   confettiBurst();
 
-  // Säg resultatet + beröm. Plus-nivån säger hela uträkningen ("a plus b är lika med summan"),
-  // med lite längre fördröjning så sista godisens räkning hinner höras klart.
+  // Säg resultatet + beröm. VÄNTA tills rösten talat klart innan nästa runda –
+  // plus-meningen är lång och får inte klippas av av ett nytt tal.
   const pi = Math.floor(Math.random() * PRAISE.length);
-  if (level === 3) {
-    setTimeout(() => sayClips(
-      [String(addA), 'plus', String(addB), 'lika', String(target), PRAISE_KEYS[pi]],
-      NUM_SV[addA] + ' plus ' + NUM_SV[addB] + ' är lika med ' + NUM_SV[target] + '! ' + PRAISE[pi]
-    ), 650);
-  } else {
-    setTimeout(() => sayClips(
-      [String(target), PRAISE_KEYS[pi]],
-      NUM_SV[target] + '! ' + PRAISE[pi]
-    ), 250);
-  }
+  const reachedEnd = stars >= ROUNDS_TO_END;
+  let advanced = false;
+  const finish = () => { if (advanced) return; advanced = true; if (reachedEnd) showEnding(); else nextRound(); };
 
   // Plocka bort kvarvarande godis snyggt
   $('candies').querySelectorAll('.candy').forEach(c => {
@@ -641,8 +633,18 @@ function win() {
     c.style.transform = 'scale(0.4)'; c.style.opacity = '0';
   });
 
-  const reachedEnd = stars >= ROUNDS_TO_END;
-  setTimeout(() => { if (reachedEnd) showEnding(); else nextRound(); }, 1700);
+  let keys, tts, speakDelay, gapAfter, failsafe;
+  if (level === 3) {
+    keys = [String(addA), 'plus', String(addB), 'lika', String(target), PRAISE_KEYS[pi]];
+    tts  = NUM_SV[addA] + ' plus ' + NUM_SV[addB] + ' är lika med ' + NUM_SV[target] + '! ' + PRAISE[pi];
+    speakDelay = 650; gapAfter = 900; failsafe = 9000;
+  } else {
+    keys = [String(target), PRAISE_KEYS[pi]];
+    tts  = NUM_SV[target] + '! ' + PRAISE[pi];
+    speakDelay = 250; gapAfter = 650; failsafe = 4500;
+  }
+  setTimeout(() => sayClips(keys, tts, () => setTimeout(finish, gapAfter)), speakDelay);
+  setTimeout(finish, failsafe); // säkerhet om talet aldrig hinner avsluta
 }
 
 /* ── Slut: doktor-animationen spelas i scenen, sedan "Spela igen" ── */
