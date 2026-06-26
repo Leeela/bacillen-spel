@@ -1,4 +1,4 @@
-const CACHE_NAME = 'bacillerna-v36';
+const CACHE_NAME = 'bacillerna-v38';
 
 // Filer som cachas vid installation
 const PRECACHE_URLS = [
@@ -13,6 +13,7 @@ const PRECACHE_URLS = [
   '/karleksbacillen.html',
   '/kontakt.html',
   '/mata-godisbacillen.html',
+  '/rakna-godisbacillen.html',
   '/om.html',
   '/retbacillen.html',
   '/rikedomsbacillen.html',
