@@ -637,11 +637,11 @@ function win() {
   if (level === 3) {
     keys = [String(addA), 'plus', String(addB), 'lika', String(target), PRAISE_KEYS[pi]];
     tts  = NUM_SV[addA] + ' plus ' + NUM_SV[addB] + ' är lika med ' + NUM_SV[target] + '! ' + PRAISE[pi];
-    speakDelay = 650; gapAfter = 900; failsafe = 9000;
+    speakDelay = 650; gapAfter = 450; failsafe = 9000;
   } else {
     keys = [String(target), PRAISE_KEYS[pi]];
     tts  = NUM_SV[target] + '! ' + PRAISE[pi];
-    speakDelay = 250; gapAfter = 650; failsafe = 4500;
+    speakDelay = 250; gapAfter = 400; failsafe = 4500;
   }
   setTimeout(() => sayClips(keys, tts, () => setTimeout(finish, gapAfter)), speakDelay);
   setTimeout(finish, failsafe); // säkerhet om talet aldrig hinner avsluta
