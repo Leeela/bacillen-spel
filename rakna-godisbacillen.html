@@ -454,19 +454,25 @@ function stopVoice() {
 }
 // Spela en sekvens klipp i följd; avbryter pågående ljud först.
 // Faller tillbaka på TTS om något klipp saknas.
+const CLIP_OVERLAP = 0.18;        // sek – starta nästa ord innan detta tystnar (tätare tal)
 function sayClips(keys, ttsFallback, onDone) {
   stopVoice();
   if (!keys.every(clipReady)) { speak(ttsFallback); if (onDone) setTimeout(onDone, 1600); return; }
   let i = 0;
-  (function next() {
+  (function playNext() {
     if (i >= keys.length) { if (onDone) onDone(); return; }
+    const key = keys[i++];
+    const dur = voiceEls[key].duration || 0.6;
     let a;
-    try { a = voiceEls[keys[i]].cloneNode(); } catch (e) { if (onDone) onDone(); return; }
-    i++;
+    try { a = voiceEls[key].cloneNode(); } catch (e) { if (onDone) onDone(); return; }
     voiceActive.push(a);
-    a.addEventListener('ended', next, { once: true });
-    a.addEventListener('error', next, { once: true });
-    const p = a.play(); if (p) p.catch(() => next());
+    let stepped = false;
+    const step = () => { if (stepped) return; stepped = true; playNext(); };
+    // starta nästa klipp strax innan detta tar slut → mindre tystnad mellan orden
+    const t = setTimeout(step, Math.max(120, (dur - CLIP_OVERLAP) * 1000));
+    a.addEventListener('ended', () => { clearTimeout(t); step(); }, { once: true });
+    a.addEventListener('error', () => { clearTimeout(t); step(); }, { once: true });
+    const p = a.play(); if (p) p.catch(() => { clearTimeout(t); step(); });
   })();
 }
 // Säg ett tal (1–10)
