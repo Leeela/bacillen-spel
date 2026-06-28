@@ -627,16 +627,24 @@ function win() {
     c.style.transform = 'scale(0.4)'; c.style.opacity = '0';
   });
 
-  let keys, tts, speakDelay, gapAfter, failsafe;
+  let keys, tts, speakDelay, gapAfter;
   if (level === 3) {
     keys = [String(addA), 'plus', String(addB), 'lika', String(target), PRAISE_KEYS[pi]];
     tts  = NUM_SV[addA] + ' plus ' + NUM_SV[addB] + ' är lika med ' + NUM_SV[target] + '! ' + PRAISE[pi];
-    speakDelay = 650; gapAfter = 450; failsafe = 9000;
+    speakDelay = 650; gapAfter = 450;
   } else {
     keys = [String(target), PRAISE_KEYS[pi]];
     tts  = NUM_SV[target] + '! ' + PRAISE[pi];
-    speakDelay = 250; gapAfter = 400; failsafe = 4500;
+    speakDelay = 250; gapAfter = 400;
   }
+  // Failsafe-timern får ALDRIG vara kortare än själva meningen, annars kapas
+  // slutet ("…är lika med fem! Bra!"). Räkna ut den från klippens verkliga
+  // längd + rejäl marginal – den ska bara slå till om rösten helt fastnar.
+  const clipSecs = keys.reduce((s, k) => {
+    const d = voiceEls[k] && isFinite(voiceEls[k].duration) ? voiceEls[k].duration : 1.2;
+    return s + d;
+  }, 0);
+  const failsafe = speakDelay + Math.round(clipSecs * 1000) + gapAfter + 2000;
   setTimeout(() => sayClips(keys, tts, () => setTimeout(finish, gapAfter)), speakDelay);
   setTimeout(finish, failsafe); // säkerhet om talet aldrig hinner avsluta
 }
