@@ -302,6 +302,23 @@ function speak(key) {
   sfx.play().catch(() => {});
 }
 
+// Mobil (särskilt iOS) kräver att varje ljud spelats inuti en användartryckning
+// minst en gång – annars blockeras uppspelning från timers (t.ex. skrattet).
+// Vi "låser upp" alla ljud vid första tryck genom att spela dem ljudlöst.
+let audioUnlocked = false;
+function unlockAudio() {
+  if (audioUnlocked) return;
+  audioUnlocked = true;
+  Object.values(SFX).forEach(sfx => {
+    sfx.muted = true;
+    sfx.play().then(() => {
+      sfx.pause();
+      sfx.currentTime = 0;
+      sfx.muted = false;
+    }).catch(() => { sfx.muted = false; });
+  });
+}
+
 const DISTRACTORS = [
   '/bilder/godisbacillen.png',
   '/bilder/karleksbacillen.png',
@@ -330,6 +347,7 @@ function updateHud() {
 }
 
 function startGame(lvlKey) {
+  unlockAudio();
   currentLevel = lvlKey;
   level  = LEVELS[lvlKey];
   score  = 0;
