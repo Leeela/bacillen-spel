@@ -70,9 +70,7 @@ body {
 #menu-bug {
   width: clamp(150px, 34vmin, 230px);
   aspect-ratio: 1 / 1;
-  object-fit: cover;
-  object-position: center 42%;
-  mix-blend-mode: multiply;
+  object-fit: contain;
   animation: bob 2s ease-in-out infinite;
   cursor: pointer;
 }
@@ -229,10 +227,8 @@ body {
 #bug {
   width: clamp(160px, 42vmin, 290px);
   aspect-ratio: 1 / 1;
-  object-fit: cover;
-  object-position: center 42%;
+  object-fit: contain;
   display: block;
-  mix-blend-mode: multiply;
 }
 #bug.cheer { animation: bugCheer 0.7s ease-in-out; }
 #bug.chomp { animation: bugChomp 0.22s ease-in-out; }
@@ -301,11 +297,7 @@ body {
 
 <!-- ── MENY ── -->
 <div id="screen-menu" class="screen">
-  <video id="menu-bug" autoplay loop muted playsinline webkit-playsinline onclick="menuTap()" poster="/bilder/godisbacillen-gapar.png" aria-label="Godisbacillen – tryck för att tugga!">
-    <source src="/bug_loop.mov"  type="video/quicktime">
-    <source src="/bug_loop.webm" type="video/webm">
-    <source src="/bug_loop.mp4"  type="video/mp4">
-  </video>
+  <img id="menu-bug" src="/bilder/godisbacillen-gapar.png" onclick="menuTap()" alt="Godisbacillen – tryck för att tugga!">
   <h1>Räkna med Godisbacillen</h1>
   <p id="menu-sub">Mata Godisbacillen med rätt antal godis och lär dig räkna! 🍬</p>
   <div class="levels">
@@ -330,11 +322,7 @@ body {
     <div id="counter"><b id="counter-eaten">0</b> / <span id="counter-target">0</span></div>
     <div id="candies"></div>
     <div id="bug-wrap">
-      <video id="bug" autoplay loop muted playsinline webkit-playsinline poster="/bilder/godisbacillen-gapar.png" aria-label="Godisbacillen">
-        <source src="/bug_loop.mov"  type="video/quicktime">
-        <source src="/bug_loop.webm" type="video/webm">
-        <source src="/bug_loop.mp4"  type="video/mp4">
-      </video>
+      <img id="bug" src="/bilder/godisbacillen-gapar.png" alt="Godisbacillen">
     </div>
   </div>
 </div>
@@ -719,16 +707,33 @@ function goMenu() {
   show('screen-menu');
 }
 
-/* ── Säkerställ att loop-videon spelar (autoplay-policy på iOS/Android) ── */
-function playBugLoops() {
-  document.querySelectorAll('#menu-bug, #bug').forEach(v => {
-    try { v.muted = true; const p = v.play(); if (p) p.catch(() => {}); } catch (e) {}
+/* ── Lås upp & förladda röstklippen vid första tryck ──
+   iOS Safari förladdar/spelar inte <audio> utan en användargest. Utan detta
+   når klippen aldrig readyState ≥ 2, clipReady() blir alltid falsk och
+   räkningen fastnar på robotrösten (TTS). Ett kort tyst play+pause i en gest
+   låser upp ljudet och tvingar fram förladdning → Godisbacillens egen röst. */
+let voicesWarmed = false;
+function warmVoices() {
+  if (voicesWarmed) return;
+  voicesWarmed = true;
+  VOICE_KEYS.forEach(k => {
+    const a = voiceEls[k];
+    if (!a) return;
+    try {
+      a.muted = true;
+      const p = a.play();
+      if (p && p.then) {
+        p.then(() => { a.pause(); a.currentTime = 0; a.muted = false; })
+         .catch(() => { a.muted = false; });
+      } else {
+        try { a.pause(); } catch (e) {}
+        a.muted = false;
+      }
+    } catch (e) {}
   });
 }
-playBugLoops();
 ['pointerdown', 'touchstart', 'click'].forEach(ev =>
-  window.addEventListener(ev, playBugLoops, { passive: true }));
-document.addEventListener('visibilitychange', () => { if (!document.hidden) playBugLoops(); });
+  window.addEventListener(ev, warmVoices, { passive: true }));
 
 show('screen-menu');
 </script>
