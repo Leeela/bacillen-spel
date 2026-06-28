@@ -446,11 +446,28 @@ function playDing() {
     });
   } catch (e) {}
 }
+// VIKTIGT: Android/iOS saknar ofta en svensk TTS-röst och byter då till sin
+// engelska standardröst som uttalar svensk text fel ("engelsk robotröst").
+// Vi letar därför upp en riktig sv-röst – finns ingen sådan är vi hellre TYSTA
+// än läser svenska med engelskt uttal.
+let _svVoice = null;
+function pickSvVoice() {
+  try {
+    if (!('speechSynthesis' in window)) return null;
+    const vs = speechSynthesis.getVoices() || [];
+    return vs.find(v => /^sv\b/i.test(v.lang) || /^sv[-_]/i.test(v.lang)) ||
+           vs.find(v => /(^|[-_])sv([-_]|$)/i.test(v.lang)) || null;
+  } catch (e) { return null; }
+}
+try { if ('speechSynthesis' in window) speechSynthesis.onvoiceschanged = () => { _svVoice = pickSvVoice(); }; } catch (e) {}
 function speakWord(word) {
   try {
     if (!('speechSynthesis' in window)) return;
+    if (!_svVoice) _svVoice = pickSvVoice();
+    if (!_svVoice) return;              // ingen svensk röst → var hellre tyst
     const u = new SpeechSynthesisUtterance(word);
-    u.lang = 'sv-SE'; u.rate = 0.9; u.pitch = 1.2;
+    u.voice = _svVoice; u.lang = _svVoice.lang || 'sv-SE';
+    u.rate = 0.9; u.pitch = 1.2;
     speechSynthesis.cancel(); speechSynthesis.speak(u);
   } catch (e) {}
 }
