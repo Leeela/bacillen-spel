@@ -218,6 +218,21 @@ body {
   filter: drop-shadow(0 4px 6px rgba(0,0,0,0.16));
 }
 .candy:active { transform: scale(1.18); }
+/* Plus-nivå: två synliga grupper som matchar talen (4+4 → grupp om 4 «+» grupp om 4) */
+.candy-group {
+  display: flex; flex-wrap: wrap; gap: clamp(6px,2vw,14px);
+  align-items: center; justify-content: center;
+  padding: clamp(6px,1.6vw,12px);
+  border-radius: 26px;
+  background: rgba(123,193,66,0.10);
+  box-shadow: inset 0 0 0 3px rgba(123,193,66,0.30);
+}
+.candy-plus {
+  font-weight: 700; color: var(--green-deep);
+  font-size: clamp(40px, 11vmin, 80px); line-height: 1;
+  padding: 0 2px; user-select: none; flex: 0 0 auto;
+  text-shadow: 0 3px 0 rgba(255,255,255,0.7);
+}
 
 /* Godisbacillen */
 #bug-wrap {
@@ -554,15 +569,27 @@ function nextRound() {
   updateCounter();
 
   // Godisar
-  const total = target + extra;
   const box = $('candies');
   box.innerHTML = '';
-  for (let i = 0; i < total; i++) {
+  const makeCandy = () => {
     const b = document.createElement('button');
     b.className = 'candy';
     b.textContent = pick(CANDY_EMOJI);
     b.addEventListener('click', () => feed(b));
-    box.appendChild(b);
+    return b;
+  };
+  if (level === 3) {
+    // Två synliga grupper som matchar talen: addA godisar «+» addB godisar.
+    // Barnet SER additionen (4+4) – inte bara totalen.
+    const g1 = document.createElement('div'); g1.className = 'candy-group';
+    for (let i = 0; i < addA; i++) g1.appendChild(makeCandy());
+    const plus = document.createElement('div'); plus.className = 'candy-plus'; plus.textContent = '+';
+    const g2 = document.createElement('div'); g2.className = 'candy-group';
+    for (let i = 0; i < addB; i++) g2.appendChild(makeCandy());
+    box.appendChild(g1); box.appendChild(plus); box.appendChild(g2);
+  } else {
+    const total = target + extra;
+    for (let i = 0; i < total; i++) box.appendChild(makeCandy());
   }
 
 }
@@ -638,8 +665,8 @@ function win() {
   let advanced = false;
   const finish = () => { if (advanced) return; advanced = true; if (reachedEnd) showEnding(); else nextRound(); };
 
-  // Plocka bort kvarvarande godis snyggt
-  $('candies').querySelectorAll('.candy').forEach(c => {
+  // Plocka bort kvarvarande godis (och plus-nivåns tomma grupper/«+») snyggt
+  Array.from($('candies').children).forEach(c => {
     c.style.transition = 'transform 0.3s, opacity 0.3s';
     c.style.transform = 'scale(0.4)'; c.style.opacity = '0';
   });
