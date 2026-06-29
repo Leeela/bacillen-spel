@@ -41,15 +41,21 @@
     }
     canvas { display: block; }
 
-    /* ── Reaktionsvideo: liten bubbla i hörnet, spelet fortsätter bakom ── */
-    #video-overlay {
+    /* ── Reaktion: TVÅ separata noder (bubbla + helskärm). Var och en går bara
+       display:none -> flex (undantaget från CLS). Ingen synlig nod ändrar
+       geometri mellan lägena, så kraschtransitionen ger noll layout shift. ── */
+    #reaction-bubble, #reaction-fullscreen {
       display: none;
-      position: fixed; top: 12px; right: 12px; z-index: 10;
-      pointer-events: none;            /* tryck går igenom till spelet */
-      justify-content: center;
-      align-items: center;
+      position: fixed; z-index: 10;
+      justify-content: center; align-items: center;
     }
-    #video-overlay.active { display: flex; }
+    #reaction-bubble.active, #reaction-fullscreen.active { display: flex; }
+
+    /* Bubbla: liten, uppe i högra hörnet. Tryck går igenom till spelet. */
+    #reaction-bubble {
+      top: 12px; right: 12px;
+      pointer-events: none;
+    }
     #reaction-video {
       aspect-ratio: 9 / 16;
       height: min(22vh, 168px);
@@ -57,14 +63,14 @@
       box-shadow: 0 6px 24px rgba(0,0,0,0.18);
       background: rgba(255,255,255,0.55);
     }
-    /* Helskärm — bara för sockerkrasch / vinst-video (pausar medvetet) */
-    #video-overlay.fullscreen {
-      inset: 0; top: 0; right: 0;
+
+    /* Helskärm — bara för sockerkrasch / vinst-video (pausar medvetet). */
+    #reaction-fullscreen {
+      inset: 0; z-index: 11;          /* över bubblan om de råkar samexistera */
       background: rgba(255,255,255,0.96);
       pointer-events: auto;
     }
-    #video-overlay.fullscreen #reaction-video {
-      height: auto;
+    #reaction-video-fs {
       width: min(50vh, 88vw);
       max-width: 92%; max-height: 92%;
       border-radius: 24px;
@@ -173,9 +179,13 @@
     <source src="bug_loop.mp4"  type="video/mp4">
   </video>
 
-  <!-- Reaktionsvideo -->
-  <div id="video-overlay">
+  <!-- Reaktion: liten bubbla i hörnet (egen nod, fade:ar bara in/ut) -->
+  <div id="reaction-bubble">
     <video id="reaction-video" playsinline webkit-playsinline></video>
+  </div>
+  <!-- Reaktion: helskärm för krasch/vinst (egen nod, fade:ar bara in/ut) -->
+  <div id="reaction-fullscreen">
+    <video id="reaction-video-fs" playsinline webkit-playsinline></video>
   </div>
 
   <!-- Crash-video (Somnar) -->

@@ -5,8 +5,10 @@
 
 const canvas = document.getElementById('gameCanvas');
 const ctx    = canvas.getContext('2d');
-const overlay = document.getElementById('video-overlay');
-const video   = document.getElementById('reaction-video');
+const bubble    = document.getElementById('reaction-bubble');     // liten reaktion i hörnet
+const video     = document.getElementById('reaction-video');
+const fsOverlay = document.getElementById('reaction-fullscreen'); // helskärm (krasch/vinst)
+const videoFs   = document.getElementById('reaction-video-fs');
 const bugLoop    = document.getElementById('bug-loop');
 const crashVideo = document.getElementById('crash-video');
 const startScreen = document.getElementById('start-screen');
@@ -182,6 +184,38 @@ document.addEventListener('visibilitychange', () => {
   else if (musicPlaying && wantsMusic()) { bgMusic.play().catch(() => {}); }
 });
 
+// ── Auto-resume av bakgrundsmusik efter en reaktions-/krasch-video ──────────
+// iOS Safari avbryter <audio>-musiken när en röstvideo tar över ljudsessionen
+// och återupptar den inte själv. Vi schemalägger ett återupptagningsförsök
+// 1200 ms efter att videoaktiviteten lugnat sig (debounce — så att täta
+// reaktioner inte triggar en massa försök mitt i nästa video).
+//
+// VIKTIGT (iOS): ett programmatiskt play() härifrån sker UTAN färsk
+// användargest. iOS kan avvisa det (NotAllowedError). Då fångas felet tyst,
+// musik-state lämnas orört och den manuella musikknappen fungerar precis som
+// förut. Console-loggen visar utfallet vid telefontest (ingen synlig debug-UI).
+let musicResumeTimer = null;
+
+function cancelMusicResume() {
+  if (musicResumeTimer) { clearTimeout(musicResumeTimer); musicResumeTimer = null; }
+}
+function scheduleMusicResume() {
+  cancelMusicResume();
+  musicResumeTimer = setTimeout(() => { musicResumeTimer = null; resumeMusic(); }, 1200);
+}
+function resumeMusic() {
+  if (!bgMusic) return;
+  if (!wantsMusic() || !musicPlaying) return;   // användaren har musik avstängd
+  if (document.hidden) return;                  // dold flik sköts av visibilitychange
+  if (!bgMusic.paused) return;                  // spelar redan, inget att göra
+  const p = bgMusic.play();
+  if (p && p.then) p.then(
+    () => console.log('[musik] auto-resume efter video: OK'),
+    (err) => console.log('[musik] auto-resume avvisad:', err && err.name,
+                         '— manuell musikknapp fungerar fortfarande')
+  );
+}
+
 // ==========================================
 //  INSTRUKTIONSTEXT (visas i 4 sek vid start)
 // ==========================================
@@ -282,19 +316,17 @@ function handleStart() {
   // (med dyr getImageData per frame) bakom startskärmen och gör START-knappen trög.
   if (!loopStarted) { loopStarted = true; requestAnimationFrame(loop); }
 
+  // Värm BÅDA reaktionselementen under start-gesten — annars fastnar
+  // helskärmsvideon (Somnar/Win) på iOS som kräver en användargest.
+  const warm = (el) => {
+    const reset = () => { el.muted = false; el.removeAttribute('src'); el.load(); };
+    el.muted = true;
+    el.src = VIDEOS.chomp;
+    el.play().then(() => { el.pause(); reset(); }).catch(reset);
+  };
   setTimeout(() => {
-    video.muted = true;
-    video.src = VIDEOS.chomp;
-    video.play().then(() => {
-      video.pause();
-      video.muted = false;
-      video.removeAttribute('src');
-      video.load();
-    }).catch(() => {
-      video.muted = false;
-      video.removeAttribute('src');
-      video.load();
-    });
+    warm(video);
+    warm(videoFs);
 
     bugLoop.play().catch(() => {});
     startMusic();
@@ -473,12 +505,12 @@ const crash = {
 };
 
 window.restartGame = function() {
-  video.oncanplay = null;
-  video.onerror   = null;
-  video.onended   = null;
-  video.removeAttribute('src');
-  video.load();
-  overlay.classList.remove('active');
+  [video, videoFs].forEach(v => {
+    v.oncanplay = null; v.onerror = null; v.onended = null;
+    v.removeAttribute('src'); v.load();
+  });
+  bubble.classList.remove('active');
+  fsOverlay.classList.remove('active');
   isShowingVideo = false;
   crash.phase = 'idle';
   candyEaten = 0;
@@ -842,42 +874,44 @@ function eatCandy(candy) {
 // Liten reaktion uppe i hörnet — STOPPAR INTE spelet (man kan fortsätta dra godis)
 function playReaction(filename) {
   if (!filename) return;
-  overlay.classList.remove('fullscreen');
+  cancelMusicResume();            // videon tar över ljudet — avbryt ev. pending resume
   video.onended = () => hideReaction();
   video.onerror = () => hideReaction();
   video.src = filename;
-  overlay.classList.add('active');
+  bubble.classList.add('active');
   const p = video.play();
   if (p) p.catch(() => { video.oncanplay = () => video.play().catch(hideReaction); });
 }
 function hideReaction() {
-  overlay.classList.remove('active');
+  bubble.classList.remove('active');
   video.onended = video.onerror = video.oncanplay = null;
   video.removeAttribute('src');
   video.load();
+  scheduleMusicResume();          // reaktionen klar — planera att ta tillbaka musiken
 }
 
 // Helskärmsvideo (sockerkrasch / vinst) — pausar spelet medvetet inför ny nivå
 function playVideo(filename, onDone = null) {
   isShowingVideo = true;
-  overlay.classList.add('fullscreen');
-  video.onended = () => finishVideo(onDone);
-  video.onerror = () => finishVideo(onDone);
-  video.src = filename;
-  overlay.classList.add('active');
-  video.play().catch(() => {
-    video.oncanplay = () => { video.play().catch(() => finishVideo(onDone)); };
+  hideReaction();                 // dölj ev. bubbla så helskärmen tar över rent
+  cancelMusicResume();            // helskärmsvideon tar över ljudet — avbryt resume
+  videoFs.onended = () => finishVideo(onDone);
+  videoFs.onerror = () => finishVideo(onDone);
+  videoFs.src = filename;
+  fsOverlay.classList.add('active');
+  videoFs.play().catch(() => {
+    videoFs.oncanplay = () => { videoFs.play().catch(() => finishVideo(onDone)); };
   });
 }
 function finishVideo(onDone = null) {
-  overlay.classList.remove('active');
-  overlay.classList.remove('fullscreen');
+  fsOverlay.classList.remove('active');
   // Nolla handlers FÖRST — annars loopar onerror in i finishVideo igen
-  video.onended  = null;
-  video.onerror  = null;
-  video.oncanplay = null;
-  video.removeAttribute('src');
-  video.load();
+  videoFs.onended  = null;
+  videoFs.onerror  = null;
+  videoFs.oncanplay = null;
+  videoFs.removeAttribute('src');
+  videoFs.load();
+  scheduleMusicResume();          // helskärmsvideo klar — planera att ta tillbaka musiken
   if (onDone) {
     onDone();
   } else if (!crash.isActive) {
