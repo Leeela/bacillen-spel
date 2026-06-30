@@ -459,11 +459,12 @@ const voiceEls = {};
 VOICE_KEYS.forEach(k => {
   try { const a = new Audio(VOICE_DIR + VOICE_FILES[k]); a.preload = 'auto'; voiceEls[k] = a; } catch (e) {}
 });
-// Ett klipp räknas som redo bara om mp3:n faktiskt laddats och avkodats.
-// En saknad fil (404) ger readyState 0 / duration NaN → vi faller tillbaka på TTS.
+// Ett klipp räknas som redo om metadata laddats (readyState >= 1) och ingen 404-fel.
+// iOS Safari når bara readyState=1 efter warmVoices; kräv inte >=2 annars faller
+// iPaden alltid tillbaka på TTS-rösten.
 function clipReady(k) {
   const a = voiceEls[k];
-  return !!a && !a.error && a.readyState >= 2 && isFinite(a.duration) && a.duration > 0;
+  return !!a && !a.error && a.readyState >= 1 && isFinite(a.duration) && a.duration > 0;
 }
 // Avbryt allt som spelas just nu (klipp + TTS) så inget överlappar
 let voiceActive = [];
@@ -477,7 +478,14 @@ function stopVoice() {
 const CLIP_OVERLAP = 0.18;        // sek – starta nästa ord innan detta tystnar (tätare tal)
 function sayClips(keys, ttsFallback, onDone) {
   stopVoice();
-  if (!keys.every(clipReady)) { speak(ttsFallback); if (onDone) setTimeout(onDone, 1600); return; }
+  if (!keys.every(clipReady)) {
+    speak(ttsFallback);
+    // Räkna ut hur lång tid TTS behöver — 70ms per tecken + 800ms marginal.
+    // Undviker att onDone kallas mitt i meningen (tidigare hårdkodad 1600ms räckte
+    // inte för "tre plus två är lika med fem! Bra!" som tar ~3–4 sek).
+    if (onDone) setTimeout(onDone, Math.max(2500, ttsFallback.length * 70 + 800));
+    return;
+  }
   let i = 0;
   (function playNext() {
     if (i >= keys.length) { if (onDone) onDone(); return; }
@@ -771,6 +779,9 @@ function warmVoices() {
   VOICE_KEYS.forEach(k => {
     const a = voiceEls[k];
     if (!a) return;
+    // load() tvingar iOS att hämta metadata (readyState → 1) utan att kräva play().
+    // play()+pause() låser sedan upp uppspelnings-tillståndet inuti användargest.
+    try { a.load(); } catch (e) {}
     try {
       a.muted = true;
       const p = a.play();
