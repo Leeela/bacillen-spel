@@ -48,11 +48,16 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
-      padding: 20px;
+      justify-content: flex-start;
+      padding: 20px 20px 96px;
       z-index: 10;
       overflow-y: auto;
     }
+    /* Centrera innehållet när det får plats, men låt det scrolla fullt när det
+       inte gör det — annars klipps tillbaka-länkarna på korta skärmar.
+       Extra padding-bottom håller dem fria från den fasta musikknappen. */
+    .overlay::before,
+    .overlay::after { content: ""; margin-block: auto; }
     .overlay.hidden { display: none; }
 
     .overlay h1 {
@@ -199,10 +204,13 @@
       display: none;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
+      justify-content: flex-start;
       z-index: 20;
-      padding: 20px;
+      padding: 20px 20px 96px;
+      overflow-y: auto;
     }
+    .gameover::before,
+    .gameover::after { content: ""; margin-block: auto; }
     .gameover.show { display: flex; }
 
     .gameover-card {
