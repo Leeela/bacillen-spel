@@ -446,12 +446,27 @@ function playDing() {
     });
   } catch (e) {}
 }
-/* ── Uppläsning av känslo-ordet (webbläsarens röst) ──
-   Funkade på iPhone men var TYST på Android/Samsung. Två orsaker, nu fixade:
-   1) speechSynthesis måste "låsas upp" inne i en användargest – annars spelar
-      Android ingenting. Vi värmer upp tyst vid första touch.
-   2) Röstlistan laddas asynkront; vi väljer svensk röst när den dyker upp,
-      men sätter ALLTID lang='sv-SE' så systemet kan välja svenska ändå. */
+/* ── Uppläsning av känslo-ordet ──
+   PRIMÄRT: inspelade klipp (ElevenLabs kvinnoröst) i /ljud/rost/sv/ –
+   ett per känsla. Klippen hörs på ALLA enheter, även Samsung. Saknas ett klipp
+   faller vi tillbaka på webbläsarens röst (TTS, med Android-uppvärmning nedan).
+   OBS: filnamnen är skiftlägeskänsliga på GitHub Pages – matcha exakt. */
+const VOICE_DIR = '/ljud/rost/sv/';
+const VOICE_FILES = {
+  glad: 'Glad.mp3', ledsen: 'Ledsen.mp3', arg: 'Arg.mp3',
+  radd: 'R_dd.mp3', sur: 'Sur.mp3', kar: 'K_r.mp3'
+};
+const voiceEls = {};
+Object.keys(VOICE_FILES).forEach(k => {
+  try { const a = new Audio(VOICE_DIR + VOICE_FILES[k]); a.preload = 'auto'; voiceEls[k] = a; } catch (e) {}
+});
+// Redo bara om mp3:n faktiskt laddats; saknad fil (404) → fall tillbaka på TTS.
+function clipReady(k) {
+  const a = voiceEls[k];
+  return !!a && !a.error && a.readyState >= 2 && isFinite(a.duration) && a.duration > 0;
+}
+
+// ── TTS-reserv (webbläsarens röst) – används bara om ett klipp saknas ──
 let _svVoice = null;
 function pickSvVoice() {
   try {
@@ -467,37 +482,66 @@ try {
     speechSynthesis.onvoiceschanged = () => { _svVoice = pickSvVoice(); };
   }
 } catch (e) {}
-
-// Android Chrome kräver att FÖRSTA speak() sker i en användargest, annars tyst.
-// Värm upp tyst vid första touch så senare uppläsningar (i setTimeout) hörs.
-// Fyller även röstlistan.
-let _ttsWarmed = false;
-function warmTTS() {
-  if (_ttsWarmed || !('speechSynthesis' in window)) return;
-  _ttsWarmed = true;
-  try {
-    const u = new SpeechSynthesisUtterance(' ');
-    u.volume = 0; u.lang = 'sv-SE';
-    speechSynthesis.speak(u);
-    _svVoice = _svVoice || pickSvVoice();
-  } catch (e) {}
-}
-['pointerdown', 'touchstart', 'click'].forEach(ev =>
-  window.addEventListener(ev, warmTTS, { passive: true }));
-
-function speakWord(word) {
+function speakTTS(word) {
   try {
     if (!('speechSynthesis' in window)) return;
     if (!_svVoice) _svVoice = pickSvVoice();
     const u = new SpeechSynthesisUtterance(word);
-    if (_svVoice) u.voice = _svVoice;                 // svensk röst om den finns
+    if (_svVoice) u.voice = _svVoice;
     u.lang = (_svVoice && _svVoice.lang) || 'sv-SE';
     u.rate = 0.9; u.pitch = 1.2;
     speechSynthesis.cancel();
     speechSynthesis.speak(u);
-    try { speechSynthesis.resume(); } catch (e) {}    // Chrome-bugg: tal fastnar pausat
+    try { speechSynthesis.resume(); } catch (e) {}
   } catch (e) {}
 }
+
+// Säg en känsla (id, t.ex. 'glad'): spela klippet om det finns, annars TTS.
+let _voiceActive = [];
+function speakWord(id) {
+  try { if ('speechSynthesis' in window) speechSynthesis.cancel(); } catch (e) {}
+  _voiceActive.forEach(a => { try { a.pause(); } catch (e) {} });
+  _voiceActive = [];
+  if (clipReady(id)) {
+    try {
+      const a = voiceEls[id].cloneNode();
+      a.volume = 1;
+      _voiceActive.push(a);
+      const p = a.play();
+      if (p) p.catch(() => speakTTS(LABEL[id]));
+      return;
+    } catch (e) {}
+  }
+  speakTTS(LABEL[id]);
+}
+
+// Lås upp ljudet vid första touch (krävs på iOS/Android): värm både de
+// inspelade klippen och webbläsarens röst, så uppläsningen (i setTimeout) hörs.
+let _voicesWarmed = false;
+function warmVoices() {
+  if (_voicesWarmed) return;
+  _voicesWarmed = true;
+  Object.keys(VOICE_FILES).forEach(k => {
+    const a = voiceEls[k];
+    if (!a) return;
+    try {
+      a.muted = true;
+      const p = a.play();
+      if (p && p.then) p.then(() => { a.pause(); a.currentTime = 0; a.muted = false; }).catch(() => { a.muted = false; });
+      else { try { a.pause(); } catch (e) {} a.muted = false; }
+    } catch (e) {}
+  });
+  try {
+    if ('speechSynthesis' in window) {
+      const u = new SpeechSynthesisUtterance(' ');
+      u.volume = 0; u.lang = 'sv-SE';
+      speechSynthesis.speak(u);
+      _svVoice = _svVoice || pickSvVoice();
+    }
+  } catch (e) {}
+}
+['pointerdown', 'touchstart', 'click'].forEach(ev =>
+  window.addEventListener(ev, warmVoices, { passive: true }));
 
 /* ── Spel-logik ── */
 const $ = id => document.getElementById(id);
@@ -568,7 +612,7 @@ function choose(em, btn) {
   const wp = $('word-pop');
   wp.textContent = LABEL[current.id];
   wp.classList.remove('go'); void wp.offsetWidth; wp.classList.add('go');
-  setTimeout(() => speakWord(LABEL[current.id]), 650);
+  setTimeout(() => speakWord(current.id), 650);
 
   $('choices').style.display = 'none';
   setTimeout(() => {
