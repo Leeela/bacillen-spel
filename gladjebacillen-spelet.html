@@ -446,10 +446,12 @@ function playDing() {
     });
   } catch (e) {}
 }
-// VIKTIGT: Android/iOS saknar ofta en svensk TTS-röst och byter då till sin
-// engelska standardröst som uttalar svensk text fel ("engelsk robotröst").
-// Vi letar därför upp en riktig sv-röst – finns ingen sådan är vi hellre TYSTA
-// än läser svenska med engelskt uttal.
+/* ── Uppläsning av känslo-ordet (webbläsarens röst) ──
+   Funkade på iPhone men var TYST på Android/Samsung. Två orsaker, nu fixade:
+   1) speechSynthesis måste "låsas upp" inne i en användargest – annars spelar
+      Android ingenting. Vi värmer upp tyst vid första touch.
+   2) Röstlistan laddas asynkront; vi väljer svensk röst när den dyker upp,
+      men sätter ALLTID lang='sv-SE' så systemet kan välja svenska ändå. */
 let _svVoice = null;
 function pickSvVoice() {
   try {
@@ -459,16 +461,41 @@ function pickSvVoice() {
            vs.find(v => /(^|[-_])sv([-_]|$)/i.test(v.lang)) || null;
   } catch (e) { return null; }
 }
-try { if ('speechSynthesis' in window) speechSynthesis.onvoiceschanged = () => { _svVoice = pickSvVoice(); }; } catch (e) {}
+try {
+  if ('speechSynthesis' in window) {
+    _svVoice = pickSvVoice();
+    speechSynthesis.onvoiceschanged = () => { _svVoice = pickSvVoice(); };
+  }
+} catch (e) {}
+
+// Android Chrome kräver att FÖRSTA speak() sker i en användargest, annars tyst.
+// Värm upp tyst vid första touch så senare uppläsningar (i setTimeout) hörs.
+// Fyller även röstlistan.
+let _ttsWarmed = false;
+function warmTTS() {
+  if (_ttsWarmed || !('speechSynthesis' in window)) return;
+  _ttsWarmed = true;
+  try {
+    const u = new SpeechSynthesisUtterance(' ');
+    u.volume = 0; u.lang = 'sv-SE';
+    speechSynthesis.speak(u);
+    _svVoice = _svVoice || pickSvVoice();
+  } catch (e) {}
+}
+['pointerdown', 'touchstart', 'click'].forEach(ev =>
+  window.addEventListener(ev, warmTTS, { passive: true }));
+
 function speakWord(word) {
   try {
     if (!('speechSynthesis' in window)) return;
     if (!_svVoice) _svVoice = pickSvVoice();
-    if (!_svVoice) return;              // ingen svensk röst → var hellre tyst
     const u = new SpeechSynthesisUtterance(word);
-    u.voice = _svVoice; u.lang = _svVoice.lang || 'sv-SE';
+    if (_svVoice) u.voice = _svVoice;                 // svensk röst om den finns
+    u.lang = (_svVoice && _svVoice.lang) || 'sv-SE';
     u.rate = 0.9; u.pitch = 1.2;
-    speechSynthesis.cancel(); speechSynthesis.speak(u);
+    speechSynthesis.cancel();
+    speechSynthesis.speak(u);
+    try { speechSynthesis.resume(); } catch (e) {}    // Chrome-bugg: tal fastnar pausat
   } catch (e) {}
 }
 
