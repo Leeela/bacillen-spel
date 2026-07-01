@@ -475,7 +475,7 @@ function stopVoice() {
 }
 // Spela en sekvens klipp i följd; avbryter pågående ljud först.
 // Faller tillbaka på TTS om något klipp saknas.
-const CLIP_OVERLAP = 0.18;        // sek – starta nästa ord innan detta tystnar (tätare tal)
+const CLIP_GAP = 0.5;             // sek – tydlig paus mellan klippen så orden inte flyter ihop
 function sayClips(keys, ttsFallback, onDone) {
   stopVoice();
   if (!keys.every(clipReady)) {
@@ -495,9 +495,10 @@ function sayClips(keys, ttsFallback, onDone) {
     try { a = voiceEls[key].cloneNode(); } catch (e) { if (onDone) onDone(); return; }
     voiceActive.push(a);
     let stepped = false;
-    const step = () => { if (stepped) return; stepped = true; playNext(); };
-    // starta nästa klipp strax innan detta tar slut → mindre tystnad mellan orden
-    const t = setTimeout(step, Math.max(120, (dur - CLIP_OVERLAP) * 1000));
+    // Vänta CLIP_GAP sek efter att klippet tystnat innan nästa ord → tydlig paus
+    const step = () => { if (stepped) return; stepped = true; setTimeout(playNext, CLIP_GAP * 1000); };
+    // Failsafe om 'ended' aldrig kommer (t.ex. iOS): klippets längd + liten marginal
+    const t = setTimeout(step, (dur + 0.25) * 1000);
     a.addEventListener('ended', () => { clearTimeout(t); step(); }, { once: true });
     a.addEventListener('error', () => { clearTimeout(t); step(); }, { once: true });
     const p = a.play(); if (p) p.catch(() => { clearTimeout(t); step(); });
@@ -622,10 +623,9 @@ function feed(el) {
     if (d) d.classList.add('eaten');
   }
 
-  // Räkna högt för varje godis. På plus-nivån börjar räkningen om efter
-  // första talet: 2+3 → "ett, två" (första talet), sedan "ett, två, tre".
-  const spokenNum = (level === 3 && eaten > addA) ? (eaten - addA) : eaten;
-  sayNumber(spokenNum);
+  // Räkna högt för varje godis – kontinuerligt hela vägen till summan.
+  // 2+3 → "ett, två, tre, fyra, fem" så barnet hör svaret medan det matar.
+  sayNumber(eaten);
 
   if (eaten >= target) {
     locked = true;
@@ -696,7 +696,7 @@ function win() {
     const d = voiceEls[k] && isFinite(voiceEls[k].duration) ? voiceEls[k].duration : 1.2;
     return s + d;
   }, 0);
-  const failsafe = speakDelay + Math.round(clipSecs * 1000) + gapAfter + 2000;
+  const failsafe = speakDelay + Math.round(clipSecs * 1000) + (keys.length - 1) * CLIP_GAP * 1000 + gapAfter + 2000;
   setTimeout(() => sayClips(keys, tts, () => setTimeout(finish, gapAfter)), speakDelay);
   setTimeout(finish, failsafe); // säkerhet om talet aldrig hinner avsluta
 }
