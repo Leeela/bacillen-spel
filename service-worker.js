@@ -1,4 +1,4 @@
-const CACHE_NAME = 'bacillerna-v44';
+const CACHE_NAME = 'bacillerna-v45';
 
 // Filer som cachas vid installation
 const PRECACHE_URLS = [
@@ -23,6 +23,14 @@ const PRECACHE_URLS = [
   '/manifest.json',
   '/godisbacillen.png',
   '/godisbacillen-gapar.png',
+  // Dansbacillens Dansvåg (trumspel) — spel, bild och röstklipp för offline
+  '/dansbacillen-spelet.html',
+  '/bilder/dansbacillen.png',
+  '/ljud/Let_s_dance_.mp3',
+  '/ljud/Bra_.mp3',
+  '/ljud/F_rs_k_igen_.mp3',
+  '/ljud/Min_tur_.mp3',
+  '/ljud/Din_tur_.mp3',
   '/icons/icon-180.png',
   '/icons/icon-192.png',
   '/icons/icon-512.png',
