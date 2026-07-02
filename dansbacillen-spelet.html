@@ -283,7 +283,7 @@ const DIFF = {
   easy: { bpm: 72, win: 0.26, goal: 6 },   // Lätt: fast tempo, följ varje slag
   more: { bpm: 63, win: 0.22, goal: 10 }   // Mer: härma, tempo ökar med rundor
 };
-function bpmForRound(r) { return Math.min(cfg.bpm + Math.floor(r / 2) * 9, 120); }
+function bpmForRound(r) { return Math.min(cfg.bpm + Math.floor(r / 2) * 9, 96); }
 
 /* ── Web Audio ── trumljud syntas; ETT ljudklipp ("Let's dance") vid Dansvågen ── */
 let audioCtx = null, masterGain = null, fgBus = null, noiseBuf = null;
@@ -424,6 +424,7 @@ function startGame(key) {
     callActive = true; roundsCleared = 0; callPhase = 'listen';
     pattern = nextPattern();
     beatDur = 60 / bpmForRound(0);
+    startTime += 2;                           // 2 s lugn stund så barnet hinner fatta innan tickandet
     barRef = startTime;
     phaseEndTime = startTime + 4 * beatDur;
     readyCue();                               // liten intro-signal
@@ -463,10 +464,27 @@ function scheduler() {
   }
 }
 
-/* Schemalägg mönster-slagen i en takt som fylliga trumslag. Inga taktljud
-   däremellan — bara trumslagen hörs. */
+/* Lätt taktpuls (metronom) så barnet känner fyrtakten och hittar slagen.
+   Accent på ettan, tystare klick på 2-3-4. */
+function tickClick(t, accent) {
+  const o = audioCtx.createOscillator(); const g = audioCtx.createGain();
+  o.type = 'square';
+  o.frequency.setValueAtTime(accent ? 1500 : 1050, t);
+  g.gain.setValueAtTime(0.0001, t);
+  g.gain.exponentialRampToValueAtTime(accent ? 0.16 : 0.09, t + 0.004);
+  g.gain.exponentialRampToValueAtTime(0.0001, t + 0.05);
+  o.connect(g); g.connect(fgBus); o.start(t); o.stop(t + 0.06);
+}
+/* Klick på alla fyra slagen i takten — den stadiga puls som gör mönstret följbart. */
+function scheduleBeatTicks(barStart) {
+  for (let b = 0; b < 4; b++) tickClick(barStart + b * beatDur, b === 0);
+}
+
+/* Schemalägg mönster-slagen i en takt som fylliga trumslag, ovanpå en stadig
+   taktpuls så barnet känner var slagen ligger. */
 function scheduleBar(barStart, pat) {
   if (!pat) return;
+  scheduleBeatTicks(barStart);
   for (const b of pat) {
     const tb = barStart + b * beatDur;
     boom(tb);
@@ -475,15 +493,15 @@ function scheduleBar(barStart, pat) {
   }
 }
 
-/* Inräkning (2, 1) så barnet vet exakt när det ska börja slå */
+/* Inräkning en hel takt (4, 3, 2, 1) så barnet känner fyrtakten innan det slår */
 function showCount(n) { const el = $('countnum'); el.textContent = n; el.classList.remove('go'); void el.offsetWidth; el.classList.add('go'); }
 function hideCount() { const el = $('countnum'); el.classList.remove('go'); el.textContent = ''; }
 function scheduleCountin(barStart) {
-  for (let b = 0; b < 2; b++) {
+  for (let b = 0; b < 4; b++) {
     const tb = barStart + b * beatDur;
-    tone(b === 1 ? 990 : 720, tb, 0.14, 0.3, 'square');   // klick, sista lite ljusare
+    tickClick(tb, b === 0);        // samma taktklick som pulsen, ettan accentuerad
     const dl = (tb - audioCtx.currentTime) * 1000;
-    const label = String(2 - b);   // 2, 1
+    const label = String(4 - b);   // 4, 3, 2, 1
     setTimeout(() => { if (playing && callPhase === 'countin') showCount(label); }, Math.max(0, dl));
   }
 }
@@ -504,7 +522,7 @@ function callTick(now) {
     callPhase = 'countin';
     const barStart = phaseEndTime;
     barRef = barStart;
-    phaseEndTime = barStart + 2 * beatDur;
+    phaseEndTime = barStart + 4 * beatDur;
     setInstruction('Din tur!');
     playClip(dinTurSound);
     scheduleCountin(barStart);
@@ -515,6 +533,7 @@ function callTick(now) {
     respondHits = new Set();
     barRef = respondBarStart;
     phaseEndTime = respondBarStart + 4 * beatDur;
+    scheduleBeatTicks(respondBarStart);   // stadig puls även under barnets tur
     hideCount();
     setInstruction('Din tur! Slå samma 🥁');
   } else if (callPhase === 'respond') {
@@ -540,19 +559,19 @@ function callTick(now) {
     barRef = phaseEndTime;
     const feedbackBeats = full ? Math.max(4, Math.ceil(3.4 / beatDur)) : 2;
     const restStart = phaseEndTime;
-    for (let k = 0; k < 2; k++) {
+    for (let k = 0; k < 4; k++) {
       const tb = restStart + (feedbackBeats + k) * beatDur;
-      const label = String(2 - k);               // 2, 1
-      tone(720, tb, 0.14, 0.3, 'square');
+      const label = String(4 - k);               // 4, 3, 2, 1
+      tickClick(tb, k === 0);
       const dl = (tb - audioCtx.currentTime) * 1000;
       setTimeout(() => {
         if (!(playing && callPhase === 'rest')) return;
         showCount(label);
         setInstruction('Min tur!');
-        if (label === '2') playClip(minTurSound);   // Dansbacillen: "Min tur!"
+        if (label === '4') playClip(minTurSound);   // Dansbacillen: "Min tur!"
       }, Math.max(0, dl));
     }
-    phaseEndTime = restStart + (feedbackBeats + 2) * beatDur;
+    phaseEndTime = restStart + (feedbackBeats + 4) * beatDur;
   } else {
     // paus klar -> ny demo (nytt försök)
     hideCount();
@@ -605,7 +624,10 @@ function tapDrum() {
       const diff = Math.abs(now - tq);
       if (diff < bestDiff) { bestDiff = diff; best = q; }
     }
-    if (best >= 0 && bestDiff <= hitWin && !respondHits.has(best)) { respondHits.add(best); onBeatHit(); }
+    // Fönstret skalar med tempot (65 % av ett slag) så grannslagens fönster
+    // överlappar rejält — två slag på raken är lätta att träffa, ingen död zon emellan.
+    const win = 0.65 * beatDur;
+    if (best >= 0 && bestDiff <= win && !respondHits.has(best)) { respondHits.add(best); onBeatHit(); }
     return;
   }
   // Lätt (free): slå på varje slag i takt
