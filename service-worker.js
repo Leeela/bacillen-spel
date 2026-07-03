@@ -1,4 +1,4 @@
-const CACHE_NAME = 'bacillerna-v46';
+const CACHE_NAME = 'bacillerna-v47';
 
 // Filer som cachas vid installation
 const PRECACHE_URLS = [
@@ -23,6 +23,10 @@ const PRECACHE_URLS = [
   '/manifest.json',
   '/godisbacillen.png',
   '/godisbacillen-gapar.png',
+  // Dansa med Dansbacillen (dans challenge) — sida och lokala fonter för offline
+  '/dansa-med-dansbacillen.html',
+  '/fonts/Fredoka-VariableFont.ttf',
+  '/fonts/Nunito-VariableFont.ttf',
   // Dansbacillens Dansvåg (trumspel) — spel, bild och röstklipp för offline
   '/dansbacillen-spelet.html',
   '/bilder/dansbacillen.png',
