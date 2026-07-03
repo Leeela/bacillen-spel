@@ -392,12 +392,16 @@ function loadVoices() {
 function warmClips() {
   if (clipsWarmed || !voiceLoaded) return;
   clipsWarmed = true;
+  // iOS: lås upp varje klipp i användargesten men producera INGET ljud.
+  // Mutat + synkron paus = tyst även om iOS ignorerar antingen muted eller pausen.
+  // Klippen förblir mutade; playClip slår på ljud bara för klippet som ska spelas.
   Object.values(VOICE).forEach(a => {
     try {
       a.muted = true;
       const p = a.play();
-      if (p && p.then) p.then(() => { a.pause(); a.currentTime = 0; a.muted = muted; }).catch(() => { a.muted = muted; });
-      else { try { a.pause(); } catch (e) {} a.muted = muted; }
+      if (p && p.catch) p.catch(() => {});
+      a.pause();
+      a.currentTime = 0;
     } catch (e) {}
   });
 }
@@ -405,7 +409,7 @@ function playClip(key) {
   if (muted) return;
   const a = VOICE[key];
   if (!a) return;                       // saknas -> tyst, spelet fortsätter
-  try { a.currentTime = 0; const p = a.play(); if (p) p.catch(() => {}); } catch (e) {}
+  try { a.muted = false; a.currentTime = 0; const p = a.play(); if (p) p.catch(() => {}); } catch (e) {}
 }
 function randomCheer() { return CHEERS[Math.floor(Math.random() * CHEERS.length)]; }
 
