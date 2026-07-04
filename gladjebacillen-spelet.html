@@ -460,6 +460,30 @@ const voiceEls = {};
 Object.keys(VOICE_FILES).forEach(k => {
   try { const a = new Audio(VOICE_DIR + VOICE_FILES[k]); a.preload = 'auto'; voiceEls[k] = a; } catch (e) {}
 });
+// Glädjebacillens meningar (inspelade i /ljud/rost/sv/). Saknas en fil hoppas den tyst över.
+const PHRASE_FILES = {
+  ask: 'Fraga.mp3',          // "Hur känner den sig?"
+  celebrate: 'Fira.mp3',     // "Fira med Glädjebacillen!"
+  help: 'Hjalp.mp3'          // "Hjälp den! Tryck på Glädjebacillen"
+};
+const phraseEls = {};
+Object.keys(PHRASE_FILES).forEach(k => {
+  try { const a = new Audio(VOICE_DIR + PHRASE_FILES[k]); a.preload = 'auto'; phraseEls[k] = a; } catch (e) {}
+});
+// Spela en mening (avbryter känslo-ord/tidigare mening så inget krockar).
+function speakPhrase(key) {
+  const a = phraseEls[key];
+  if (!a || a.error) return;
+  _voiceActive.forEach(x => { try { x.pause(); } catch (e) {} });
+  _voiceActive = [];
+  try {
+    const c = a.cloneNode();
+    c.volume = 1;
+    _voiceActive.push(c);
+    const p = c.play();
+    if (p) p.catch(() => {});
+  } catch (e) {}
+}
 // Redo bara om mp3:n faktiskt laddats; saknad fil (404) → fall tillbaka på TTS.
 function clipReady(k) {
   const a = voiceEls[k];
@@ -521,8 +545,7 @@ let _voicesWarmed = false;
 function warmVoices() {
   if (_voicesWarmed) return;
   _voicesWarmed = true;
-  Object.keys(VOICE_FILES).forEach(k => {
-    const a = voiceEls[k];
+  [...Object.values(voiceEls), ...Object.values(phraseEls)].forEach(a => {
     if (!a) return;
     try {
       a.muted = true;
@@ -585,6 +608,7 @@ function nextRound() {
 
   // Prompt + knappar
   $('prompt').textContent = 'Hur känner den sig?';
+  speakPhrase('ask');
   $('hero').style.display = 'none';
   $('hero').classList.remove('jump');
 
@@ -617,10 +641,13 @@ function choose(em, btn) {
   $('choices').style.display = 'none';
   setTimeout(() => {
     phase = 'help';
-    $('prompt').textContent = POSITIVE.includes(current.id)
+    const pos = POSITIVE.includes(current.id);
+    $('prompt').textContent = pos
       ? 'Fira med Glädjebacillen!'
       : 'Hjälp den! Tryck på Glädjebacillen';
     $('hero').style.display = 'block';
+    // Säg meningen efter att känslo-ordet hunnit klart, om barnet inte redan tryckt.
+    setTimeout(() => { if (phase === 'help') speakPhrase(pos ? 'celebrate' : 'help'); }, 900);
   }, 750);
 }
 
