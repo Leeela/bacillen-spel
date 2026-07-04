@@ -7,3 +7,14 @@ dist
 out
 Spel/
 public/.claude/
+
+# Claude Code / tooling – lokala filer, ej del av sajten
+.claude/launch.json
+.superpowers/
+
+# luvbugscollection.com är ett eget git-repo (committas separat, inte här)
+luvbugscollection/
+
+# Lokala ljud-backuper (behålls på disk, ej i git)
+ljud/rost/sv/original_backup/
+ljud/rost/sv/_original_backup/
