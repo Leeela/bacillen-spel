@@ -485,11 +485,16 @@ function resolve(bought){
     if(pr) pr.innerHTML=`🪙 <span class="t-oldprice">${prev} mynt</span> ${curPrice} mynt`;
     const tp=document.getElementById('tempt');
     if(tp){ tp.classList.remove('drop'); void tp.offsetWidth; tp.classList.add('drop'); }
+    const last = drops===MAX_DROPS; // sista (lägsta) prissänkningen
     const fb0=document.getElementById('feedback');
     fb0.className='feedback neutral';
-    fb0.textContent=`💡 Priset sjönk till ${curPrice} mynt — men behöver du den?`;
-    document.getElementById('bubble').textContent=`Vänta! Nu är den ännu billigare — bara ${curPrice} mynt! Köper du nu? 🤑`;
-    sndSave(); playVoice('rik-rea');
+    fb0.textContent = last
+      ? `🔥 Bra pris! Lägsta priset — ${curPrice} mynt. Men behöver du den?`
+      : `💡 Priset sjönk till ${curPrice} mynt — men behöver du den?`;
+    document.getElementById('bubble').textContent = last
+      ? `Bra pris! Sista chansen — bara ${curPrice} mynt! Men behöver du den? 🤑`
+      : `Vänta! Nu är den ännu billigare — bara ${curPrice} mynt! Köper du nu? 🤑`;
+    sndSave(); playVoice(last ? 'rik-bra-pris' : 'rik-rea');
     return; // barnet väljer igen, banan går inte framåt
   }
 

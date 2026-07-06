@@ -1,4 +1,4 @@
-const CACHE_NAME = 'bacillerna-v54';
+const CACHE_NAME = 'bacillerna-v55';
 
 // Filer som cachas vid installation
 const PRECACHE_URLS = [
@@ -50,6 +50,7 @@ const PRECACHE_URLS = [
   '/ljud/rost/rikedomsbacillen/SV/rik-vinst.mp3',
   '/ljud/rost/rikedomsbacillen/SV/rik-forlite.mp3',
   '/ljud/rost/rikedomsbacillen/SV/rik-rea.mp3',
+  '/ljud/rost/rikedomsbacillen/SV/rik-bra-pris.mp3',
 ];
 
 // Filtyper som aldrig cachas (video är för stora)
