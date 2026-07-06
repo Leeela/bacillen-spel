@@ -1,4 +1,4 @@
-const CACHE_NAME = 'bacillerna-v53';
+const CACHE_NAME = 'bacillerna-v54';
 
 // Filer som cachas vid installation
 const PRECACHE_URLS = [
@@ -39,6 +39,17 @@ const PRECACHE_URLS = [
   '/icons/icon-512.png',
   '/icons/icon-maskable-192.png',
   '/icons/icon-maskable-512.png',
+  // Spara med Rikedomsbacillen (sparspel) — sida, bild och röstklipp för offline
+  '/rikedomsbacillen-spara.html',
+  '/bilder/rikedomsbacillen.png',
+  '/ljud/rost/rikedomsbacillen/SV/rik-valj.mp3',
+  '/ljud/rost/rikedomsbacillen/SV/rik-start.mp3',
+  '/ljud/rost/rikedomsbacillen/SV/rik-spara.mp3',
+  '/ljud/rost/rikedomsbacillen/SV/rik-kop.mp3',
+  '/ljud/rost/rikedomsbacillen/SV/rik-streak.mp3',
+  '/ljud/rost/rikedomsbacillen/SV/rik-vinst.mp3',
+  '/ljud/rost/rikedomsbacillen/SV/rik-forlite.mp3',
+  '/ljud/rost/rikedomsbacillen/SV/rik-rea.mp3',
 ];
 
 // Filtyper som aldrig cachas (video är för stora)
