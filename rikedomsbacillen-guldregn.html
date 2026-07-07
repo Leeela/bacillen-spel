@@ -214,6 +214,7 @@ body {
   position: absolute;
   width: clamp(64px, 15vmin, 86px);
   height: clamp(64px, 15vmin, 86px);
+  top: 0;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
   -webkit-touch-callout: none;
@@ -223,10 +224,23 @@ body {
   outline: none;
   border: none;
   z-index: 10;
-  animation: coinAppear 0.35s cubic-bezier(0.34,1.56,0.64,1);
-  filter: drop-shadow(0 5px 12px rgba(0,0,0,0.35));
 }
-.coin svg { width: 100%; height: 100%; display: block; }
+/* Inre element bär grafiken, skuggan och skal-/puls-/pop-animationen.
+   Fallet ligger på ytterelementet (.coin) via transform, så iOS Safari
+   komponerar rörelsen på GPU:n och lämnar inga gråa drop-shadow-spår. */
+.coin-vis {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  filter: drop-shadow(0 5px 12px rgba(0,0,0,0.35));
+  animation: coinAppear 0.35s cubic-bezier(0.34,1.56,0.64,1);
+  will-change: transform;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+}
+.coin-vis svg { width: 100%; height: 100%; display: block; }
 @keyframes coinAppear {
   from { transform: scale(0) rotate(-25deg); opacity: 0; }
   to   { transform: scale(1) rotate(0deg);   opacity: 1; }
@@ -234,7 +248,8 @@ body {
 .coin.special {
   width: clamp(72px, 17vmin, 96px);
   height: clamp(72px, 17vmin, 96px);
-  display: flex; align-items: center; justify-content: center;
+}
+.coin.special .coin-vis {
   font-size: clamp(44px, 12vmin, 64px);
   animation: specialPulse 0.75s ease-in-out infinite alternate, coinAppear 0.35s ease-out;
   filter: drop-shadow(0 0 12px rgba(255,215,0,0.95));
@@ -244,29 +259,28 @@ body {
   to   { transform: scale(1.2)  rotate(6deg);  filter: drop-shadow(0 0 22px gold) drop-shadow(0 0 8px #fff); }
 }
 .coin.caught {
-  animation: catchPop 0.32s ease-out forwards !important;
+  animation-play-state: paused !important;
   pointer-events: none;
+}
+.coin.caught .coin-vis {
+  animation: catchPop 0.32s ease-out forwards !important;
 }
 @keyframes catchPop {
   0%   { transform: scale(1);   opacity: 1; }
   45%  { transform: scale(1.6); opacity: 0.8; }
   100% { transform: scale(0);   opacity: 0; }
 }
+/* Fallet animerar transform (GPU-komponerat) i stället för 'top' — det tar
+   bort de gråa släpspåren på iPhone. Puls/pop ligger på .coin-vis och
+   krockar därför inte med fallet. */
 .coin.falling {
-  top: -90px;
-  animation: fallDown var(--fall-dur, 2.5s) linear forwards,
-             coinAppear 0.35s cubic-bezier(0.34,1.56,0.64,1);
+  top: 0;
+  will-change: transform;
+  animation: fallDown var(--fall-dur, 2.5s) linear forwards;
 }
-/* Fallet animerar 'top' (inte transform) så att pulsering/pop-animationen
-   kan använda transform samtidigt utan att skriva över fallet. */
 @keyframes fallDown {
-  from { top: -90px; }
-  to   { top: 110vh; }
-}
-.coin.falling.special {
-  top: -90px;
-  animation: fallDown var(--fall-dur,2.5s) linear forwards,
-             specialPulse 0.75s ease-in-out infinite alternate;
+  from { transform: translateY(-90px); }
+  to   { transform: translateY(110vh); }
 }
 
 /* Float poäng */
@@ -334,6 +348,7 @@ body {
   overflow: hidden;
 }
 #bonus-area .coin {
+  will-change: transform;
   animation: fallDown var(--fall-dur, 2.5s) linear forwards;
 }
 .bonus-score-flash {
@@ -649,7 +664,7 @@ function spawnCoin() {
   el.className = `coin ${isGold ? 'gold' : 'silver'}`;
   el.dataset.points = isGold ? GOLD_PTS : SILVER_PTS;
   el.dataset.type   = isGold ? 'gold' : 'silver';
-  el.innerHTML = isGold ? goldSVG() : silverSVG();
+  el.innerHTML = '<div class="coin-vis">' + (isGold ? goldSVG() : silverSVG()) + '</div>';
 
   if (mode === 'easy') {
     el.style.left = rnd(5, 80) + '%';
@@ -674,7 +689,7 @@ function spawnSpecial(area) {
   const emoji = opts[Math.floor(Math.random() * opts.length)];
   const el = document.createElement('div');
   el.className = 'coin special';
-  el.textContent = emoji;
+  el.innerHTML = '<div class="coin-vis">' + emoji + '</div>';
   el.dataset.type = 'special';
 
   if (mode === 'easy') {
@@ -715,7 +730,6 @@ function catchCoin(el) {
   floatPts(el, '+' + pts);
 
   el.classList.add('caught');
-  el.style.animation = 'catchPop 0.3s ease-out forwards';
   setTimeout(() => el.remove(), 300);
 
   if (mode === 'medium') bounceBug();
@@ -727,7 +741,6 @@ function catchSpecial(el) {
   gameActive = false;
 
   el.classList.add('caught');
-  el.style.animation = 'catchPop 0.3s ease-out forwards';
   play('ching');
 
   clearInterval(spawnTimer);
@@ -844,7 +857,7 @@ function startBonusRound() {
     el.className = 'coin gold';
     el.dataset.points = BONUS_PTS;
     el.dataset.type = 'gold';
-    el.innerHTML = goldSVG();
+    el.innerHTML = '<div class="coin-vis">' + goldSVG() + '</div>';
     const dur = rnd(1800, 3000);
     el.style.setProperty('--fall-dur', dur + 'ms');
     el.style.left = rnd(4, 84) + '%';
@@ -875,7 +888,7 @@ function catchBonusCoin(el) {
   updateScore();
   floatPts(el, '+' + pts);
   play('gold');
-  el.style.animation = 'catchPop 0.3s ease-out forwards';
+  el.classList.add('caught');
   setTimeout(() => el.remove(), 300);
 }
 
