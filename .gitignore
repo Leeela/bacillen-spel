@@ -18,3 +18,6 @@ luvbugscollection/
 # Lokala ljud-backuper (behålls på disk, ej i git)
 ljud/rost/sv/original_backup/
 ljud/rost/sv/_original_backup/
+
+# Råklipp/original till Härma Dansbacillen (stora källfiler, ej del av sajten)
+Dansbacillen dansspel/

@@ -1,0 +1,22 @@
+INSPELNINGSLISTA – Dansbacillens röst (Härma Dansbacillen)
+==========================================================
+Spela in som MP3, lägg filerna i denna mapp (ljud/harma/).
+Filnamn EXAKT som nedan (gemener + bindestreck). Korta, glada, lekfulla.
+
+START (spelas när spelet börjar):
+  start-1.mp3  →  "Tryck på en dans!"
+  start-2.mp3  →  "Nu dansar vi!"
+
+HÄRMA (spelas när barnet trycker på en dans – slumpas):
+  harma-1.mp3  →  "Härma mig!"
+  harma-2.mp3  →  "Gör som jag!"
+  harma-3.mp3  →  "Kan du göra så här?"
+  harma-4.mp3  →  "Dansa med mig!"
+
+SLUT/BERÖM (spelas när dansen är klar – slumpas):
+  slut-1.mp3   →  "Vilken dans!"
+  slut-2.mp3   →  "Så bra!"
+  slut-3.mp3   →  "Wow, du är grym!"
+  slut-4.mp3   →  "Tryck på nästa dans!"
+
+Totalt: 10 klipp. Tills mp3:erna finns läser webbläsaren texten automatiskt.
