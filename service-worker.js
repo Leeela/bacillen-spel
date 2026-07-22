@@ -1,4 +1,4 @@
-const CACHE_NAME = 'bacillerna-v67';
+const CACHE_NAME = 'bacillerna-v68';
 
 // Filer som cachas vid installation
 const PRECACHE_URLS = [

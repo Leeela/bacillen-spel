@@ -736,17 +736,31 @@ if (window.CanvasRenderingContext2D &&
 
     const video = document.createElement('video');
     video.src = '../WOW_Yay!.mp4';
+    video.setAttribute('playsinline', '');
+    video.setAttribute('webkit-playsinline', '');
+    video.playsInline = true;
     video.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);height:70vh;width:auto;z-index:30;border-radius:20px;background:transparent;';
     video.muted = false;
+    // Säkerhets-timeout: om videon aldrig firar "ended" (fastnar på gammal/långsam
+    // Android-WebView) gå vidare ändå — annars fryser spelet i evighet här.
+    let done = false, safetyTimer = null;
     const cleanup = () => {
+      if (done) return; done = true;
+      if (safetyTimer) clearTimeout(safetyTimer);
       if (document.body.contains(video)) document.body.removeChild(video);
       state.showingWinVideo = false;
       showWinCard();
     };
     video.onended = cleanup;
     video.onerror = cleanup;
-    video.play().catch(() => { video.muted = true; video.play(); });
-    document.body.appendChild(video);
+    video.onloadedmetadata = () => {
+      if (safetyTimer) clearTimeout(safetyTimer);
+      safetyTimer = setTimeout(cleanup, (video.duration || 8) * 1000 + 3000);
+    };
+    safetyTimer = setTimeout(cleanup, 12000); // om metadata aldrig laddar (stalled)
+    document.body.appendChild(video);          // i DOM före play() (Android/iOS)
+    const pp = video.play();
+    if (pp && pp.catch) pp.catch(() => { video.muted = true; video.play().catch(() => {}); });
   }
 
   function showWinCard() {
@@ -782,17 +796,30 @@ if (window.CanvasRenderingContext2D &&
     // Spela fångst-videon
     const video = document.createElement('video');
     video.src = '../TandlakareFangar.mp4';
+    video.setAttribute('playsinline', '');
+    video.setAttribute('webkit-playsinline', '');
+    video.playsInline = true;
     video.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);height:70vh;width:auto;z-index:30;border-radius:20px;background:transparent;';
     video.muted = false;
-    video.onended = () => {
-      document.body.removeChild(video);
+    // Säkerhets-timeout: fastnar videon (gammal/långsam Android-WebView) starta
+    // ändå minispelet — annars fryser spelet här och tandborstningen startar aldrig.
+    let done = false, safetyTimer = null;
+    const cleanup = () => {
+      if (done) return; done = true;
+      if (safetyTimer) clearTimeout(safetyTimer);
+      if (document.body.contains(video)) document.body.removeChild(video);
       startBrushing(); // interaktivt tandborstnings-minispel!
     };
-    video.play().catch(() => {
-      video.muted = true;
-      video.play();
-    });
-    document.body.appendChild(video);
+    video.onended = cleanup;
+    video.onerror = cleanup;
+    video.onloadedmetadata = () => {
+      if (safetyTimer) clearTimeout(safetyTimer);
+      safetyTimer = setTimeout(cleanup, (video.duration || 8) * 1000 + 3000);
+    };
+    safetyTimer = setTimeout(cleanup, 12000); // om metadata aldrig laddar (stalled)
+    document.body.appendChild(video);          // i DOM före play() (Android/iOS)
+    const pp = video.play();
+    if (pp && pp.catch) pp.catch(() => { video.muted = true; video.play().catch(() => {}); });
   }
 
   // ── Tandborstnings-minispel ──────────────────────────────────
