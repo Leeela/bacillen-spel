@@ -3,6 +3,27 @@
 // Fas 1 prototyp — portrait-native, stadsmiljö-bakgrund
 // ═══════════════════════════════════════════════════════════
 
+// ── roundRect-polyfill (iOS < 16, Chrome/Android WebView < 99) ───────────────
+// Utan denna kastar ctx.roundRect() ett fel varje frame på äldre motorer och
+// spel-loopen dör → spelet fryser vid start. Ritar samma rundade rekt manuellt.
+if (window.CanvasRenderingContext2D &&
+    !CanvasRenderingContext2D.prototype.roundRect) {
+  CanvasRenderingContext2D.prototype.roundRect = function (x, y, w, h, r) {
+    if (typeof r !== 'number') r = (Array.isArray(r) && r.length) ? r[0] : 0;
+    r = Math.min(r, Math.abs(w) / 2, Math.abs(h) / 2);
+    this.moveTo(x + r, y);
+    this.lineTo(x + w - r, y);
+    this.arcTo(x + w, y, x + w, y + r, r);
+    this.lineTo(x + w, y + h - r);
+    this.arcTo(x + w, y + h, x + w - r, y + h, r);
+    this.lineTo(x + r, y + h);
+    this.arcTo(x, y + h, x, y + h - r, r);
+    this.lineTo(x, y + r);
+    this.arcTo(x, y, x + r, y, r);
+    return this;
+  };
+}
+
 (() => {
   const canvas = document.getElementById('gameCanvas');
   const ctx = canvas.getContext('2d');

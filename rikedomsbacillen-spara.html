@@ -615,8 +615,8 @@ function finish(){
     endEmoji.textContent=dream.emoji;
     endTitle.textContent='Du hade råd! 🎉';
     endMsg.textContent=`Du sparade nog och köpte ${dream.a}${dream.name.toLowerCase()}! Du hade ${money} mynt. Vilken sparare! 💜`;
-    sndWin(); confetti();
-    playVoice('rik-vinst');
+    playVoice('rik-vinst'); confetti();
+    setTimeout(sndWin, 500); // låt rösten börja först så jingeln inte slukar den (mobil)
   } else {
     const miss=dream.price-money;
     endEmoji.innerHTML='<div style="width:clamp(120px,32vmin,180px);margin:0 auto">'+pigSVG()+'</div>';
