@@ -178,8 +178,10 @@ body {
   font-size: clamp(54px, 16vmin, 120px);
   font-weight: 700; color: var(--green-deep);
   line-height: 1; text-shadow: 0 3px 0 rgba(255,255,255,0.7);
-  flex: 0 0 auto;
+  flex: 0 0 auto; max-width: 96vw; text-align: center;
 }
+/* Hela talet "2 + 3 = 5" är längre → lite mindre så det ryms på en rad */
+#number.equation { font-size: clamp(40px, 12vmin, 92px); }
 #number.pop { animation: numPop 0.4s cubic-bezier(0.34,1.56,0.64,1); }
 @keyframes numPop {
   from { transform: scale(0.3); opacity: 0; }
@@ -588,6 +590,7 @@ function nextRound() {
   // Talvisning
   const num = $('number');
   num.textContent = display;
+  num.classList.remove('equation');
   num.classList.remove('pop'); void num.offsetWidth; num.classList.add('pop');
 
   // Räknare
@@ -784,6 +787,12 @@ function win() {
 
   let keys, tts, speakDelay, gapAfter;
   if (level === 3) {
+    // Visa hela talet "2 + 3 = 5" när han firar – barnet får SE svaret, inte bara höra det
+    const num = $('number');
+    num.textContent = addA + ' + ' + addB + ' = ' + target;
+    num.classList.add('equation');
+    num.classList.remove('pop'); void num.offsetWidth; num.classList.add('pop');
+
     keys = [String(addA), 'plus', String(addB), 'lika', String(target), PRAISE_KEYS[pi]];
     tts  = NUM_SV[addA] + ' plus ' + NUM_SV[addB] + ' är lika med ' + NUM_SV[target] + '! ' + PRAISE[pi];
     speakDelay = 650; gapAfter = 450;
