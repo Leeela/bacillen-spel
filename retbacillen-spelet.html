@@ -307,6 +307,32 @@ function stopSfx(key) {
   try { sfx.pause(); sfx.currentTime = 0; } catch (e) {}
 }
 
+// Kort surrande "vibrationsljud" för fel figur – skapas i webbläsaren (ingen ljudfil).
+// Två låga surr som matchar den fysiska vibrationen [80, 60, 80].
+let buzzCtx = null;
+function playBuzz() {
+  try {
+    buzzCtx = buzzCtx || new (window.AudioContext || window.webkitAudioContext)();
+    if (buzzCtx.state === 'suspended') buzzCtx.resume();
+    const now = buzzCtx.currentTime;
+    // ett surr = fyrkantsvåg ~120 Hz med lätt darr, för mjukt "brrr"
+    const buzz = (start, dur) => {
+      const osc = buzzCtx.createOscillator();
+      const gain = buzzCtx.createGain();
+      osc.type = 'square';
+      osc.frequency.value = 120;
+      gain.gain.setValueAtTime(0.0001, start);
+      gain.gain.exponentialRampToValueAtTime(0.18, start + 0.01);
+      gain.gain.exponentialRampToValueAtTime(0.0001, start + dur);
+      osc.connect(gain).connect(buzzCtx.destination);
+      osc.start(start);
+      osc.stop(start + dur + 0.02);
+    };
+    buzz(now, 0.08);
+    buzz(now + 0.14, 0.08);
+  } catch (e) {}
+}
+
 // Mobil (särskilt iOS) kräver att varje ljud spelats inuti en användartryckning
 // minst en gång – annars blockeras uppspelning från timers (t.ex. skrattet).
 // Vi "låser upp" alla ljud vid första tryck genom att spela dem ljudlöst.
@@ -417,7 +443,7 @@ function catchBug() {
     updateHud();
   } else {
     navigator.vibrate?.([80, 60, 80]);
-    showHitText('Fel! 😊', '#7BC142');
+    playBuzz();
   }
   hideBug(() => scheduleBug());
 }
