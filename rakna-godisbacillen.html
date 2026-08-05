@@ -260,6 +260,14 @@ body {
   cursor: grabbing; z-index: 9999; pointer-events: none;
   filter: drop-shadow(0 8px 12px rgba(0,0,0,0.28));
 }
+/* Lätt-nivå: större rutor + godisar så små barn lättare kan dra.
+   Höjer bara nedre änden (påverkar iPhone/små skärmar) – desktop ligger kvar på max.
+   Bara Lätt (≤5 rutor) så det ryms. */
+#slots.big .slot {
+  width: clamp(58px, 16vmin, 64px); height: clamp(58px, 16vmin, 64px);
+  font-size: clamp(36px, 10vmin, 46px);
+}
+#tray.big .candy { font-size: clamp(54px, 15vmin, 60px); }
 
 /* Godisbacillen */
 #bug-wrap {
@@ -517,9 +525,13 @@ function sayClips(keys, ttsFallback, onDone) {
   (function playNext() {
     if (i >= keys.length) { if (onDone) onDone(); return; }
     const key = keys[i++];
-    const dur = voiceEls[key].duration || 0.6;
-    let a;
-    try { a = voiceEls[key].cloneNode(); } catch (e) { if (onDone) onDone(); return; }
+    const a = voiceEls[key];
+    if (!a) { if (onDone) onDone(); return; }
+    const dur = a.duration || 0.6;
+    // Spela ORIGINAL-elementet (INTE en klon). iOS låser bara upp de element som
+    // värmts i en gest (warmVoices) – färska kloner blir tysta/ostabila på iPhone.
+    // Originalen kan spelas om när som helst när de väl är upplåsta.
+    try { a.pause(); a.currentTime = 0; } catch (e) {}
     voiceActive.push(a);
     let stepped = false;
     // Vänta CLIP_GAP sek efter att klippet tystnat innan nästa ord → tydlig paus
@@ -601,6 +613,7 @@ function nextRound() {
   const slots = $('slots');
   slots.style.opacity = '';
   slots.innerHTML = '';
+  slots.classList.toggle('big', level === 1);   // större rutor på Lätt (lättare att träffa)
   if (level === 3) {
     // Två grupper med rutor som matchar talen: addA rutor «+» addB rutor.
     // Barnet SER additionen (4+4) – inte bara totalen.
@@ -617,6 +630,7 @@ function nextRound() {
   // Godishög att dra ifrån (lite fler än rutorna → det ser ut som en hög)
   const tray = $('tray');
   tray.innerHTML = '';
+  tray.classList.toggle('big', level === 1);    // större godisar på Lätt
   const supply = target + extra;
   for (let i = 0; i < supply; i++) tray.appendChild(makeCandy());
 }
