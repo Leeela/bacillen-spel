@@ -265,9 +265,12 @@ function drawInstruction() {
 let levelTransition = 0; // 0 = ingen, >0 = countdown frames
 let levelTransitionText = '';
 
+// Varje nivå är en egen "värld" med eget namn och egna godisar.
+const WORLD_NAMES = { 1: 'Godislandet', 2: 'Godishimlen', 3: 'Godisvulkanen' };
+
 function showLevelTransition(newLevel) {
   levelTransitionText = newLevel <= 3
-    ? `⭐ Nivå ${newLevel}! ⭐`
+    ? `🌍 ${WORLD_NAMES[newLevel]}`
     : '🏆 MÄSTARE! 🏆';
   levelTransition = 150; // 2.5 sekunder
 }
@@ -305,7 +308,8 @@ function drawLevelTransition() {
   if (level <= 3) {
     ctx.font = `bold ${Math.min(W * 0.045, 28)}px Arial Rounded MT Bold, Arial`;
     ctx.fillStyle = '#ffeb3b';
-    const subText = level === 2 ? 'Snabbare! 💨' : level === 3 ? 'Snabbast! 🔥' : '';
+    const subText = level === 2 ? 'Nya godisar! 🍬 Snabbare 💨'
+                  : level === 3 ? 'Nya godisar! 🍬 Snabbast 🔥' : '';
     ctx.fillText(subText, 0, 50);
   }
 
@@ -563,14 +567,24 @@ function getImg(obj) {
   return obj.processed || (obj.raw.complete ? obj.raw : null);
 }
 
-const YUMMY_IMGS = [
-  loadImg('Godis2.png'),
-  loadImg('Godis3.png'),
-  loadImg('Godis4.png'),
-  loadImg('Godis5.png'),
-  loadImg('Godis6.png'),
-  loadImg('Godis 4.png'),
-];
+// Ladda varje godisbild för sig så vi kan blanda olika uppsättningar per värld.
+const IMG_G2  = loadImg('Godis2.png');
+const IMG_G3  = loadImg('Godis3.png');
+const IMG_G4  = loadImg('Godis4.png');
+const IMG_G5  = loadImg('Godis5.png');
+const IMG_G6  = loadImg('Godis6.png');
+const IMG_G4B = loadImg('Godis 4.png');
+
+// ── Varje värld har sin EGNA uppsättning godis som faller ────────────────────
+// Så fort barnet klarar en nivå byts godisen ut → "nya godisar!"-känsla.
+// (Guldgodiset Godis1 hålls likadant i alla världar — det är den speciella.)
+const LEVEL_YUMMY = {
+  1: [IMG_G2, IMG_G3, IMG_G4],        // Godislandet
+  2: [IMG_G5, IMG_G6, IMG_G4B],       // Godishimlen — helt andra godisar
+  3: [IMG_G2, IMG_G4, IMG_G5, IMG_G6],// Godisvulkanen — allt blandat, finalen
+};
+function getYummyPool() { return LEVEL_YUMMY[level] || LEVEL_YUMMY[3]; }
+
 const GOLD_IMG   = loadImg('Godis1.png');
 const YUCKY_IMGS = [
   loadImg('Morot.png'),
@@ -615,7 +629,8 @@ class Candy {
       this.imgObj = YUCKY_IMGS[Math.floor(Math.random() * YUCKY_IMGS.length)];
     } else {
       this.kind = 'yummy';
-      this.imgObj = YUMMY_IMGS[Math.floor(Math.random() * YUMMY_IMGS.length)];
+      const pool = getYummyPool();
+      this.imgObj = pool[Math.floor(Math.random() * pool.length)];
     }
   }
   update() {
