@@ -363,7 +363,18 @@ const STANDARD = [
   { key:'jatte',       emoji:'🦖',  name:'Jättedansen',     text:'Dansa som en jättestor dinosaurie! Stora tunga steg!' },
   { key:'mus',         emoji:'🐭',  name:'Musdansen',       text:'Dansa pytteliten som en mus! Små, små rörelser!' },
   { key:'tvattmaskin', emoji:'🌪️', name:'Tvättmaskinen',   text:'Dansa som en tvättmaskin på centrifugering!' },
-  { key:'ballong',     emoji:'🎈',  name:'Ballongdansen',   text:'Dansa som en ballong som svävar upp mot taket!' }
+  { key:'ballong',     emoji:'🎈',  name:'Ballongdansen',   text:'Dansa som en ballong som svävar upp mot taket!' },
+  { key:'katt',        emoji:'🐱',  name:'Kattdansen',      text:'Smyg mjukt och sträck dig som en katt!' },
+  { key:'bebis',       emoji:'👶',  name:'Bebisdansen',     text:'Krypa och vagga som en liten bebis!' },
+  { key:'regn',        emoji:'🌧️', name:'Regndansen',      text:'Vifta fingrarna som regn och plaska i pölarna!' },
+  { key:'sol',         emoji:'☀️',  name:'Soldansen',       text:'Sträck armarna vitt ut och lys som solen!' },
+  { key:'sim',         emoji:'🏊',  name:'Simdansen',       text:'Simma genom luften med stora simtag!' },
+  { key:'fagel',       emoji:'🐦',  name:'Fågeldansen',     text:'Flaxa med armarna som vingar och flyg som en fågel!' },
+  { key:'popcorn',     emoji:'🍿',  name:'Popcorndansen',   text:'Sitt ihopkrupen och poppa upp som popcorn!' },
+  { key:'superhjalte', emoji:'🦸',  name:'Superhjältedansen', text:'Flyg och posera som en superhjälte!' },
+  { key:'pingvin',     emoji:'🐧',  name:'Pingvindansen',   text:'Vagga från sida till sida som en pingvin!' },
+  { key:'raket',       emoji:'🚀',  name:'Raketdansen',     text:'Räkna ner… tre, två, ett… och skjut upp i luften!' },
+  { key:'disco',       emoji:'🕺',  name:'Discodansen',     text:'Peka upp mot taket, en arm i taget!' }
 ];
 const LUGNT = [
   { key:'finger',  emoji:'🖐️', name:'Fingerdansen',    text:'Låt bara fingrarna dansa!' },
@@ -371,7 +382,13 @@ const LUGNT = [
   { key:'axel',    emoji:'🤷',  name:'Axeldansen',      text:'Låt axlarna dansa upp och ner!' },
   { key:'huvud',   emoji:'🎵',  name:'Huvudgungan',     text:'Gunga huvudet mjukt i takt!' },
   { key:'tadans',  emoji:'🦶',  name:'Tådansen',        text:'Sitt still och låt bara tårna dansa!' },
-  { key:'andning', emoji:'🌬️', name:'Andningsdansen',  text:'Andas in, sträck dig långsamt, andas ut och sjunk ihop!' }
+  { key:'andning', emoji:'🌬️', name:'Andningsdansen',  text:'Andas in, sträck dig långsamt, andas ut och sjunk ihop!' },
+  { key:'trott',    emoji:'😴',  name:'Tröttdansen',    text:'Sträck dig, gäspa stort och dansa jättesömnigt!' },
+  { key:'ogon',     emoji:'👀',  name:'Ögondansen',     text:'Håll kroppen still och låt bara ögonen dansa runt!' },
+  { key:'vinka',    emoji:'👋',  name:'Vinkdansen',     text:'Vinka mjukt och långsamt med händerna!' },
+  { key:'kattstrack', emoji:'🐈', name:'Kattsträckningen', text:'Sträck dig långsamt och mysigt som en katt!' },
+  { key:'vag',      emoji:'🌊',  name:'Vågdansen',      text:'Gör mjuka vågor med armarna, som havet!' },
+  { key:'mane',     emoji:'🌙',  name:'Månpromenaden',  text:'Gå superlångsamt, som på månen!' }
 ];
 const CHEERS = ['hejarop-1','hejarop-2','hejarop-3','hejarop-4'];
 
@@ -388,6 +405,7 @@ function loadVoices() {
   CHEERS.forEach(c => { VOICE[c] = mkClip('/ljud/dans/' + c + '.mp3'); });
   VOICE.valkommen = mkClip('/ljud/dans/valkommen.mp3');
   VOICE.avslut    = mkClip('/ljud/dans/avslut.mp3');
+  VOICE.frys      = mkClip('/ljud/dans/frys.mp3');
 }
 function warmClips() {
   if (clipsWarmed || !voiceLoaded) return;
@@ -430,9 +448,32 @@ function initAudio() {
 }
 
 const NOTE = { C4:261.63, D4:293.66, E4:329.63, G4:392.00, A4:440.00, C5:523.25, D5:587.33, E5:659.25, G5:784.00, A5:880.00 };
-const MELODY_STD  = [NOTE.C5, NOTE.E5, NOTE.G5, NOTE.E5, NOTE.A5, NOTE.G5, NOTE.E5, NOTE.D5, NOTE.C5, NOTE.E5, NOTE.D5, NOTE.G4];
-const MELODY_CALM = [NOTE.C5, NOTE.E5, NOTE.G4, NOTE.A4, NOTE.G4, NOTE.E5, NOTE.D5, NOTE.C5];
+
+/* Flera "låtar": varje runda väljs en slumpad melodi (+ eget tempo) så att det
+   låter som olika sånger. Aldrig samma låt två gånger i rad (pickSong). */
+const SONGS_STD = [
+  { bpm:116, mel:[NOTE.C5, NOTE.E5, NOTE.G5, NOTE.E5, NOTE.A5, NOTE.G5, NOTE.E5, NOTE.D5, NOTE.C5, NOTE.E5, NOTE.D5, NOTE.G4] },
+  { bpm:120, mel:[NOTE.G4, NOTE.A4, NOTE.C5, NOTE.D5, NOTE.E5, NOTE.D5, NOTE.C5, NOTE.A4, NOTE.G4, NOTE.A4, NOTE.C5, NOTE.E5] },
+  { bpm:108, mel:[NOTE.C5, NOTE.D5, NOTE.E5, NOTE.G5, NOTE.A5, NOTE.G5, NOTE.E5, NOTE.D5, NOTE.C5, NOTE.G4, NOTE.A4, NOTE.C5] },
+  { bpm:124, mel:[NOTE.E5, NOTE.G5, NOTE.A5, NOTE.G5, NOTE.E5, NOTE.D5, NOTE.C5, NOTE.D5, NOTE.E5, NOTE.G5, NOTE.E5, NOTE.C5] },
+  { bpm:112, mel:[NOTE.A4, NOTE.C5, NOTE.D5, NOTE.E5, NOTE.G5, NOTE.E5, NOTE.D5, NOTE.C5, NOTE.A4, NOTE.G4, NOTE.A4, NOTE.C5] }
+];
+const SONGS_CALM = [
+  { bpm:80, mel:[NOTE.C5, NOTE.E5, NOTE.G4, NOTE.A4, NOTE.G4, NOTE.E5, NOTE.D5, NOTE.C5] },
+  { bpm:72, mel:[NOTE.E5, NOTE.D5, NOTE.C5, NOTE.D5, NOTE.E5, NOTE.E5, NOTE.D5, NOTE.C5] },
+  { bpm:76, mel:[NOTE.G4, NOTE.A4, NOTE.C5, NOTE.E5, NOTE.D5, NOTE.C5, NOTE.A4, NOTE.G4] },
+  { bpm:70, mel:[NOTE.C5, NOTE.D5, NOTE.E5, NOTE.G5, NOTE.E5, NOTE.D5, NOTE.C5, NOTE.G4] }
+];
 const BASS = [NOTE.C4, NOTE.G4, NOTE.A4, NOTE.G4];
+let curMel = SONGS_STD[0].mel, lastSongIdx = -1;
+function pickSong() {
+  const bank = (mode === 'lugnt') ? SONGS_CALM : SONGS_STD;
+  let i;
+  do { i = Math.floor(Math.random() * bank.length); }
+  while (bank.length > 1 && i === lastSongIdx);
+  lastSongIdx = i;
+  return bank[i];
+}
 
 function tone(freq, t, dur, peak, type) {
   const o = audioCtx.createOscillator(); const g = audioCtx.createGain();
@@ -469,7 +510,9 @@ const MODE = {
 
 function startMusic() {
   cfg = MODE[mode];
-  stepDur = (60 / cfg.bpm) / 2;          // åttondelar
+  const song = pickSong();               // slumpad låt varje runda
+  curMel = song.mel;
+  stepDur = (60 / song.bpm) / 2;         // åttondelar
   noteIdx = 0; melIdx = 0;
   nextNoteTime = audioCtx.currentTime + 0.08;
   // slumpad danslängd 15–30 s -> stopp läggs i schemaläggaren
@@ -497,11 +540,11 @@ function scheduleStep(i, t) {
   if (cfg.busy) {
     if (i % 2 === 0) kick(t);                                   // slag varje fjärdedel
     hat(t);                                                     // hihat varje åttondel
-    tone(MELODY_STD[i % MELODY_STD.length], t, 0.20, 0.18, 'triangle');
+    tone(curMel[i % curMel.length], t, 0.20, 0.18, 'triangle');
     if (i % 4 === 0) tone(BASS[(i / 4) % BASS.length] / 2, t, 0.34, 0.13, 'sine');
   } else {
     if (i % 4 === 0) kick(t);                                   // glesare, lugnare
-    if (i % 2 === 0) { tone(MELODY_CALM[melIdx % MELODY_CALM.length], t, 0.5, 0.16, 'sine'); melIdx++; }
+    if (i % 2 === 0) { tone(curMel[melIdx % curMel.length], t, 0.5, 0.16, 'sine'); melIdx++; }
     if (i % 8 === 0) tone(BASS[(i / 8) % BASS.length] / 2, t, 0.7, 0.11, 'sine');
   }
 }
@@ -694,7 +737,8 @@ function setHero(s) {
 function freeze(soft) {
   state = 'freeze';
   setHero('frozen');
-  freezeSound(soft);                     // FRYS-ljud exakt när texten dyker upp
+  freezeSound(soft);                     // FRYS-ljudeffekt exakt när texten dyker upp
+  playClip('frys');                      // Dansbacillen ropar "FRYS!" (saknas -> tyst, texten visas ändå)
   const f = $('freeze');
   f.className = 'show ' + (soft ? 'soft' : 'pop');
   setInstruction('');
