@@ -139,6 +139,16 @@
       position: relative; z-index: 1;
     }
 
+    .start-stars {
+      font-size: clamp(15px, 3.2vw, 22px);
+      font-weight: 900;
+      color: #f9a825;
+      margin-top: 20px;
+      text-align: center;
+      position: relative; z-index: 1;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.15);
+    }
+
     .start-btn {
       position: relative; z-index: 1;
       background: linear-gradient(135deg, #66bb6a, #43a047);
@@ -318,9 +328,10 @@
     <div class="start-sub">🥕 Mata munnen – grönsaker lagar tänder! 🦷</div>
 
     <button class="start-btn">▶ &nbsp;STARTA!</button>
+    <div id="star-collection" class="start-stars"></div>
   </div>
 
-  <script src="game.js?v=17"></script>
+  <script src="game.js?v=18"></script>
 
 <script src="/pwa-install.js" defer></script>
 <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "e985bdf04c164c86b40875af0397828c"}'></script><!-- End Cloudflare Web Analytics -->
