@@ -55,9 +55,9 @@ const LEVELS = {
     chanceSalim:   0.10,
     chanceSelma:   0.10,
     chanceGold:    0.10,
-    bgTop:    '#fffbe8',
-    bgBottom: '#ffe6f5',
-    grassColor: '#b8eeaa',
+    bgTop:    '#fff2c2',   // Godislandet — varm godisäng
+    bgBottom: '#ffd4ee',
+    grassColor: '#8fd66f',
     bpm: 160,
   },
   2: {
@@ -68,9 +68,9 @@ const LEVELS = {
     chanceSalim:   0.10,
     chanceSelma:   0.10,
     chanceGold:    0.10,
-    bgTop:    '#f3e5f5',
-    bgBottom: '#e1f5fe',
-    grassColor: '#b2dfdb',
+    bgTop:    '#8fccff',   // Godishimlen — klarblå himmel
+    bgBottom: '#dff3ff',
+    grassColor: '#cdeeff',
     bpm: 190,
   },
   3: {
@@ -81,9 +81,9 @@ const LEVELS = {
     chanceSalim:   0.10,
     chanceSelma:   0.10,
     chanceGold:    0.12,
-    bgTop:    '#fff3e0',
-    bgBottom: '#ffebee',
-    grassColor: '#ffcc80',
+    bgTop:    '#ff9e5e',   // Godisvulkanen — glödande orange himmel
+    bgBottom: '#ffd6a3',
+    grassColor: '#a9663f',
     bpm: 220,
   },
 };
@@ -107,6 +107,7 @@ function healTooth()  { brokenTeeth = Math.max(0, brokenTeeth - 1);          tee
 const VIDEOS = {
   chomp:   'Mmm_Godis!.mp4',
   merMore: 'Mer_godis!.mp4',
+  namnam:  'Godisbacillen_nam_nam.mp4',
   wow:     'Wow!_Tack!.mp4',
   win:     'Win_star_Perfekt!.mp4',
   yuck:    'NEj_jag_vill_ha_godis.mp4',
@@ -575,13 +576,26 @@ const IMG_G5  = loadImg('Godis5.png');
 const IMG_G6  = loadImg('Godis6.png');
 const IMG_G4B = loadImg('Godis 4.png');
 
+// Nya godisar (skapade av Leila) — temade per värld.
+const IMG_KLUBBSTAV = loadImg('klubbstav.png');            // regnbågsklubba på stjälk
+const IMG_SLOTT     = loadImg('slottsklubba.png');          // slottsklubba
+const IMG_MONSTER_B = loadImg('glad monster godis.png');     // blå glad monster
+const IMG_MONSTER_R = loadImg('rosa glad monster godis.png'); // rosa glad monster
+const IMG_STJARNA   = loadImg('stjarnagodis.png');          // galaxstjärna
+const IMG_SWIRL     = loadImg('swirlgodis.png');            // kosmisk swirl
+const IMG_MOLN      = loadImg('molngodis.png');             // molngodis
+const IMG_MARANG    = loadImg('maranggodis.png');           // marängsvirvel
+const IMG_SVAMP     = loadImg('flugsvamp.png');             // förtrollad svamp
+const IMG_PRALIN    = loadImg('chokladpralin.png');         // chokladpralin
+const IMG_SKATT     = loadImg('skattgodis.png');            // skattkista med ädelstenar
+
 // ── Varje värld har sin EGNA uppsättning godis som faller ────────────────────
 // Så fort barnet klarar en nivå byts godisen ut → "nya godisar!"-känsla.
 // (Guldgodiset Godis1 hålls likadant i alla världar — det är den speciella.)
 const LEVEL_YUMMY = {
-  1: [IMG_G2, IMG_G3, IMG_G4],        // Godislandet
-  2: [IMG_G5, IMG_G6, IMG_G4B],       // Godishimlen — helt andra godisar
-  3: [IMG_G2, IMG_G4, IMG_G5, IMG_G6],// Godisvulkanen — allt blandat, finalen
+  1: [IMG_KLUBBSTAV, IMG_SLOTT, IMG_MONSTER_B, IMG_MONSTER_R], // Godislandet
+  2: [IMG_STJARNA, IMG_SWIRL, IMG_MOLN, IMG_MARANG],           // Godishimlen
+  3: [IMG_SVAMP, IMG_PRALIN, IMG_SKATT, IMG_G3],               // Godisvulkanen
 };
 function getYummyPool() { return LEVEL_YUMMY[level] || LEVEL_YUMMY[3]; }
 
@@ -654,7 +668,13 @@ class Candy {
     const drawable = getImg(this.imgObj);
     if (drawable) {
       try {
-        ctx.drawImage(drawable, -s / 2, -s / 2, s, s);
+        // Behåll bildens proportioner — passa längsta sidan till s (annars blir
+        // avlånga godisar som klubbstaven hoptryckta till en fyrkant).
+        const iw = drawable.naturalWidth  || drawable.width  || s;
+        const ih = drawable.naturalHeight || drawable.height || s;
+        let dw = s, dh = s;
+        if (iw >= ih) { dh = s * ih / iw; } else { dw = s * iw / ih; }
+        ctx.drawImage(drawable, -dw / 2, -dh / 2, dw, dh);
       } catch(e) {
         ctx.beginPath();
         ctx.arc(0, 0, s / 2, 0, Math.PI * 2);
@@ -718,11 +738,104 @@ function spawnCandy() {
 // ==========================================
 //  UI
 // ==========================================
+// ── Regnbåge (Godishimlen) ───────────────────────────────────────────────────
+// En mjuk regnbågsbåge över himlen. Ritas FÖRE molnen så de ligger framför →
+// regnbågen tittar fram "bland molnen".
+function drawRainbow() {
+  const cx = W * 0.5, cy = H * 0.52;
+  const baseR = Math.min(W * 0.52, H * 0.46);
+  const band  = Math.max(8, baseR * 0.055);
+  const colors = ['#ff5a5a','#ff9f43','#ffe14d','#5ed86f','#4aa8ff','#5a6bd8','#b163d8'];
+  ctx.save();
+  ctx.globalAlpha = 0.55;
+  ctx.lineWidth = band;
+  ctx.lineCap = 'butt';
+  colors.forEach((col, i) => {
+    ctx.strokeStyle = col;
+    ctx.beginPath();
+    ctx.arc(cx, cy, baseR - i * band, Math.PI, Math.PI * 2); // övre halvan = båge
+    ctx.stroke();
+  });
+  ctx.restore();
+}
+
+// ── Vulkan (Godisvulkanen) ───────────────────────────────────────────────────
+let volcanoTick = 0; // för att lågorna ska flimra glatt
+
+// En mjuk tecknad låga (droppform) med spetsen uppåt.
+function drawFlame(cx, baseY, w, h, color) {
+  ctx.beginPath();
+  ctx.moveTo(cx, baseY);
+  ctx.bezierCurveTo(cx - w, baseY - h*0.35, cx - w*0.55, baseY - h*0.85, cx, baseY - h);
+  ctx.bezierCurveTo(cx + w*0.55, baseY - h*0.85, cx + w, baseY - h*0.35, cx, baseY);
+  ctx.closePath();
+  ctx.fillStyle = color;
+  ctx.fill();
+}
+
+// Glad eldbukett ovanpå kratern (röd → orange → gul, med liten flimmer).
+function drawFlames(cx, baseY, size, tick) {
+  const flick = 1 + Math.sin(tick * 0.25 + cx) * 0.14;
+  ctx.save();
+  // värmeglöd bakom
+  ctx.globalAlpha = 0.45;
+  const rg = ctx.createRadialGradient(cx, baseY - size, 2, cx, baseY - size, size*2.4);
+  rg.addColorStop(0, 'rgba(255,170,40,0.85)'); rg.addColorStop(1, 'rgba(255,170,40,0)');
+  ctx.fillStyle = rg;
+  ctx.fillRect(cx - size*2.4, baseY - size*3.4, size*4.8, size*4.8);
+  ctx.globalAlpha = 1;
+  // yttre röd/orange lågor (mitten hög, två kortare på sidorna)
+  drawFlame(cx,             baseY, size*0.95, size*2.1*flick, '#ff5722');
+  drawFlame(cx - size*0.85, baseY, size*0.62, size*1.25*flick, '#ff8a1e');
+  drawFlame(cx + size*0.85, baseY, size*0.62, size*1.35*flick, '#ff8a1e');
+  // inre gul kärna
+  drawFlame(cx,             baseY, size*0.5,  size*1.25*flick, '#ffd23e');
+  ctx.restore();
+}
+
+function drawOneVolcano(peakX, baseY, height, halfBase) {
+  const topY    = baseY - height;
+  const craterW = halfBase * 0.30;
+  const lipY    = topY + height * 0.05;
+  ctx.save();
+  // berget
+  ctx.beginPath();
+  ctx.moveTo(peakX - halfBase, baseY);
+  ctx.lineTo(peakX - craterW,  topY);
+  ctx.lineTo(peakX - craterW*0.5, lipY);
+  ctx.lineTo(peakX + craterW*0.5, lipY);
+  ctx.lineTo(peakX + craterW,  topY);
+  ctx.lineTo(peakX + halfBase, baseY);
+  ctx.closePath();
+  const g = ctx.createLinearGradient(0, topY, 0, baseY);
+  g.addColorStop(0, '#6d4c41'); g.addColorStop(1, '#3e2723');
+  ctx.fillStyle = g; ctx.fill();
+  // lava i kratern
+  ctx.fillStyle = '#ff7a33';
+  ctx.beginPath();
+  ctx.ellipse(peakX, lipY, craterW*0.85, height*0.028, 0, 0, Math.PI*2);
+  ctx.fill();
+  ctx.restore();
+  // glad eld ovanpå kratern
+  drawFlames(peakX, lipY, Math.max(14, height * 0.10), volcanoTick);
+}
+
+function drawVolcano() {
+  volcanoTick++;
+  const baseY = H * 0.9;
+  // Två vulkaner ute vid sidorna så de inte krockar med Godisbacillen i mitten.
+  drawOneVolcano(W * 0.20, baseY, H * 0.38, W * 0.22);
+  drawOneVolcano(W * 0.82, baseY, H * 0.26, W * 0.16);
+}
+
 function drawBackground() {
   const cfg = getLevelConfig();
   const g = ctx.createLinearGradient(0, 0, 0, H);
   g.addColorStop(0, cfg.bgTop); g.addColorStop(1, cfg.bgBottom);
   ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+
+  if (level === 2) drawRainbow();     // regnbåge bakom molnen
+
   [
     [W*0.14, H*0.10, 60],
     [W*0.76, H*0.07, 80],
@@ -733,6 +846,9 @@ function drawBackground() {
       .forEach(([bx,by,br]) => ctx.arc(bx,by,br,0,Math.PI*2));
     ctx.fill(); ctx.restore();
   });
+
+  if (level >= 3) drawVolcano();      // vulkaner reser sig ur marken
+
   ctx.beginPath();
   ctx.ellipse(W/2, H+15, W*0.65, 55, 0, 0, Math.PI*2);
   ctx.fillStyle = cfg.grassColor; ctx.fill();
@@ -901,6 +1017,7 @@ function eatCandy(candy) {
   playReaction(
     candy.kind === 'gold' ? VIDEOS.wow     :
     candyEaten % 3 === 0   ? VIDEOS.merMore :
+    candyEaten % 2 === 0   ? VIDEOS.namnam  :  // "Nam nam!" för varannan godis
                              VIDEOS.chomp
   );
 }
