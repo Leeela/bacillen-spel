@@ -422,6 +422,8 @@ function warmClips() {
       a.currentTime = 0;
     } catch (e) {}
   });
+  // lås även upp låt-elementen i samma användargest (iOS)
+  trackEls.concat(calmTrackEls).forEach(a => { try { a.muted = true; const p = a.play(); if (p && p.catch) p.catch(() => {}); a.pause(); a.currentTime = 0; } catch (e) {} });
 }
 function playClip(key) {
   if (muted) return;
@@ -430,6 +432,20 @@ function playClip(key) {
   try { a.muted = false; a.currentTime = 0; const p = a.play(); if (p) p.catch(() => {}); } catch (e) {}
 }
 function randomCheer() { return CHEERS[Math.floor(Math.random() * CHEERS.length)]; }
+
+/* ══════════════ RIKTIGA DISCO-LÅTAR (mp3) för Standard-läget ══════════════
+   Alternerar varje runda (aldrig samma i rad) och stoppas TVÄRT vid frysen.
+   Lugnt läge behåller den mjuka genererade musiken nedan. Fallback: saknad låt
+   -> tyst, men frysen sker ändå (timern styr). */
+const MUSIC_TRACKS = ['/ljud/dans/musik-1.mp3','/ljud/dans/musik-2.mp3','/ljud/dans/musik-3.mp3','/ljud/dans/musik-4.mp3','/ljud/dans/musik-5.mp3','/ljud/dans/musik-6.mp3','/ljud/dans/musik-7.mp3'];
+const CALM_TRACKS  = ['/ljud/dans/lugn-1.mp3','/ljud/dans/lugn-2.mp3'];
+let trackEls = [], calmTrackEls = [], tracksLoaded = false, lastTrack = -1, curTrack = null, trackStopTimer = null;
+function loadTracks() {
+  if (tracksLoaded) return;
+  tracksLoaded = true;
+  MUSIC_TRACKS.forEach(src => { const a = new Audio(src); a.preload = 'auto'; a.loop = true; a.volume = 0.72; trackEls.push(a); });
+  CALM_TRACKS.forEach(src => { const a = new Audio(src); a.preload = 'auto'; a.loop = true; a.volume = 0.5; calmTrackEls.push(a); });
+}
 
 /* ══════════════ WEB AUDIO — genererad musik (inga ljudfiler för musik) ══════════════ */
 let audioCtx = null, masterGain = null, musicGain = null, noiseBuf = null;
@@ -522,9 +538,26 @@ const MODE = {
   lugnt:    { busy: false, bpm: 80  }
 };
 
+/* ── Riktiga låtar: välj ny låt (ej samma i rad) ur rätt lista, spela, stoppa vid frysen ── */
+function startTrack() {
+  const pool = (mode === 'lugnt') ? calmTrackEls : trackEls;
+  let i; do { i = Math.floor(Math.random() * pool.length); } while (pool.length > 1 && i === lastTrack);
+  lastTrack = i; curTrack = pool[i];
+  try { curTrack.muted = muted; curTrack.currentTime = 0; const p = curTrack.play(); if (p) p.catch(() => {}); } catch (e) {}
+  const danceLen = 15 + Math.random() * 15;               // slumpad danslängd 15–30 s
+  clearTimeout(trackStopTimer);
+  trackStopTimer = setTimeout(stopTrackIntoFreeze, danceLen * 1000);
+}
+function stopTrackIntoFreeze() {
+  clearTimeout(trackStopTimer); trackStopTimer = null;
+  if (curTrack) { try { curTrack.pause(); } catch (e) {} }   // plötsligt stopp -> FRYS (mjukt i Lugnt)
+  freeze(mode === 'lugnt');
+}
 function startMusic() {
   cfg = MODE[mode];
-  const song = pickSong();               // slumpad låt varje runda
+  const pool = (mode === 'lugnt') ? calmTrackEls : trackEls;
+  if (pool.length) { startTrack(); return; }   // riktiga låtar (disco i Standard, mjuka i Lugnt)
+  const song = pickSong();               // fallback: genererad musik om inga låtar finns
   curMel = song.mel;
   stepDur = (60 / song.bpm) / 2;         // åttondelar
   noteIdx = 0; melIdx = 0;
@@ -667,6 +700,7 @@ function meterStep() {
 function startGame() {
   initAudio();
   loadVoices();
+  loadTracks();
   warmClips();
   pool = (mode === 'lugnt') ? LUGNT : STANDARD;
   lastKey = null; danceTurns = 0; state = 'idle';
@@ -778,6 +812,8 @@ function stopAll() {
   musicOn = false;
   clearInterval(schedTimer); schedTimer = null;
   clearTimeout(freezeTimer); freezeTimer = null;
+  clearTimeout(trackStopTimer); trackStopTimer = null;
+  if (curTrack) { try { curTrack.pause(); } catch (e) {} }
   if (audioCtx && musicGain) { musicGain.gain.cancelScheduledValues(audioCtx.currentTime); musicGain.gain.setTargetAtTime(0.0001, audioCtx.currentTime, 0.02); }
   document.querySelectorAll('.wheel-ring').forEach(r => r.classList.remove('spin'));
   hideFreeze();
@@ -811,6 +847,7 @@ function toggleMute() {
   muted = !muted;
   if (masterGain && audioCtx) masterGain.gain.setTargetAtTime(muted ? 0 : 1, audioCtx.currentTime, 0.02);
   Object.values(VOICE).forEach(a => { a.muted = muted; if (muted) { try { a.pause(); } catch (e) {} } });
+  trackEls.concat(calmTrackEls).forEach(a => { a.muted = muted; });
   $('mute-btn').textContent = muted ? '🔇' : '🔊';
 }
 
@@ -831,7 +868,7 @@ function confettiBurst(n) {
 
 function menuTap() {
   const b = $('menu-bug'); b.classList.remove('wave'); void b.offsetWidth; b.classList.add('wave');
-  initAudio(); loadVoices(); warmClips();
+  initAudio(); loadVoices(); loadTracks(); warmClips();
 }
 
 pickMode(mode);   // markera förvalt läge (Lugnt om reduced-motion)
