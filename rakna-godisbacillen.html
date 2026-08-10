@@ -349,7 +349,7 @@ body {
 <div id="screen-menu" class="screen">
   <img id="menu-bug" src="/bilder/godisbacillen-gapar.png" onclick="menuTap()" alt="Godisbacillen – tryck för att tugga!">
   <h1>Räkna med Godisbacillen</h1>
-  <p id="menu-sub">Dra rätt antal godis till rutorna och lär dig räkna! 🍬</p>
+  <p id="menu-sub">Dra rätt antal godis till cirklarna och lär dig räkna! 🍬</p>
   <div class="levels">
     <button class="big-btn lvl-1" onclick="startGame(1)">🟢 Lätt <span class="lvl-tag">räkna 1–5</span></button>
     <button class="big-btn lvl-2" onclick="startGame(2)">🟡 Medel <span class="lvl-tag">räkna 1–10</span></button>
@@ -570,7 +570,7 @@ function startGame(lvl) {
   level = lvl;
   stars = 0;
   $('hud-right').textContent = '⭐ 0';
-  $('hud-center').textContent = level === 3 ? 'Räkna ut och fyll rutorna!' : 'Dra godis till rutorna!';
+  $('hud-center').textContent = level === 3 ? 'Räkna ut och fyll cirklarna!' : 'Dra godis till cirklarna!';
   show('screen-game');
   nextRound();
 }
