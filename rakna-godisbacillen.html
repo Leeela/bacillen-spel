@@ -906,35 +906,32 @@ function warmVoices() {
     const a = voiceEls[k];
     if (!a) return;
     // load() tvingar iOS att hämta metadata (readyState → 1) utan att kräva play().
-    // play()+pause() låser sedan upp uppspelnings-tillståndet inuti användargest.
+    // Muted + SYNKRON paus = tyst även om iOS ignorerar muted-flaggan. En async paus
+    // i .then() lät alla 15 klipp spela LJUDANDE samtidigt på iPhone – synkron paus
+    // stoppar klippet innan det hinner höras. muted=false efter pausen är ljudlöst.
     try { a.load(); } catch (e) {}
     try {
       a.muted = true;
       const p = a.play();
-      if (p && p.then) {
-        p.then(() => { a.pause(); a.currentTime = 0; a.muted = false; })
-         .catch(() => { a.muted = false; });
-      } else {
-        try { a.pause(); } catch (e) {}
-        a.muted = false;
-      }
+      if (p && p.catch) p.catch(() => {});
+      a.pause();
+      a.currentTime = 0;
+      a.muted = false;
     } catch (e) {}
   });
   // Lås även upp slut-videon så dess LJUD kan spelas senare (iOS kräver en gest).
-  // Ett kort tyst play+pause inuti gesten låser upp elementet; annars faller
-  // showEnding tillbaka på muted och doktor-klippet spelas ljudlöst på iPhone.
+  // OCKSÅ synkron paus: en async paus i .then() kunde slå till SENARE – efter att
+  // showEnding() redan startat doktor-klippet – och nollställa currentTime → videon
+  // "frös" på första bilden. Synkron paus här kolliderar aldrig med uppspelningen.
   try {
     const v = $('end-video');
     if (v) {
       v.muted = true;
       const p = v.play();
-      if (p && p.then) {
-        p.then(() => { v.pause(); v.currentTime = 0; v.muted = false; })
-         .catch(() => { v.muted = false; });
-      } else {
-        try { v.pause(); } catch (e) {}
-        v.muted = false;
-      }
+      if (p && p.catch) p.catch(() => {});
+      v.pause();
+      v.currentTime = 0;
+      v.muted = false;
     }
   } catch (e) {}
 }
