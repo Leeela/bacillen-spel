@@ -377,9 +377,9 @@ const DREAMS_MEDEL = [
   { emoji:'🛼', name:'Rullskridskor', price:45, a:''     },
 ];
 const DREAMS_SVAR = [
-  { emoji:'🎮', name:'TV-spel', price:30, a:'ett ' },
-  { emoji:'🚲', name:'Cykel',   price:45, a:'en '  },
-  { emoji:'💻', name:'Dator',   price:58, a:'en '  },
+  { emoji:'🎮', name:'TV-spel', price:60,  a:'ett ' },
+  { emoji:'🚲', name:'Cykel',   price:90,  a:'en '  },
+  { emoji:'💻', name:'Dator',   price:115, a:'en '  },
 ];
 
 // Liten jordhög (det finns ingen bra emoji för smuts på golvet)
@@ -436,7 +436,7 @@ const LEVELS = {
   // Medel/Svår = veckoloop: jobba → betala behov → stå emot frestelser
   medel: { mode:'weeks', weeks:3, chorePay:5, foodPrice:5, clothesPrice:10, wants:2, foodConsume:75,
            clothesWeeks:[1], sale:false, reoffer:false, surprise:false },
-  svar:  { mode:'weeks', weeks:4, chorePay:6, foodPrice:6, clothesPrice:10, surprisePrice:12, wants:3, foodConsume:80,
+  svar:  { mode:'weeks', weeks:4, chorePay:10, foodPrice:6, clothesPrice:10, surprisePrice:12, wants:3, foodConsume:80,
            clothesWeeks:[1,3], surpriseWeek:2, sale:true, reoffer:true, surprise:true },
 };
 
@@ -449,7 +449,7 @@ const B_SALE = ['Åh, den är billig! Men behöver du den? 🤔','Billigt — me
 const MAX_DROPS=2;
 let level, cfg, dream, dreamPool, startMoney, money, idx, order, streak, drops=0, curPrice=0, busy=false, autoTimer=null;
 // Veckoläge (Medel/Svår)
-let week, queue, qIdx, curEvent, choresDone;
+let week, queue, qIdx, curEvent, choresDone, workAgainForEvent=false;
 // Skafferi (matmätare)
 const FOOD_MAX=100;
 let foodLevel=FOOD_MAX;
@@ -488,6 +488,29 @@ const sndBuy   = ()=>tone([520,300],0.35,0.25);          /* fallande = pengar ut
 const sndKaching = ()=>tone([1046,1318,1568],0.45,0.25);
 const sndWin   = ()=>tone([784,988,1319,1568],0.5,0.28);
 const sndStar  = ()=>tone([1319,1760,2093],0.3,0.2);
+// Segerfanfar: stigande "ta-ta-ta-daaa" + triumf-ackord
+function sndFanfare(){
+  try{
+    const ctx=new (window.AudioContext||window.webkitAudioContext)();
+    const t0=ctx.currentTime;
+    const blow=(freq,start,dur,vol=0.2,type='triangle')=>{
+      const o=ctx.createOscillator(), g=ctx.createGain();
+      o.type=type; o.frequency.value=freq; o.connect(g); g.connect(ctx.destination);
+      const t=t0+start;
+      g.gain.setValueAtTime(0.0001,t);
+      g.gain.exponentialRampToValueAtTime(vol,t+0.03);
+      g.gain.exponentialRampToValueAtTime(0.0001,t+dur);
+      o.start(t); o.stop(t+dur+0.03);
+    };
+    // upptakt: C-E-G korta, sedan högt C långt
+    blow(523.25,0.00,0.16); blow(659.25,0.17,0.16); blow(783.99,0.34,0.16);
+    blow(1046.50,0.52,0.95,0.24);
+    // triumf-ackord under
+    blow(523.25,0.52,1.0,0.14); blow(659.25,0.52,1.0,0.14); blow(783.99,0.55,1.0,0.14);
+    // liten glitter-topp
+    blow(1567.98,0.70,0.5,0.10); blow(2093.00,0.80,0.5,0.09);
+  }catch(e){}
+}
 
 // En enda röst-kanal: en ny röst stoppar alltid den föregående (aldrig två samtidigt)
 let curVoice=null;
@@ -584,11 +607,10 @@ function startWeeks(){
   startWeek(1);
 }
 
-function startWeek(w){
-  week=w; choresDone=0; busy=false;
-  document.getElementById('workWeek').textContent='Vecka '+week+' av '+cfg.weeks;
-  document.getElementById('workMoney').textContent=money;
-  document.getElementById('workPig').innerHTML=pigSVG();
+// Färga myntsiffran röd vid minus (skuld)
+function mcolor(){ ['moneyNum','workMoney'].forEach(id=>{ const el=document.getElementById(id); if(el) el.style.color = money<0 ? '#dc2626' : ''; }); }
+
+function renderChoreGrid(){
   const grid=document.getElementById('choreGrid'); grid.innerHTML='';
   shuffle(CHORES).slice(0,5).forEach(c=>{
     const el=document.createElement('button');
@@ -598,7 +620,27 @@ function startWeek(w){
     el.onclick=()=>onChoreCard(el);
     grid.appendChild(el);
   });
+}
+
+function startWeek(w){
+  week=w; choresDone=0; busy=false; workAgainForEvent=false;
+  document.getElementById('workWeek').textContent='Vecka '+week+' av '+cfg.weeks;
+  document.getElementById('workMoney').textContent=money; mcolor();
+  document.getElementById('workPig').innerHTML=pigSVG();
+  renderChoreGrid();
   document.getElementById('workHint').textContent='Tryck på sysslorna för att jobba!';
+  show('screen-work');
+  playVoice('rik-jobba');
+}
+
+// Extra arbetsrunda mitt i handlingen (Medel: tjäna ihop till ett behov man inte har råd med)
+function startWorkRound(){
+  choresDone=0; busy=false;
+  document.getElementById('workWeek').textContent='Vecka '+week+' — jobba mer!';
+  document.getElementById('workMoney').textContent=money; mcolor();
+  document.getElementById('workPig').innerHTML=pigSVG();
+  renderChoreGrid();
+  document.getElementById('workHint').textContent='Jobba ihop mer pengar — sedan betalar du!';
   show('screen-work');
   playVoice('rik-jobba');
 }
@@ -616,7 +658,7 @@ function finishChore(el){
   el.querySelector('.c-pay').textContent='✔ Klart';
   choresDone++;
   money+=cfg.chorePay;
-  document.getElementById('workMoney').textContent=money;
+  document.getElementById('workMoney').textContent=money; mcolor();
   document.getElementById('workPig').innerHTML=pigSVG();
   flyCoinToWorkPig(el);
   sndKaching();   // mynt-ljud (ingen röst: man jobbar, inte sparar)
@@ -739,9 +781,25 @@ function finishWork(){
     document.getElementById('workHint').textContent='Jobba minst en syssla först — då får du veckopeng! 💪';
     return;
   }
+  // Extra arbetsrunda klar (Medel): tillbaka till det väntande behovet, betala nu
+  if(workAgainForEvent){
+    workAgainForEvent=false;
+    busy=true; setBtns(false);
+    document.getElementById('moneyNum').textContent=money; mcolor();
+    document.getElementById('charImg').classList.remove('cheer');
+    document.getElementById('charImg').classList.add('run');
+    renderPig(); updateTrack();
+    document.getElementById('feedback').className='feedback neutral';
+    document.getElementById('feedback').textContent='Betala behovet nu!';
+    document.getElementById('bubble').textContent='Nu har du mer pengar — betala behovet! 💜';
+    show('screen-game');
+    const v2=playVoice('rik-bra-jobbat');
+    afterVoice(v2, nextEvent, 4000);   // visa samma behov igen (qIdx oförändrat)
+    return;
+  }
   buildWeekEvents();
   busy=true; setBtns(false);   // lås knapparna tills första frestelsen visas
-  document.getElementById('moneyNum').textContent=money;
+  document.getElementById('moneyNum').textContent=money; mcolor();
   document.getElementById('weekChip').textContent='Vecka '+week+'/'+cfg.weeks;
   document.getElementById('charImg').classList.remove('cheer');
   document.getElementById('charImg').classList.add('run');
@@ -828,6 +886,16 @@ function nextEvent(){
 function onSave(){ if(cfg && cfg.mode==='weeks') resolveEvent(false); else resolve(false); }
 function onBuy(){  if(cfg && cfg.mode==='weeks') resolveEvent(true);  else resolve(true);  }
 
+// Medel: har inte råd med ett behov → gå och jobba mer, behåll behovet (qIdx/curEvent oförändrat)
+function goWorkMore(){
+  workAgainForEvent=true; busy=true; setBtns(false);
+  const fb=document.getElementById('feedback'); fb.className='feedback neutral';
+  fb.textContent=`Du har bara ${money} mynt — det kostar ${curPrice}. Jobba ihop mer först!`;
+  document.getElementById('bubble').textContent='Vi behöver mer pengar först — dags att jobba lite till! 💪';
+  const v=playVoice('rik-behov');
+  afterVoice(v, startWorkRound, 4000);
+}
+
 function resolveEvent(bought){
   if(busy || !curEvent) return;
   const e=curEvent;
@@ -843,6 +911,14 @@ function resolveEvent(bought){
     sndSave(); sparkPig(); playVoice('rik-inte-rad');
     qIdx++; updateTrack();
     afterVoice(curVoice, nextEvent, 5000);   // vänta tills repliken spelat klart
+    return;
+  }
+
+  // Behov/oväntat man INTE har råd med:
+  //  Medel → gå och jobba mer först, sedan betala samma behov
+  //  Svår  → köp ändå, hamna på minus (skuld som ska jobbas tillbaka)
+  if(bought && e.kind!=='want' && money < curPrice && level==='medel'){
+    goWorkMore();
     return;
   }
 
@@ -895,8 +971,8 @@ function applyEvent(bought){
   tempt.classList.remove('active');
 
   if(bought){
-    const pay=Math.min(money, curPrice);          // grisen kan inte bli minus
-    money-=pay;
+    money-=curPrice;                     // behov drar hela priset (kan bli minus på Svår = skuld)
+    const kvar = money<0 ? `Du är back ${-money} mynt — jobba tillbaka dem! 😮` : `${money} mynt kvar.`;
     tempt.classList.add('buy-out');
     if(e.kind==='want'){
       streak=0;
@@ -906,24 +982,24 @@ function applyEvent(bought){
       playVoice('rik-kop');
     } else {
       streak=0;
-      fb.className='feedback good';
+      fb.className = money<0 ? 'feedback bad' : 'feedback good';
       if(e.food){
         foodLevel=FOOD_MAX; renderPantry();   // skafferiet fyllt igen
-        fb.textContent=`🛍️ Du fyllde på skafferiet med ${e.name.toLowerCase()} (${curPrice} mynt). ${money} mynt kvar.`;
-        document.getElementById('bubble').textContent='Skafferiet är fullt igen — nu räcker maten! 🍎';
+        fb.textContent=`🛍️ Du fyllde på skafferiet med ${e.name.toLowerCase()} (${curPrice} mynt). ${kvar}`;
+        document.getElementById('bubble').textContent = money<0 ? 'Maten fick gå på skuld — jobba tillbaka mynten! 💪' : 'Skafferiet är fullt igen — nu räcker maten! 🍎';
         playVoice('rik-skafferi');
       } else if(e.kind==='surprise'){
-        fb.textContent=`🔧 Du betalade (${curPrice} mynt). Klokt att ha sparat! ${money} mynt kvar.`;
-        document.getElementById('bubble').textContent='Skönt att pengarna räckte! 💪';
+        fb.textContent=`🔧 Du betalade ${curPrice} mynt. ${kvar}`;
+        document.getElementById('bubble').textContent = money<0 ? 'Oj, det blev skuld — jobba tillbaka mynten! 💪' : 'Skönt att pengarna räckte! 💪';
         playVoice('rik-ovantat');
       } else {
-        fb.textContent=`✅ Bra — behov först! Du köpte ${e.name.toLowerCase()} (${curPrice} mynt). ${money} mynt kvar.`;
-        document.getElementById('bubble').textContent='Klokt — behov före nöje! 👏';
+        fb.textContent=`✅ Bra — behov först! Du köpte ${e.name.toLowerCase()} (${curPrice} mynt). ${kvar}`;
+        document.getElementById('bubble').textContent = money<0 ? 'Behov går först — men nu är du back, jobba mer! 💪' : 'Klokt — behov före nöje! 👏';
         playVoice('rik-behov');
       }
     }
     flyCoins(curPrice); renderPig(); pigPulse(true);
-    sndBuy(); sndKaching(); countTo(money);
+    sndBuy(); sndKaching(); countTo(money); mcolor();
   } else {
     // sparade en frestelse = bra
     streak++;
@@ -969,7 +1045,7 @@ function finishWeeks(){
     endTitle.textContent='Du klarade det! 🎉';
     endMsg.textContent=`Efter ${cfg.weeks} veckor med jobb, mat, kläder och kloka val sparade du ihop till ${dream.a}${dream.name.toLowerCase()}! Du hade ${money} mynt kvar. Vilken sparare! 💜`;
     playVoice('rik-vinst'); confetti();
-    setTimeout(sndWin, 500);
+    setTimeout(sndFanfare, 350);
   } else {
     const miss=dream.price-money;
     endEmoji.innerHTML='<div style="width:clamp(120px,32vmin,180px);margin:0 auto">'+pigSVG()+'</div>';
@@ -1067,7 +1143,7 @@ function pigPulse(spend){
 
 function updateTrack(){
   let p;
-  if(cfg && cfg.mode==='weeks'){ p=dream? Math.min(1, money/dream.price) : 0; }
+  if(cfg && cfg.mode==='weeks'){ p=dream? Math.max(0, Math.min(1, money/dream.price)) : 0; }
   else { p=cfg && cfg.count? idx/cfg.count : 0; }
   document.getElementById('trackFill').style.width=(p*100)+'%';
   document.getElementById('trackRunner').style.left=(p*100)+'%';
@@ -1250,6 +1326,7 @@ function countTo(target){
   const el=document.getElementById('moneyNum');
   let cur=parseInt(el.textContent,10)||0;
   const step=cur>target?-1:1;
+  el.style.color = target<0 ? '#dc2626' : '';
   const timer=setInterval(()=>{
     if(cur===target){ clearInterval(timer); return; }
     cur+=step; el.textContent=cur;
@@ -1268,7 +1345,7 @@ function finish(){
     endTitle.textContent='Du hade råd! 🎉';
     endMsg.textContent=`Du sparade nog och köpte ${dream.a}${dream.name.toLowerCase()}! Du hade ${money} mynt. Vilken sparare! 💜`;
     playVoice('rik-vinst'); confetti();
-    setTimeout(sndWin, 500); // låt rösten börja först så jingeln inte slukar den (mobil)
+    setTimeout(sndFanfare, 350); // låt rösten börja först så jingeln inte slukar den (mobil)
   } else {
     const miss=dream.price-money;
     endEmoji.innerHTML='<div style="width:clamp(120px,32vmin,180px);margin:0 auto">'+pigSVG()+'</div>';
@@ -1281,14 +1358,14 @@ function finish(){
 
 function confetti(){
   const em=['🎉','⭐','💜','🪙','✨','🎊'];
-  for(let i=0;i<32;i++){
+  for(let i=0;i<60;i++){
     const el=document.createElement('div');
     el.className='confetti'; el.textContent=em[Math.floor(Math.random()*em.length)];
     el.style.left=Math.random()*100+'vw';
     el.style.animationDuration=(2+Math.random()*2)+'s';
-    el.style.animationDelay=(Math.random()*0.6)+'s';
+    el.style.animationDelay=(Math.random()*0.9)+'s';
     document.body.appendChild(el);
-    setTimeout(()=>el.remove(),4200);
+    setTimeout(()=>el.remove(),4900);
   }
 }
 </script>
