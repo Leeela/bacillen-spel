@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex,nofollow">
+  <title>Diagnostik — tillfällig</title>
+  <!-- TILLFÄLLIG SIDA. Tas bort före produktionsansökan i Google Play Console.
+       Laddar medvetet INGA externa resurser (ingen webbfont, ingen analys-beacon)
+       eftersom sidan mäter exakt vilka resurser appen laddar. -->
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      font-size: 20px;
+      line-height: 1.5;
+      color: #111;
+      background: #fff;
+      margin: 0;
+      padding: 20px 16px 60px;
+    }
+    h1 { font-size: 26px; margin: 0 0 4px; }
+    h2 { font-size: 22px; margin: 32px 0 8px; border-bottom: 2px solid #111; padding-bottom: 4px; }
+    p.meta { font-size: 16px; color: #555; margin: 0 0 20px; }
+    dl { margin: 0; }
+    dt { font-weight: 700; margin-top: 14px; }
+    dd {
+      margin: 2px 0 0;
+      font-family: ui-monospace, Menlo, Consolas, monospace;
+      font-size: 19px;
+      word-break: break-all;
+      overflow-wrap: anywhere;
+      background: #f2f2f2;
+      padding: 6px 8px;
+      border-radius: 4px;
+    }
+    dd.ja { background: #d8f0d0; }
+    dd.nej { background: #f8dcdc; }
+    ol { margin: 0; padding-left: 28px; }
+    li {
+      font-family: ui-monospace, Menlo, Consolas, monospace;
+      font-size: 18px;
+      word-break: break-all;
+      overflow-wrap: anywhere;
+      margin-bottom: 12px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid #ddd;
+    }
+    li.extern { background: #fff2cc; padding: 6px 8px 12px; border-radius: 4px; }
+    .flagga { display: inline-block; font-family: system-ui, sans-serif; font-weight: 700; font-size: 15px; margin-right: 6px; }
+    .flagga.e { color: #a05000; }
+    .flagga.i { color: #4a7a2a; }
+    button {
+      font-size: 22px;
+      font-weight: 700;
+      padding: 16px 24px;
+      margin: 24px 0 8px;
+      width: 100%;
+      border: 3px solid #111;
+      border-radius: 10px;
+      background: #fff;
+      color: #111;
+    }
+    button:active { background: #eee; }
+    .fot { font-size: 16px; color: #777; margin-top: 40px; }
+  </style>
+</head>
+<body>
+
+  <h1>Diagnostik</h1>
+  <p class="meta">Tillfällig sida. Visar vad WebView:n faktiskt laddar. Tas bort före produktionsansökan.</p>
+
+  <button id="uppdatera" type="button">Uppdatera lista</button>
+  <p class="meta" id="avlast"></p>
+
+  <h2>Appläge</h2>
+  <dl id="applage"></dl>
+
+  <h2>Analys (GA4)</h2>
+  <dl id="analys"></dl>
+
+  <h2>Kontext</h2>
+  <dl id="kontext"></dl>
+
+  <h2>Cookies</h2>
+  <dl id="cookies"></dl>
+
+  <h2>Laddade resurser</h2>
+  <p class="meta" id="resurs-sammanfattning"></p>
+  <ol id="resurser"></ol>
+
+  <p class="fot">/app/diagnostik.html — tillfällig verifieringssida, ej länkad från appens navigation.</p>
+
+<script>
+(function () {
+  var GA_ID = 'G-VPN8T03G8N';
+
+  function rad(dl, etikett, varde, ton) {
+    var dt = document.createElement('dt');
+    dt.textContent = etikett;
+    var dd = document.createElement('dd');
+    dd.textContent = varde;
+    if (ton) dd.className = ton;
+    dl.appendChild(dt);
+    dl.appendChild(dd);
+  }
+
+  function jaNej(v) { return v ? 'JA' : 'NEJ'; }
+
+  function arNoop(fn) {
+    if (typeof fn !== 'function') return false;
+    try {
+      // En no-op är function(){} — tom kropp, noll argument.
+      return fn.length === 0 && /\{\s*\}\s*$/.test(String(fn));
+    } catch (e) { return false; }
+  }
+
+  function las() {
+    var appLage = document.getElementById('applage');
+    var analys = document.getElementById('analys');
+    var kontext = document.getElementById('kontext');
+    var cookies = document.getElementById('cookies');
+    var lista = document.getElementById('resurser');
+    appLage.innerHTML = analys.innerHTML = kontext.innerHTML = cookies.innerHTML = '';
+    lista.innerHTML = '';
+
+    // ── Resurser hämtas först, app-mode-kontrollen nedan behöver dem ──
+    var resurser = [];
+    try {
+      resurser = performance.getEntriesByType('resource').map(function (r) { return r.name; });
+    } catch (e) {
+      resurser = ['(performance.getEntriesByType kastade fel: ' + e.message + ')'];
+    }
+
+    var appModeLaddad = resurser.some(function (n) { return n.indexOf('app-mode.js') !== -1; });
+
+    // ── Appläge ──
+    var harKlass = document.documentElement.classList.contains('app-mode');
+    rad(appLage, "classList.contains('app-mode')", jaNej(harKlass), harKlass ? 'ja' : 'nej');
+    rad(appLage, 'app-mode.js laddad på denna sida?', jaNej(appModeLaddad), appModeLaddad ? 'ja' : 'nej');
+
+    var standaloneMedia = false;
+    try { standaloneMedia = window.matchMedia('(display-mode: standalone)').matches; } catch (e) {}
+    rad(appLage, "matchMedia('(display-mode: standalone)').matches", jaNej(standaloneMedia), standaloneMedia ? 'ja' : 'nej');
+
+    var navStandalone = ('standalone' in navigator) ? String(navigator.standalone) : 'undefined (finns ej i denna webbläsare)';
+    rad(appLage, 'navigator.standalone', navStandalone);
+
+    // ── Analys ──
+    var gaFlagga = window['ga-disable-' + GA_ID];
+    rad(analys, "window['ga-disable-" + GA_ID + "']", String(gaFlagga) + ' (' + typeof gaFlagga + ')');
+
+    rad(analys, 'typeof window.gtag', typeof window.gtag);
+
+    var noop = arNoop(window.gtag);
+    rad(analys, 'window.gtag är no-op (tom funktion)?', jaNej(noop), noop ? 'ja' : '');
+
+    var harDataLayer = typeof window.dataLayer !== 'undefined';
+    var dlText = jaNej(harDataLayer);
+    if (harDataLayer) {
+      dlText += ' — typ: ' + (Array.isArray(window.dataLayer) ? 'array' : typeof window.dataLayer);
+      try { dlText += ', längd: ' + window.dataLayer.length; } catch (e) {}
+    }
+    rad(analys, 'window.dataLayer finns?', dlText, harDataLayer ? 'nej' : 'ja');
+
+    var gaResurser = resurser.filter(function (n) {
+      return /googletagmanager\.com|google-analytics\.com|analytics\.google\.com/.test(n);
+    });
+    rad(analys, 'Requests mot GA-domäner', gaResurser.length === 0 ? '0 — inga' : gaResurser.length + ' st:\n' + gaResurser.join('\n'), gaResurser.length === 0 ? 'ja' : 'nej');
+
+    // ── Kontext ──
+    rad(kontext, 'document.referrer', document.referrer === '' ? '(tom)' : document.referrer);
+    rad(kontext, 'location.href', location.href);
+    rad(kontext, 'navigator.userAgent', navigator.userAgent);
+
+    // ── Cookies ──
+    var c = document.cookie;
+    rad(cookies, 'document.cookie', c === '' ? '(tom — inga cookies)' : c, c === '' ? 'ja' : 'nej');
+
+    // ── Resurslista ──
+    var externa = 0;
+    resurser.forEach(function (namn) {
+      var extern = namn.indexOf(location.origin) !== 0 && /^https?:/i.test(namn);
+      if (extern) externa++;
+      var li = document.createElement('li');
+      if (extern) li.className = 'extern';
+      var flagga = document.createElement('span');
+      flagga.className = 'flagga ' + (extern ? 'e' : 'i');
+      flagga.textContent = extern ? 'EXTERN' : 'egen';
+      li.appendChild(flagga);
+      li.appendChild(document.createTextNode(namn));
+      lista.appendChild(li);
+    });
+
+    if (resurser.length === 0) {
+      var tom = document.createElement('li');
+      tom.textContent = '(inga resursposter — sidan laddade inget mätbart)';
+      lista.appendChild(tom);
+    }
+
+    document.getElementById('resurs-sammanfattning').textContent =
+      resurser.length + ' resurser totalt, varav ' + externa + ' mot extern domän (gulmarkerade).';
+
+    document.getElementById('avlast').textContent =
+      'Avläst ' + new Date().toLocaleTimeString('sv-SE') + '.';
+  }
+
+  document.getElementById('uppdatera').addEventListener('click', las);
+  las();
+}());
+</script>
+
+</body>
+</html>

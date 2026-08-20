@@ -128,6 +128,7 @@ Divergerad dubblett av luvbugscollection.com-filer låg i bacillen-spel-repot oc
 ---
 
 ## Återstående
+- [ ] **Ta bort /app/diagnostik.html före produktionsansökan** — gäller både sidan `app/diagnostik.html` och den tillfälliga textlänken "Diagnostik" längst ner i `app/index.html` (markerad med kommentaren `TILLFÄLLIG diagnostiklänk`). Sidan finns enbart för att verifiera på enheten vad TWA:ns WebView laddar (USB-felsökning fungerar inte), och är inte länkad från appens navigation i övrigt.
 - [ ] Android-testprotokoll (test 1–7) genomförs och signeras
 - [ ] Data Safety-formuläret fylls i och skickas in i Google Play Console
 
