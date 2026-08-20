@@ -3,6 +3,17 @@
   var isTWA = document.referrer.startsWith('android-app://');
 
   if (isStandalone || isTWA) {
+    // Shop-sidan ska aldrig renderas inne i appen. Döljning av länken räcker inte —
+    // sidan nås via URL och innehåller externa Etsy-länkar (som inte täcks av
+    // samma-origin-regeln nedan) samt ett Brevo-formulär med levande action.
+    // Körs före allt annat i appgrenen, medan <body> ännu inte är parsad.
+    // Regexen är ankrad i båda ändar mot location.pathname och kan bara träffa
+    // exakt /shop eller /shop.html. Målet /app/ matchar inte, så ingen loop.
+    if (/^\/shop(\.html)?$/i.test(location.pathname)) {
+      location.replace('/app/');
+      return;
+    }
+
     window.gtag = function () {};
     document.addEventListener('DOMContentLoaded', function () {
       // Dölj Bacillpost-länken i appläge
