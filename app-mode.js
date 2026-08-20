@@ -44,15 +44,28 @@
         }
       });
 
-      // Barnsäkert: dölj Brevo/e-postprenumerationsformulär i appläge
-      // (t.ex. på mottagarsidan /love/k/). Visas fortfarande på webben.
-      document.querySelectorAll(
+      // Barnsäkert: ta bort Brevo/e-postprenumerationsformulären UR DOM i appläge.
+      // Tidigare doldes de med style.display='none', men markupen låg kvar med
+      // levande action mot sibforms.com — ett formulär behöver ingen JS för att
+      // kunna postas. Visas fortfarande normalt på webben.
+      //
+      // Listan innehåller både formuläret (#sib-form) och dess wrappers. Vi tar
+      // bort de YTTERSTA träffarna, så att rubrik och beskrivningstext inuti
+      // wrappern följer med och inget blir kvar som ser trasigt ut.
+      // .brevo-section är med för att love/index.html och shop.html annars
+      // lämnar en tom sektion med 48 px marginal efter sig.
+      var brevoTraffar = [].slice.call(document.querySelectorAll(
         '#recipient-subscribe, .recipient-subscribe, ' +
         '#sib-form-container, .sib-form-container, ' +
         '#sib-container, #sib-form, .sib-form, ' +
-        '.subscribe-box, .subscribe-box-wrap'
-      ).forEach(function (el) {
-        el.style.display = 'none';
+        '.subscribe-box, .subscribe-box-wrap, .brevo-section'
+      ));
+      brevoTraffar.filter(function (el) {
+        return !brevoTraffar.some(function (annan) {
+          return annan !== el && annan.contains(el);
+        });
+      }).forEach(function (el) {
+        el.remove();
       });
     });
     return;
