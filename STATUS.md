@@ -330,6 +330,11 @@ utan filerna skulle bryta typografin på hela engelska sajten.
       göras innan formuläret skickas in.
 - [ ] Subsetta Baloo 2 (683 kB → ca 30 kB) när `fonttools` finns tillgängligt.
 - [ ] Kör åtgärdsrundan på engelska sajten, med font-filerna på plats först.
+- [ ] **Layoutbugg i `kla-om-bacillen.html`:** sex `.char-btn`-knappar à 99 px ligger i en
+      flex-rad med `overflow-x: visible` — totalt 485 px på en 390 px skärm, alltså 95 px
+      horisontell överspillning. Befintlig bugg, inte orsakad av font-bytet: diffen rör bara
+      `<link>`-raderna, html2canvas och beacon-taggen, och med systemfont blir raden bredare
+      (500 px) än med Fredoka. Inte åtgärdad — rör den inte utan eget beslut.
 - [ ] `harma-dansbacillen.html` (Härma Dansbacillen) länkas inte från `spel.html` och går
       därmed inte att nå i appen. Avsiktligt eller förbiseende?
 - [ ] Karaktärsbilden i Kärleksbacillen-spelet ser inte ut att matcha karaktärsbibeln —
