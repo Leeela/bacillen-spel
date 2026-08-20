@@ -302,6 +302,43 @@ Spara. Filen (1.4.1, MIT) ligger nu i `/vendor/html2canvas.min.js`.
 **Obs vid utrullning:** `app-mode.js` cachas av webbläsare och av appens WebView. Ändringen
 slår igenom först när cachen förnyas.
 
+### Brevo-runda 2026-08-20 — förhindra i stället för att dölja
+
+`app-mode.js` dolde prenumerationsformuläret med `display:none` i appläge, men
+`sib-styles.css` och `main.js` laddades ändå — **två requests mot `sibforms.com` på nio
+sidor, även inuti appen**. Döljning stoppar inte inladdning.
+
+Berörda filer: `shop.html`, `love/index.html`, `love/k/index.html` och de sex
+`love/<karaktär>/index.html`.
+
+Åtgärd: `<link>` och `<script>` borttagna ur alla nio och injiceras nu från `app-mode.js`,
+i webbläsargrenen och bara när `#sib-form` finns på sidan. De tre `@font-face`-reglerna mot
+`assets.brevo.com` är helt borttagna — Roboto faller tillbaka på systemfont inuti
+formuläret, även på webben (beslut 2026-08-20).
+
+Formulärets `action` mot `sibforms.com` är orörd. Den är användarinitierad och nås bara i
+webbläsarläge.
+
+Verifierat lokalt: nio formulärsidor får 2 Brevo-requests i webbläsarläge och formuläret
+fungerar; sidor utan formulär får noll.
+
+### Döljs eller förhindras — full genomgång 2026-08-20
+
+| Vad | Mekanism | Verdikt |
+|---|---|---|
+| GA4 | tidig `return` + no-op `gtag` | Förhindras |
+| Cloudflare-beacon | villkorad injektion | Förhindras |
+| YouTube + Spotify | åldersgrind + `data-src` | Förhindras |
+| Brevo-formulär | villkorad injektion | Förhindras (efter denna runda) |
+| `/love/`-länken | `display:none` | **Endast dold** — `/love/*` nås via URL |
+| Shop-länkar | `display:none` | **Endast dold** — `shop.html` nås via URL |
+| Länkomskrivning till `/app/` | `setAttribute('href')` | Byter destination, ingen döljning |
+
+De två länkfallen laddar ingenting i sig — en dold länk gör inga requests. Men de leder till
+sidor som nås via URL ändå. Efter Brevo-rundan laddar de sidorna inget tredjeparts i appläge,
+så det är inte längre ett inladdningsproblem — men de är fortfarande *nåbara*, vilket är en
+separat fråga om appens innehåll snarare än om datainsamling.
+
 ### Kvar efter åtgärdsrundan
 
 Endast YouTube (`youtube-nocookie.com`) på Titta och Spotify (`open.spotify.com`,
