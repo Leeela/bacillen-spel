@@ -122,6 +122,84 @@ Divergerad dubblett av luvbugscollection.com-filer låg i bacillen-spel-repot oc
 
 ---
 
+## Mätning på enhet 2026-08-20 (Samsung-surfplatta, TWA `se.bacillerna.app`)
+
+Genomförd med den tillfälliga sidan `/app/diagnostik.html` (skannar varje sida i en dold
+iframe på samma origin och läser av `performance.getEntriesByType('resource')`).
+USB-felsökning fungerade inte, därför gjordes avläsningen på enheten.
+
+**Appläge bekräftat:** `matchMedia('(display-mode: standalone)')` = JA.
+`document.referrer` = `https://bacillerna.se/app/` — förväntat, eftersom `android-app://`
+bara sätts på TWA:ns startdokument, inte vid navigering inuti appen. Detektionen i
+`app-mode.js` vilar alltså i praktiken helt på display-mode-kontrollen, och den håller.
+
+**Åldersgrinden var passerad**, så YouTube- och Spotify-inbäddningarna ingår i mätningen.
+
+### Resultat per sida
+
+| Sida | Resurser | Externa | GA-domäner |
+|---|---|---|---|
+| /app/index.html | 4 | 3 | 0 |
+| /app/spel.html | 14 | 5 | 0 |
+| /app/titta.html | 13 | 12 | 0 |
+| /app/sagor.html | 9 | 8 | 0 |
+| /app/halsning.html | 12 | 5 | 0 |
+
+### Externa domäner (8 st)
+
+| Domän | Requests | Vad det är |
+|---|---|---|
+| fonts.gstatic.com | 8 | Webbfont-filer (Fredoka, Nunito) |
+| www.youtube-nocookie.com | 7 | Videoinbäddningar på Titta |
+| fonts.googleapis.com | 5 | Font-CSS |
+| static.cloudflareinsights.com | 5 | Analys-skript |
+| cloudflareinsights.com | 5 | `/cdn-cgi/rum` — analysdata skickas |
+| anchor.fm | 1 | Podd-RSS på Sagor |
+| open.spotify.com | 1 | Spotify iframe-API |
+| embed-cdn.spotifycdn.com | 1 | Spotify-spelaren |
+
+### Godkänt
+
+- **Test 2 (GA4 i TWA) — GODKÄNT.** Noll requests mot googletagmanager.com,
+  google-analytics.com eller analytics.google.com på samtliga fem sidor.
+  `typeof gtag` = `undefined`, `dataLayer` saknas. VP1 verifierad på enhet.
+- **Test 4 (YouTube nocookie) — GODKÄNT.** Alla sju inbäddningar går mot
+  `youtube-nocookie.com`, noll mot `www.youtube.com`. VP3 verifierad på enhet.
+- Åldersgrinden laddar inget tredjepartsinnehåll före passage — bekräftat.
+- `api.allorigins.win` användes inte; RSS hämtas direkt från anchor.fm, proxyn är reserv.
+
+### Kvarstående problem för Data Safety
+
+`cloudflareinsights.com/cdn-cgi/rum` är inte en nedladdning utan själva analysdatan som
+skickas från enheten, på alla fem sidor. Så länge den ligger kvar går **"App doesn't collect
+or share data" inte att deklarera**.
+
+Åtgärdsförslag i prioritetsordning:
+
+1. Villkora Cloudflare-beaconen på samma sätt som GA4 redan är (flytta in i `app-mode.js`)
+   — mätningen behålls på webben, noll analysdata ur appen.
+2. Självhosta Fredoka och Nunito i `/app` — tar bort 13 requests och två Google-domäner.
+   Fonterna finns redan i `Spel/fonts/`.
+3. YouTube och Spotify är appens faktiska innehåll och kan inte tas bort. De ligger bakom
+   åldersgrinden och är användarinitierade — en annan och mer försvarbar position än
+   passiv besöksmätning, men behöver bedömas separat inför formuläret.
+
+### Ej mätt än
+
+Skanningen täcker bara de fem `/app`-sidorna. De 15 spelen som `/app/spel.html` länkar till
+ligger utanför manifest-scopet (`/mata-godisbacillen.html`, `/Memory/`, `/Tandlakaren/` m.fl.),
+laddas i samma WebView och är där barnet tillbringar tiden. De laddar dessutom `app-mode.js`,
+alltså de enda sidorna där GA4-gatingen överhuvudtaget körs. En separat knapp "Skanna spelen"
+finns nu på diagnostiksidan — resultatet är ännu inte inhämtat från enheten.
+
+**Tolkningsfälla vid spelskanningen:** en sida som laddas i iframe kan tappa
+`display-mode: standalone`. Gör den det aktiverar `app-mode.js` inte appläget och laddar GA4
+med flit — vilket ser ut som ett läckage men är en artefakt av mätmetoden. Diagnostiksidan
+läser därför av display-mode inuti varje ram och flaggar utfallet som ogiltigt när appläget
+tappats. Vid en sådan flagga: öppna spelet direkt i appen och läs av där i stället.
+
+---
+
 ## Blockering
 **Data Safety-formuläret är blockerat** tills Android-testerna (1–7 ovan) är genomförda och loggade med godkänt resultat.
 
@@ -129,7 +207,8 @@ Divergerad dubblett av luvbugscollection.com-filer låg i bacillen-spel-repot oc
 
 ## Återstående
 - [ ] **Ta bort /app/diagnostik.html före produktionsansökan** — gäller både sidan `app/diagnostik.html` och den tillfälliga textlänken "Diagnostik" längst ner i `app/index.html` (markerad med kommentaren `TILLFÄLLIG diagnostiklänk`). Sidan finns enbart för att verifiera på enheten vad TWA:ns WebView laddar (USB-felsökning fungerar inte), och är inte länkad från appens navigation i övrigt.
-- [ ] Android-testprotokoll (test 1–7) genomförs och signeras
+- [ ] Android-testprotokoll: test 2 och 4 genomförda på enhet 2026-08-20 (se ovan). Kvar: test 1, 3, 5, 6, 7.
+- [ ] Skanna de 15 spelsidorna på enhet och åtgärda Cloudflare-beaconen + Google Fonts
 - [ ] Data Safety-formuläret fylls i och skickas in i Google Play Console
 
 ---

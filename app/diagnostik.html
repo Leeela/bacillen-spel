@@ -91,7 +91,8 @@
 
   <h2>Skanna app-sidorna</h2>
   <p class="meta">Laddar varje app-sida i en dold ram på samma origin och l&auml;ser av vad <em>den</em> sidan h&auml;mtar. Tar ca 20 sekunder. Detta &auml;r avl&auml;sningen som svarar p&aring; Data Safety-fr&aring;gan &mdash; resurslistan ovan g&auml;ller bara diagnostiksidan sj&auml;lv.</p>
-  <button id="skanna" type="button">Skanna app-sidorna</button>
+  <button id="skanna" type="button">Skanna app-sidorna (5 st, ca 20 s)</button>
+  <button id="skanna-spel" type="button">Skanna spelen (15 st, ca 60 s)</button>
   <p class="meta" id="skann-status"></p>
   <div id="skann-resultat"></div>
 
@@ -219,6 +220,23 @@
     '/app/sagor.html',
     '/app/halsning.html'
   ];
+  var SPEL = [
+    '/mata-godisbacillen.html',
+    '/rakna-godisbacillen.html',
+    '/kla-om-bacillen.html',
+    '/retbacillen-spelet.html',
+    '/gladjebacillen-spelet.html',
+    '/dansbacillen-spelet.html',
+    '/dansa-med-dansbacillen.html',
+    '/karleksbacillen-spelet/',
+    '/karleksbacillen-labyrint/',
+    '/Memory/',
+    '/Tandlakaren/',
+    '/aktivitetsbok.html',
+    '/rikedomsbacillen-spelet.html',
+    '/rikedomsbacillen-guldregn.html',
+    '/rikedomsbacillen-spara.html'
+  ];
   var VANTA_MS = 2500;   // tid efter load innan avläsning (defer-skript, RUM-POST)
   var TAK_MS = 9000;     // ge upp väntan på load
 
@@ -243,6 +261,7 @@
           ut.appModeKlass = d.documentElement.classList.contains('app-mode');
           ut.appModeJs = ut.resurser.some(function (n) { return n.indexOf('app-mode.js') !== -1; });
           ut.gaFlagga = w['ga-disable-' + GA_ID];
+          ut.standaloneIRam = w.matchMedia('(display-mode: standalone)').matches;
         } catch (e) {
           ut.fel = e.message;
         }
@@ -283,8 +302,12 @@
     var dl = document.createElement('dl');
     rad(dl, 'Resurser', ut.resurser.length + ' totalt, ' + externa.length + ' externa',
         externa.length === 0 ? 'ja' : 'nej');
-    rad(dl, 'Requests mot GA-domäner', ga.length === 0 ? '0 — inga' : ga.length + ' st',
-        ga.length === 0 ? 'ja' : 'nej');
+    rad(dl, 'display-mode: standalone inuti ramen', jaNej(ut.standaloneIRam),
+        ut.standaloneIRam ? 'ja' : 'nej');
+    rad(dl, 'Requests mot GA-domäner',
+        (ga.length === 0 ? '0 — inga' : ga.length + ' st') +
+        (ut.standaloneIRam ? '' : '  ⚠ EJ GILTIGT: ramen körde i webbläsarläge, så app-mode.js laddade GA4 med flit'),
+        (ga.length === 0 && ut.standaloneIRam) ? 'ja' : 'nej');
     rad(dl, 'app-mode.js laddad', jaNej(ut.appModeJs));
     rad(dl, "classList.contains('app-mode')", jaNej(ut.appModeKlass));
     rad(dl, 'typeof gtag', String(ut.gtag) + (ut.gtagNoop ? ' (no-op)' : ''));
@@ -314,7 +337,7 @@
     return externa;
   }
 
-  function ritaSammanfattning(allaExterna) {
+  function ritaSammanfattning(allaExterna, tappadeApplage) {
     var box = document.getElementById('skann-resultat');
     var h = document.createElement('h3');
     h.style.cssText = 'font-size:21px;margin:32px 0 6px;';
@@ -338,6 +361,14 @@
     }
     box.appendChild(dl);
 
+    if (tappadeApplage > 0) {
+      var varn = document.createElement('dl');
+      rad(varn, '⚠ Mätfel', tappadeApplage + ' sida/sidor kördes i webbläsarläge inuti ramen. ' +
+          'Där aktiverades INTE app-mode.js, så GA4-träffar på dessa sidor är en artefakt av ' +
+          'skanningen — inte ett läckage i appen. Öppna sidan direkt i appen för att kontrollera.', 'nej');
+      box.appendChild(varn);
+    }
+
     var grind = null;
     try { grind = localStorage.getItem('bacillerna_alder_ok'); } catch (e) {}
     var dl2 = document.createElement('dl');
@@ -353,35 +384,43 @@
     box.appendChild(not);
   }
 
-  function skanna() {
+  function skanna(lista) {
     var knapp = document.getElementById('skanna');
+    var knappSpel = document.getElementById('skanna-spel');
     var status = document.getElementById('skann-status');
     var box = document.getElementById('skann-resultat');
     knapp.disabled = true;
+    knappSpel.disabled = true;
     box.innerHTML = '';
     var allaExterna = [];
+    var tappade = 0;
 
     var kedja = Promise.resolve();
-    SIDOR.forEach(function (url, i) {
+    lista.forEach(function (url, i) {
       kedja = kedja.then(function () {
-        status.textContent = 'Skannar ' + (i + 1) + '/' + SIDOR.length + ': ' + url + ' …';
+        status.textContent = 'Skannar ' + (i + 1) + '/' + lista.length + ': ' + url + ' …';
         return skannaSida(url).then(function (ut) {
+          if (!ut.fel && !ut.standaloneIRam) tappade++;
           allaExterna = allaExterna.concat(ritaSida(ut));
         });
       });
     });
 
     kedja.then(function () {
-      ritaSammanfattning(allaExterna);
-      status.textContent = 'Skanning klar ' + new Date().toLocaleTimeString('sv-SE') + '.';
+      ritaSammanfattning(allaExterna, tappade);
+      status.textContent = 'Skanning klar ' + new Date().toLocaleTimeString('sv-SE') +
+        ' — ' + lista.length + ' sidor.';
       knapp.disabled = false;
+      knappSpel.disabled = false;
     })['catch'](function (e) {
       status.textContent = 'Skanningen avbröts: ' + e.message;
       knapp.disabled = false;
+      knappSpel.disabled = false;
     });
   }
 
-  document.getElementById('skanna').addEventListener('click', skanna);
+  document.getElementById('skanna').addEventListener('click', function () { skanna(SIDOR); });
+  document.getElementById('skanna-spel').addEventListener('click', function () { skanna(SPEL); });
   document.getElementById('uppdatera').addEventListener('click', las);
   las();
 }());
