@@ -56,6 +56,21 @@
   cf.setAttribute('data-cf-beacon', '{"token": "e985bdf04c164c86b40875af0397828c"}');
   document.head.appendChild(cf);
 
+  // Brevo/Sendinblue-formuläret — laddas ENDAST i webbläsarläge, och bara på de sidor
+  // som faktiskt har ett formulär. Tidigare låg <link> och <script> statiskt i nio sidor
+  // och laddades även i appen, trots att formuläret döljs där. Döljning stoppar inte
+  // inladdningen — därför förhindras den i stället.
+  document.addEventListener('DOMContentLoaded', function () {
+    if (!document.querySelector('#sib-form')) return;
+    var cssLank = document.createElement('link');
+    cssLank.rel = 'stylesheet';
+    cssLank.href = 'https://sibforms.com/forms/end-form/build/sib-styles.css';
+    document.head.appendChild(cssLank);
+    var sib = document.createElement('script');
+    sib.src = 'https://sibforms.com/forms/end-form/build/main.js';
+    document.body.appendChild(sib);
+  });
+
   var s = document.createElement('script');
   s.async = true;
   s.src = 'https://www.googletagmanager.com/gtag/js?id=G-VPN8T03G8N';
