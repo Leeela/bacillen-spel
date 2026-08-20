@@ -360,9 +360,9 @@ utan filerna skulle bryta typografin på hela engelska sajten.
 
 ---
 
-## Ändringar 2026-08-20, runda 3
+## Ändringar 2026-08-21, runda 3
 
-- `8b15507`  Diagnostiklänken borttagen ur `app/index.html`. Filen `app/diagnostik.html`
+- `8b15507`  *(committad 2026-08-20 23:56)* Diagnostiklänken borttagen ur `app/index.html`. Filen `app/diagnostik.html`
   ligger kvar, raderas separat efter sista mätningen.
 - `cfe85bc`  Redirect från `shop.html` till `/app/` i appläge. `app-mode.js` rad 12–15,
   appgrenen. Stänger den kommersiella ytan, Etsy-länkarna på `shop.html:290` och `:298`
