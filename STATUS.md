@@ -200,15 +200,131 @@ tappats. Vid en sådan flagga: öppna spelet direkt i appen och läs av där i s
 
 ---
 
+## Appens verkliga yta (verifierat på enhet 2026-08-20)
+
+`app/manifest.json` deklarerar `"scope": "/app/"`, men **WebView:n navigerar fritt inom hela
+origin**. Spelen ligger på rot-nivå (`/mata-godisbacillen.html`, `/Memory/`, `/Tandlakaren/`
+m.fl.), öppnas inuti appen och behåller appläget — `display-mode: standalone` avläst till JA
+inuti varje sida. Digital Asset Links täcker hela `bacillerna.se`.
+
+**Appens yta är alltså hela bacillerna.se, inte de fem `/app`-sidorna.** Allt som gäller
+Data Safety måste bedömas för hela sajten, inte bara `/app/`.
+
+---
+
+## Spelskanning på enhet 2026-08-20 (11 av 15 sidor)
+
+Skannade med `/app/diagnostik.html`, knappen "Skanna spelen".
+`display-mode: standalone inuti ramen` = JA på samtliga — mätningen är giltig, inga artefakter.
+
+| Spel | Resurser | Externa | GA-domäner |
+|---|---|---|---|
+| /mata-godisbacillen.html | 32 | 2 | 0 |
+| /rakna-godisbacillen.html | 22 | 1 | 0 |
+| /kla-om-bacillen.html | 19 | 5 | 0 |
+| /retbacillen-spelet.html | 10 | 2 | 0 |
+| /gladjebacillen-spelet.html | 15 | 2 | 0 |
+| /dansbacillen-spelet.html | 9 | 2 | 0 |
+| /dansa-med-dansbacillen.html | 4 | 0 | 0 |
+| /karleksbacillen-spelet/ | 7 | 3 | 0 |
+| /karleksbacillen-labyrint/ | 6 | 3 | 0 |
+| /Memory/ | 9 | 0 | 0 |
+| /Tandlakaren/ | 13 | 0 | 0 |
+
+**VP1 verifierad på riktigt.** Spelen är de enda sidorna som laddar `app-mode.js`, alltså de
+enda där GA4-gatingen körs. På samtliga: `app-mode.js laddad` = JA, `typeof gtag` =
+`function (no-op)`, `dataLayer` saknas, noll requests mot GA-domäner.
+
+`/dansa-med-dansbacillen.html`, `/Memory/` och `/Tandlakaren/` hade redan noll externa
+resurser — dansspelet självhostade fonterna, vilket blev mönstret för åtgärdsrundan nedan.
+
+**Ej avlästa än:** `/aktivitetsbok.html`, `/rikedomsbacillen-spelet.html`,
+`/rikedomsbacillen-guldregn.html`, `/rikedomsbacillen-spara.html`. Skanningen hann inte klart
+innan sidan fotograferades (ca 20 s per sida på enheten). Enligt repot laddar de inga nya
+domäner — aktivitetsboken hade Cloudflare-beacon + Google Fonts, Rikedomsbacillen-spelen bara
+Google Fonts — men det är inte bekräftat på enhet.
+
+---
+
+## Åtgärdsrunda 2026-08-20 — bort med tredjepartsanropen
+
+### Cloudflare Web Analytics — två olika lösningar, avsiktligt
+
+**1. Övriga sajten (spel + webbsidor):** beacon-taggen flyttad in i `app-mode.js`, samma
+mekanik som GA4 redan använder. Laddas i webbläsarläge, aldrig i appläge. Skriptet fanns
+redan på alla dessa sidor och detektionen är verifierad på enhet.
+
+**2. De fem `/app`-sidorna:** beacon-taggen **borttagen helt**. `app-mode.js` laddas inte där,
+och att införa det beroendet enbart för beaconens skull vore fel. `/app`-sidorna har därmed
+ingen besöksmätning alls — medvetet val.
+
+Den statiska taggen togs bort ur samtliga 24 HTML-filer som hade den (byte-identisk i alla).
+`integritetspolicy.html` saknade `app-mode.js` och fick det tillagt, annars hade den tappat
+mätningen även i webbläsare.
+
+### Google Fonts självhostade
+
+Fredoka och Nunito laddades från `fonts.googleapis.com` + `fonts.gstatic.com` på 43 sidor.
+Ersatta med lokala `@font-face` enligt mönstret i `dansa-med-dansbacillen.html`:
+
+| Familj | Fil | Viktaxel |
+|---|---|---|
+| Fredoka | `/fonts/Fredoka-VariableFont.ttf` | 300–700 |
+| Nunito | `/fonts/Nunito-VariableFont.ttf` | 200–1000 |
+| Baloo 2 | `/fonts/Baloo2-VariableFont.ttf` | 400–800 |
+
+`aktivitetsbok.html` använder Baloo 2, som inte fanns lokalt. Hämtad från Googles officiella
+fonts-repo (OFL-licens, samma som de övriga). **Filen är 683 kB** — variabelfonten innehåller
+både latinska och devanagariska tecken. Google levererade tidigare en subsettad woff2 på ca
+30 kB. Sidan blir alltså tyngre. Subsetting kräver `fonttools`, som inte var tillgängligt.
+Öppen förbättringspunkt, inte ett hinder.
+
+### html2canvas hostad lokalt
+
+`kla-om-bacillen.html` laddade `html2canvas.hertzen.com/dist/html2canvas.min.js` vid tryck på
+Spara. Filen (1.4.1, MIT) ligger nu i `/vendor/html2canvas.min.js`.
+
+### Verifierat lokalt
+
+- Noll referenser till `fonts.googleapis`, `fonts.gstatic`, `cloudflareinsights` eller
+  `hertzen` kvar i någon HTML-fil på bacillerna.se.
+- Fonterna laddas och renderar: `Fredoka:loaded`, `Nunito:loaded`, `Baloo 2:loaded`.
+- I webbläsarläge injicerar `app-mode.js` fortfarande både beacon och GA4 — mätningen på
+  webben är intakt.
+
+**Obs vid utrullning:** `app-mode.js` cachas av webbläsare och av appens WebView. Ändringen
+slår igenom först när cachen förnyas.
+
+### Kvar efter åtgärdsrundan
+
+Endast YouTube (`youtube-nocookie.com`) på Titta och Spotify (`open.spotify.com`,
+`embed-cdn.spotifycdn.com`) plus podd-RSS (`anchor.fm`) på Sagor. Alla bakom åldersgrinden och
+användarinitierade — en annan bedömning än passiv besöksmätning, men behöver fortfarande
+bedömas separat inför Data Safety-formuläret.
+
+---
+
+## Öppna punkter (ej compliance)
+
+- [ ] `harma-dansbacillen.html` (Härma Dansbacillen) länkas inte från `spel.html` och går
+      därmed inte att nå i appen. Avsiktligt eller förbiseende?
+- [ ] Karaktärsbilden i Kärleksbacillen-spelet ser inte ut att matcha karaktärsbibeln —
+      brun/beige kropp, grön ring, långa ögonfransar. Verifiera mot `karleksbacillen_NY_9_16.jpg`.
+      (Filen hittades inte i `bacillerna/` eller projektmappen på skrivbordet vid sökning
+      2026-08-20 — ligger troligen i karaktärsbibeln utanför repot.)
+
+---
+
 ## Blockering
 **Data Safety-formuläret är blockerat** tills Android-testerna (1–7 ovan) är genomförda och loggade med godkänt resultat.
 
 ---
 
 ## Återstående
-- [ ] **Ta bort /app/diagnostik.html före produktionsansökan** — gäller både sidan `app/diagnostik.html` och den tillfälliga textlänken "Diagnostik" längst ner i `app/index.html` (markerad med kommentaren `TILLFÄLLIG diagnostiklänk`). Sidan finns enbart för att verifiera på enheten vad TWA:ns WebView laddar (USB-felsökning fungerar inte), och är inte länkad från appens navigation i övrigt.
+- [ ] **Ta bort /app/diagnostik.html före produktionsansökan** — ligger kvar tills åtgärdsrundan är verifierad på plattan. Gäller både sidan `app/diagnostik.html` och den tillfälliga textlänken "Diagnostik" längst ner i `app/index.html` (markerad med kommentaren `TILLFÄLLIG diagnostiklänk`). Sidan finns enbart för att verifiera på enheten vad TWA:ns WebView laddar (USB-felsökning fungerar inte), och är inte länkad från appens navigation i övrigt.
 - [ ] Android-testprotokoll: test 2 och 4 genomförda på enhet 2026-08-20 (se ovan). Kvar: test 1, 3, 5, 6, 7.
-- [ ] Skanna de 15 spelsidorna på enhet och åtgärda Cloudflare-beaconen + Google Fonts
+- [ ] Verifiera åtgärdsrundan på enhet med samma metod (skanna app-sidorna + spelen igen — förväntat: noll Cloudflare, noll Google Fonts)
+- [ ] Skanna de fyra sidor som inte hanns med: aktivitetsbok + Rikedomsbacillen ×3
 - [ ] Data Safety-formuläret fylls i och skickas in i Google Play Console
 
 ---

@@ -30,10 +30,10 @@
   <meta property="og:description" content="Klä på Bacillerna roliga accessoarer och spara din skapelse!" />
   <meta property="og:image" content="https://bacillerna.se/bilder/godisbacillen.png" />
   <meta property="og:site_name" content="Bacillerna" />
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap" media="print" onload="this.media='all'">
-  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap"></noscript>
+<style>
+/* Självhostade fonter — inga externa anrop (Google Play Families). */
+@font-face { font-family: 'Fredoka'; src: url('/fonts/Fredoka-VariableFont.ttf') format('truetype'); font-weight: 300 700; font-display: swap; }
+</style>
   <!-- html2canvas laddas lazy (bara när man trycker Spara) — se skriptet längst ned -->
   <style>
     :root {
@@ -815,7 +815,7 @@ function ensureHtml2Canvas() {
   if (_h2cPromise) return _h2cPromise;
   _h2cPromise = new Promise((resolve, reject) => {
     const s = document.createElement('script');
-    s.src = 'https://html2canvas.hertzen.com/dist/html2canvas.min.js';
+    s.src = '/vendor/html2canvas.min.js';  // lokalt hostad (1.4.1, MIT) — inga externa anrop
     s.onload = resolve;
     s.onerror = reject;
     document.head.appendChild(s);
@@ -876,6 +876,5 @@ document.getElementById('save-btn').addEventListener('click', (e) => {
   onmouseleave="this.style.opacity='0.85';this.style.transform='scale(1)'"
   >🎮 Fler spel!</a>
 
-<!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "e985bdf04c164c86b40875af0397828c"}'></script><!-- End Cloudflare Web Analytics -->
 </body>
 </html>

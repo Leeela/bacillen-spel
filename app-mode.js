@@ -47,6 +47,15 @@
     return;
   }
 
+  // Cloudflare Web Analytics — laddas ENDAST i webbläsarläge, aldrig i appen.
+  // Tidigare låg taggen statiskt i varje HTML-sida och sköt iväg en RUM-request
+  // även inuti TWA:n; verifierat på enhet 2026-08-20.
+  var cf = document.createElement('script');
+  cf.defer = true;
+  cf.src = 'https://static.cloudflareinsights.com/beacon.min.js';
+  cf.setAttribute('data-cf-beacon', '{"token": "e985bdf04c164c86b40875af0397828c"}');
+  document.head.appendChild(cf);
+
   var s = document.createElement('script');
   s.async = true;
   s.src = 'https://www.googletagmanager.com/gtag/js?id=G-VPN8T03G8N';

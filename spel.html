@@ -32,7 +32,11 @@
 <meta property="og:image" content="https://bacillerna.se/bilder/alla-bacillerna.png" />
 <meta property="og:site_name" content="Bacillerna" />
 <link rel="preload" as="image" href="bilder/alla-bacillerna.webp" type="image/webp">
-<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+/* Självhostade fonter — inga externa anrop (Google Play Families). */
+@font-face { font-family: 'Fredoka'; src: url('/fonts/Fredoka-VariableFont.ttf') format('truetype'); font-weight: 300 700; font-display: swap; }
+@font-face { font-family: 'Nunito'; src: url('/fonts/Nunito-VariableFont.ttf') format('truetype'); font-weight: 200 1000; font-display: swap; }
+</style>
 <style>
   :root {
     --color-bg: #ffffff; --color-bg-soft: #fafafa;
@@ -590,6 +594,5 @@
 
 
 <script src="/pwa-install.js" defer></script>
-<!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "e985bdf04c164c86b40875af0397828c"}'></script><!-- End Cloudflare Web Analytics -->
 </body>
 </html>

@@ -10,7 +10,11 @@
 <link rel="manifest" href="/manifest.json">
 <meta name="theme-color" content="#7BC142">
 <link rel="apple-touch-icon" href="/icons/icon-180.png">
-<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+/* Självhostade fonter — inga externa anrop (Google Play Families). */
+@font-face { font-family: 'Fredoka'; src: url('/fonts/Fredoka-VariableFont.ttf') format('truetype'); font-weight: 300 700; font-display: swap; }
+@font-face { font-family: 'Nunito'; src: url('/fonts/Nunito-VariableFont.ttf') format('truetype'); font-weight: 200 1000; font-display: swap; }
+</style>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body {
