@@ -360,6 +360,33 @@ utan filerna skulle bryta typografin på hela engelska sajten.
 
 ---
 
+## Ändringar 2026-08-20, runda 3
+
+- `8b15507`  Diagnostiklänken borttagen ur `app/index.html`. Filen `app/diagnostik.html`
+  ligger kvar, raderas separat efter sista mätningen.
+- `cfe85bc`  Redirect från `shop.html` till `/app/` i appläge. `app-mode.js` rad 12–15,
+  appgrenen. Stänger den kommersiella ytan, Etsy-länkarna på `shop.html:290` och `:298`
+  som inte täcks av samma-origin-regeln, samt Brevo-formuläret på `shop.html:320`.
+- `f2ee3f5`  Brevo-formulären tas bort ur DOM i appläge i stället för att döljas.
+  Selektorlistan utökad med `.brevo-section`. Berör åtta `/love`-sidor. Webbläsarläget orört.
+
+### Döljs eller förhindras
+
+| Vad | Mekanism | Verdikt |
+|---|---|---|
+| Brevo-resurser | Ej injicerade i appläge | Förhindrad |
+| Brevo-formulär | `.remove()` ur DOM | Förhindrad |
+| shop.html som yta | `location.replace` i appläge | Förhindrad\* |
+| Etsy-länkar | Täcks av shop-redirecten | Förhindrad\* |
+| Bacillpost-länk | inline `display:none` | Endast dold |
+| Shop-länkar i nav | inline `display:none` | Endast dold |
+
+\* JavaScript-baserat, inte en arkitektonisk gräns. Sidan svarar fortfarande 200 på origin.
+Hård gräns kräver egen origin för appen, vilket ligger utanför denna ansökan. Se anteckning
+om engelska appen.
+
+---
+
 ## Öppna punkter (ej compliance)
 
 - [ ] Integritetspolicysidans text och cookie-samtycke behöver stämmas av mot att sidan nu
@@ -372,6 +399,15 @@ utan filerna skulle bryta typografin på hela engelska sajten.
       horisontell överspillning. Befintlig bugg, inte orsakad av font-bytet: diffen rör bara
       `<link>`-raderna, html2canvas och beacon-taggen, och med systemfont blir raden bredare
       (500 px) än med Fredoka. Inte åtgärdad — rör den inte utan eget beslut.
+- [ ] `sitemap.xml` innehåller 17 av 49 sidor. 32 saknas, inklusive tolv spel. SEO och
+      affär, ej compliance. Egen runda.
+- [ ] `shop.html` saknar `noindex`. Alla sex `/app`-sidor har den.
+- [ ] `app/diagnostik.html` raderas efter sista enhetsmätningen.
+- [ ] `app-mode`-klassen och `ga-disable`-flaggan finns inte i kodbasen. Diagnostiksidan
+      mäter dem ändå och visar alltid NEJ respektive `undefined`. Korrekta appläges-kvitton
+      är `typeof gtag` = no-op och `dataLayer` = NEJ.
+- [ ] AI-Generated Content-policyn bedömd som ej tillämplig. Ingen promptdriven generering
+      inom appens yta.
 - [ ] `harma-dansbacillen.html` (Härma Dansbacillen) länkas inte från `spel.html` och går
       därmed inte att nå i appen. Avsiktligt eller förbiseende?
 - [ ] Karaktärsbilden i Kärleksbacillen-spelet ser inte ut att matcha karaktärsbibeln —
