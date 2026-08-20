@@ -89,6 +89,12 @@
   <p class="meta" id="resurs-sammanfattning"></p>
   <ol id="resurser"></ol>
 
+  <h2>Skanna app-sidorna</h2>
+  <p class="meta">Laddar varje app-sida i en dold ram på samma origin och l&auml;ser av vad <em>den</em> sidan h&auml;mtar. Tar ca 20 sekunder. Detta &auml;r avl&auml;sningen som svarar p&aring; Data Safety-fr&aring;gan &mdash; resurslistan ovan g&auml;ller bara diagnostiksidan sj&auml;lv.</p>
+  <button id="skanna" type="button">Skanna app-sidorna</button>
+  <p class="meta" id="skann-status"></p>
+  <div id="skann-resultat"></div>
+
   <p class="fot">/app/diagnostik.html — tillfällig verifieringssida, ej länkad från appens navigation.</p>
 
 <script>
@@ -205,6 +211,177 @@
       'Avläst ' + new Date().toLocaleTimeString('sv-SE') + '.';
   }
 
+  // ── Skanning av app-sidorna i dold iframe (samma origin) ──
+  var SIDOR = [
+    '/app/index.html',
+    '/app/spel.html',
+    '/app/titta.html',
+    '/app/sagor.html',
+    '/app/halsning.html'
+  ];
+  var VANTA_MS = 2500;   // tid efter load innan avläsning (defer-skript, RUM-POST)
+  var TAK_MS = 9000;     // ge upp väntan på load
+
+  function skannaSida(url) {
+    return new Promise(function (klar) {
+      var ram = document.createElement('iframe');
+      ram.setAttribute('title', 'skanning');
+      ram.style.cssText = 'position:absolute;left:-10000px;top:0;width:400px;height:800px;border:0;';
+      var avslutad = false;
+
+      function las_av() {
+        if (avslutad) return;
+        avslutad = true;
+        var ut = { url: url, resurser: [], fel: null };
+        try {
+          var w = ram.contentWindow;
+          var d = w.document;
+          ut.resurser = w.performance.getEntriesByType('resource').map(function (r) { return r.name; });
+          ut.gtag = typeof w.gtag;
+          ut.gtagNoop = arNoop(w.gtag);
+          ut.dataLayer = typeof w.dataLayer !== 'undefined';
+          ut.appModeKlass = d.documentElement.classList.contains('app-mode');
+          ut.appModeJs = ut.resurser.some(function (n) { return n.indexOf('app-mode.js') !== -1; });
+          ut.gaFlagga = w['ga-disable-' + GA_ID];
+        } catch (e) {
+          ut.fel = e.message;
+        }
+        try { ram.remove(); } catch (e) {}
+        klar(ut);
+      }
+
+      ram.onload = function () { setTimeout(las_av, VANTA_MS); };
+      ram.onerror = las_av;
+      setTimeout(las_av, TAK_MS + VANTA_MS);
+      ram.src = url;
+      document.body.appendChild(ram);
+    });
+  }
+
+  function ritaSida(ut) {
+    var box = document.getElementById('skann-resultat');
+    var h = document.createElement('h3');
+    h.style.cssText = 'font-size:21px;margin:28px 0 6px;';
+    h.textContent = ut.url;
+    box.appendChild(h);
+
+    if (ut.fel) {
+      var felP = document.createElement('dd');
+      felP.className = 'nej';
+      felP.textContent = 'Kunde inte läsas av: ' + ut.fel;
+      box.appendChild(felP);
+      return [];
+    }
+
+    var externa = ut.resurser.filter(function (n) {
+      return n.indexOf(location.origin) !== 0 && /^https?:/i.test(n);
+    });
+    var ga = ut.resurser.filter(function (n) {
+      return /googletagmanager\.com|google-analytics\.com|analytics\.google\.com/.test(n);
+    });
+
+    var dl = document.createElement('dl');
+    rad(dl, 'Resurser', ut.resurser.length + ' totalt, ' + externa.length + ' externa',
+        externa.length === 0 ? 'ja' : 'nej');
+    rad(dl, 'Requests mot GA-domäner', ga.length === 0 ? '0 — inga' : ga.length + ' st',
+        ga.length === 0 ? 'ja' : 'nej');
+    rad(dl, 'app-mode.js laddad', jaNej(ut.appModeJs));
+    rad(dl, "classList.contains('app-mode')", jaNej(ut.appModeKlass));
+    rad(dl, 'typeof gtag', String(ut.gtag) + (ut.gtagNoop ? ' (no-op)' : ''));
+    rad(dl, 'dataLayer finns', jaNej(ut.dataLayer), ut.dataLayer ? 'nej' : 'ja');
+    rad(dl, "window['ga-disable-" + GA_ID + "']", String(ut.gaFlagga));
+    box.appendChild(dl);
+
+    var ol = document.createElement('ol');
+    ut.resurser.forEach(function (namn) {
+      var extern = namn.indexOf(location.origin) !== 0 && /^https?:/i.test(namn);
+      var li = document.createElement('li');
+      if (extern) li.className = 'extern';
+      var flagga = document.createElement('span');
+      flagga.className = 'flagga ' + (extern ? 'e' : 'i');
+      flagga.textContent = extern ? 'EXTERN' : 'egen';
+      li.appendChild(flagga);
+      li.appendChild(document.createTextNode(namn));
+      ol.appendChild(li);
+    });
+    if (ut.resurser.length === 0) {
+      var tom = document.createElement('li');
+      tom.textContent = '(inga resursposter)';
+      ol.appendChild(tom);
+    }
+    box.appendChild(ol);
+
+    return externa;
+  }
+
+  function ritaSammanfattning(allaExterna) {
+    var box = document.getElementById('skann-resultat');
+    var h = document.createElement('h3');
+    h.style.cssText = 'font-size:21px;margin:32px 0 6px;';
+    h.textContent = 'Sammanfattning — externa domäner';
+    box.appendChild(h);
+
+    var domaner = {};
+    allaExterna.forEach(function (u) {
+      var m = u.match(/^https?:\/\/([^\/]+)/i);
+      if (m) domaner[m[1]] = (domaner[m[1]] || 0) + 1;
+    });
+    var namn = Object.keys(domaner).sort();
+
+    var dl = document.createElement('dl');
+    if (namn.length === 0) {
+      rad(dl, 'Externa domäner', '0 — appen hämtade inget från tredje part', 'ja');
+    } else {
+      namn.forEach(function (d) {
+        rad(dl, d, domaner[d] + ' request(s)', 'nej');
+      });
+    }
+    box.appendChild(dl);
+
+    var grind = null;
+    try { grind = localStorage.getItem('bacillerna_alder_ok'); } catch (e) {}
+    var dl2 = document.createElement('dl');
+    rad(dl2, 'Åldersgrind passerad på denna enhet?', grind === 'yes' ? 'JA' : 'NEJ',
+        grind === 'yes' ? '' : 'nej');
+    box.appendChild(dl2);
+
+    var not = document.createElement('p');
+    not.className = 'meta';
+    not.textContent = grind === 'yes'
+      ? 'Grinden är passerad, så YouTube- och Spotify-inbäddningarna på Titta/Sagor laddades under skanningen.'
+      : 'OBS: åldersgrinden är INTE passerad, därför laddade Titta och Sagor inga YouTube- eller Spotify-resurser. Passera grinden på de sidorna och skanna om för en fullständig bild.';
+    box.appendChild(not);
+  }
+
+  function skanna() {
+    var knapp = document.getElementById('skanna');
+    var status = document.getElementById('skann-status');
+    var box = document.getElementById('skann-resultat');
+    knapp.disabled = true;
+    box.innerHTML = '';
+    var allaExterna = [];
+
+    var kedja = Promise.resolve();
+    SIDOR.forEach(function (url, i) {
+      kedja = kedja.then(function () {
+        status.textContent = 'Skannar ' + (i + 1) + '/' + SIDOR.length + ': ' + url + ' …';
+        return skannaSida(url).then(function (ut) {
+          allaExterna = allaExterna.concat(ritaSida(ut));
+        });
+      });
+    });
+
+    kedja.then(function () {
+      ritaSammanfattning(allaExterna);
+      status.textContent = 'Skanning klar ' + new Date().toLocaleTimeString('sv-SE') + '.';
+      knapp.disabled = false;
+    })['catch'](function (e) {
+      status.textContent = 'Skanningen avbröts: ' + e.message;
+      knapp.disabled = false;
+    });
+  }
+
+  document.getElementById('skanna').addEventListener('click', skanna);
   document.getElementById('uppdatera').addEventListener('click', las);
   las();
 }());
