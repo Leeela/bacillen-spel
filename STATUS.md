@@ -387,7 +387,7 @@ utan filerna skulle bryta typografin på hela engelska sajten.
 ---
 
 ## Återstående
-- [ ] **Ta bort /app/diagnostik.html före produktionsansökan** — ligger kvar tills åtgärdsrundan är verifierad på plattan. Gäller både sidan `app/diagnostik.html` och den tillfälliga textlänken "Diagnostik" längst ner i `app/index.html` (markerad med kommentaren `TILLFÄLLIG diagnostiklänk`). Sidan finns enbart för att verifiera på enheten vad TWA:ns WebView laddar (USB-felsökning fungerar inte), och är inte länkad från appens navigation i övrigt.
+- [ ] **Ta bort `app/diagnostik.html` före produktionsansökan.** Textlänken i `app/index.html` togs bort 2026-08-20; själva sidan ligger kvar. Den finns enbart för att verifiera på enheten vad TWA:ns WebView laddar (USB-felsökning fungerar inte). **Obs:** utan länken går sidan inte att öppna inifrån appen — TWA:n har ingen adressrad. Behövs en ny avläsning måste länken tillfälligt läggas tillbaka.
 - [ ] Android-testprotokoll: test 2 och 4 genomförda på enhet 2026-08-20 (se ovan). Kvar: test 1, 3, 5, 6, 7.
 - [ ] Verifiera åtgärdsrundan på enhet med samma metod (skanna app-sidorna + spelen igen — förväntat: noll Cloudflare, noll Google Fonts)
 - [ ] Skanna de fyra sidor som inte hanns med: aktivitetsbok + Rikedomsbacillen ×3
