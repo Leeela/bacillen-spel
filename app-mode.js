@@ -14,6 +14,21 @@
       return;
     }
 
+    // Selektorlistan delas av stilblocket nedan och borttagningen i
+    // DOMContentLoaded-handlern, så att de två aldrig kan glida isär.
+    var BREVO_SELEKTORER =
+      '#recipient-subscribe, .recipient-subscribe, ' +
+      '#sib-form-container, .sib-form-container, ' +
+      '#sib-container, #sib-form, .sib-form, ' +
+      '.subscribe-box, .subscribe-box-wrap, .brevo-section';
+
+    // Synkront stilblock i <head>, före DOMContentLoaded. Formuläret ska aldrig
+    // hinna synas i fönstret mellan parse och borttagning. Elementen tas ändå
+    // bort ur DOM när den är klar — det här är ett komplement, inte en ersättning.
+    var brevoStil = document.createElement('style');
+    brevoStil.textContent = BREVO_SELEKTORER + ' { display: none !important; }';
+    document.head.appendChild(brevoStil);
+
     window.gtag = function () {};
     document.addEventListener('DOMContentLoaded', function () {
       // Dölj Bacillpost-länken i appläge
@@ -54,12 +69,7 @@
       // wrappern följer med och inget blir kvar som ser trasigt ut.
       // .brevo-section är med för att love/index.html och shop.html annars
       // lämnar en tom sektion med 48 px marginal efter sig.
-      var brevoTraffar = [].slice.call(document.querySelectorAll(
-        '#recipient-subscribe, .recipient-subscribe, ' +
-        '#sib-form-container, .sib-form-container, ' +
-        '#sib-container, #sib-form, .sib-form, ' +
-        '.subscribe-box, .subscribe-box-wrap, .brevo-section'
-      ));
+      var brevoTraffar = [].slice.call(document.querySelectorAll(BREVO_SELEKTORER));
       brevoTraffar.filter(function (el) {
         return !brevoTraffar.some(function (annan) {
           return annan !== el && annan.contains(el);
