@@ -262,6 +262,12 @@ Den statiska taggen togs bort ur samtliga 24 HTML-filer som hade den (byte-ident
 `integritetspolicy.html` saknade `app-mode.js` och fick det tillagt, annars hade den tappat
 mätningen även i webbläsare.
 
+**Medveten utökning som behöver kontrolleras:** `app-mode.js` laddar inte bara beaconen utan
+även GA4. Integritetspolicysidan får därmed **GA4 i webbläsarläge, vilket den inte hade
+tidigare**. I appläge laddas ingetdera. Detta måste stämmas av mot
+sidans egen text om vilken mätning som sker, och mot cookie-samtycket — annars beskriver
+policyn inte längre vad sidan faktiskt gör. Öppen punkt nedan.
+
 ### Google Fonts självhostade
 
 Fredoka och Nunito laddades från `fonts.googleapis.com` + `fonts.gstatic.com` på 43 sidor.
@@ -277,7 +283,8 @@ Ersatta med lokala `@font-face` enligt mönstret i `dansa-med-dansbacillen.html`
 fonts-repo (OFL-licens, samma som de övriga). **Filen är 683 kB** — variabelfonten innehåller
 både latinska och devanagariska tecken. Google levererade tidigare en subsettad woff2 på ca
 30 kB. Sidan blir alltså tyngre. Subsetting kräver `fonttools`, som inte var tillgängligt.
-Öppen förbättringspunkt, inte ett hinder.
+Beslut 2026-08-20: **Baloo 2 behålls.** Subsetting noteras som framtida
+optimering, inte ett hinder.
 
 ### html2canvas hostad lokalt
 
@@ -304,8 +311,25 @@ bedömas separat inför Data Safety-formuläret.
 
 ---
 
+## Engelska sajten är ur sync
+
+`luvbugscollection.com` (repo `Leeela/luvbugscollection`) har **inte** fått den här
+åtgärdsrundan. Den laddar fortfarande Google Fonts och Cloudflare-beaconen som förut.
+
+Den behöver en egen runda i sitt eget repo, och **font-filerna måste läggas på plats där
+först** — `/fonts/Fredoka-VariableFont.ttf`, `/fonts/Nunito-VariableFont.ttf` och
+`/fonts/Baloo2-VariableFont.ttf` finns bara i bacillen-spel-repot. Att kopiera HTML-ändringen
+utan filerna skulle bryta typografin på hela engelska sajten.
+
+---
+
 ## Öppna punkter (ej compliance)
 
+- [ ] Integritetspolicysidans text och cookie-samtycke behöver stämmas av mot att sidan nu
+      får GA4 i webbläsarläge (se åtgärdsrundan ovan). Detta ÄR compliance-nära och bör
+      göras innan formuläret skickas in.
+- [ ] Subsetta Baloo 2 (683 kB → ca 30 kB) när `fonttools` finns tillgängligt.
+- [ ] Kör åtgärdsrundan på engelska sajten, med font-filerna på plats först.
 - [ ] `harma-dansbacillen.html` (Härma Dansbacillen) länkas inte från `spel.html` och går
       därmed inte att nå i appen. Avsiktligt eller förbiseende?
 - [ ] Karaktärsbilden i Kärleksbacillen-spelet ser inte ut att matcha karaktärsbibeln —
