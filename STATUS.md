@@ -402,10 +402,10 @@ om engelska appen.
 - [ ] `sitemap.xml` innehåller 17 av 49 sidor. 32 saknas, inklusive tolv spel. SEO och
       affär, ej compliance. Egen runda.
 - [ ] `shop.html` saknar `noindex`. Alla sex `/app`-sidor har den.
-- [ ] `app/diagnostik.html` raderas efter sista enhetsmätningen.
-- [ ] `app-mode`-klassen och `ga-disable`-flaggan finns inte i kodbasen. Diagnostiksidan
-      mäter dem ändå och visar alltid NEJ respektive `undefined`. Korrekta appläges-kvitton
-      är `typeof gtag` = no-op och `dataLayer` = NEJ.
+- [ ] **Lärdom inför engelska appen:** `app-mode`-klassen och `ga-disable`-flaggan finns
+      inte i den här kodbasen. Diagnostiksidan mätte dem ändå och visade alltid NEJ
+      respektive `undefined`, vilket ledde till en felaktig hypotes om att appläget inte
+      slog till. Korrekta appläges-kvitton är `typeof gtag` = no-op och `dataLayer` = NEJ.
 - [ ] AI-Generated Content-policyn bedömd som ej tillämplig. Ingen promptdriven generering
       inom appens yta.
 - [ ] `harma-dansbacillen.html` (Härma Dansbacillen) länkas inte från `spel.html` och går
@@ -423,10 +423,13 @@ om engelska appen.
 ---
 
 ## Återstående
-- [ ] **Ta bort `app/diagnostik.html` före produktionsansökan.** Textlänken i `app/index.html` togs bort 2026-08-20; själva sidan ligger kvar. Den finns enbart för att verifiera på enheten vad TWA:ns WebView laddar (USB-felsökning fungerar inte). **Obs:** utan länken går sidan inte att öppna inifrån appen — TWA:n har ingen adressrad. Behövs en ny avläsning måste länken tillfälligt läggas tillbaka.
 - [ ] Android-testprotokoll: test 2 och 4 genomförda på enhet 2026-08-20 (se ovan). Kvar: test 1, 3, 5, 6, 7.
-- [ ] Verifiera åtgärdsrundan på enhet med samma metod (skanna app-sidorna + spelen igen — förväntat: noll Cloudflare, noll Google Fonts)
-- [ ] Skanna de fyra sidor som inte hanns med: aktivitetsbok + Rikedomsbacillen ×3
+- [ ] **Ej verifierat på enhet:** runda 2 (Cloudflare-beacon, Google Fonts, html2canvas) och
+      runda 3 (shop-redirect, Brevo ur DOM, stilblock) deployades efter den sista
+      enhetsmätningen 2026-08-20. Båda är verifierade live i webbläsarläge och vilar i
+      appläge på samma tidiga `return` som redan är bevisad på enhet. Fyra spelsidor
+      (aktivitetsbok + Rikedomsbacillen ×3) har aldrig skannats. Diagnostiksidan är raderad
+      2026-08-21 — en ny mätning kräver att sidan och länken återskapas tillfälligt.
 - [ ] Data Safety-formuläret fylls i och skickas in i Google Play Console
 
 ---
