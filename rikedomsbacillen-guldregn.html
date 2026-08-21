@@ -128,6 +128,16 @@ body {
   cursor: pointer;
 }
 .back-btn:active { opacity: 0.7; }
+.link-more {
+  display: inline-block;
+  margin-top: clamp(10px, 2.5vmin, 18px);
+  font-family: 'Fredoka', sans-serif;
+  font-size: clamp(14px, 3vmin, 18px);
+  color: var(--gold-deep);
+  text-decoration: none;
+  font-weight: 600;
+}
+.link-more:active { opacity: 0.7; }
 
 /* ── SPELSKÄRM ── */
 #screen-game {
@@ -418,6 +428,7 @@ body {
       <span class="mode-label">Flytta Rikedomsbacillen</span>
     </button>
   </div>
+  <a href="/app/spel.html" class="link-more">🎮 Fler spel</a>
 </div>
 
 <!-- ── SPELSKÄRM ── -->
@@ -466,10 +477,10 @@ body {
     <button class="mode-btn medium" onclick="restartGame()">
       <span>🔁 Spela igen</span>
     </button>
-    <button class="mode-btn easy" onclick="location.href='spel.html'">
+    <button class="mode-btn easy" onclick="location.href='/app/spel.html'">
       <span>🎮 Fler spel</span>
     </button>
-    <button class="back-btn" style="margin-top:6px;" onclick="location.href='titta.html'">🎬 Titta på filmer</button>
+    <button class="back-btn" style="margin-top:6px;" onclick="location.href='/app/titta.html'">🎬 Titta på filmer</button>
   </div>
 </div>
 
