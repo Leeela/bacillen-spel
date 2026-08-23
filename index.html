@@ -240,6 +240,7 @@
   .hero-group-wrap img {
     width: 100%;
     height: auto;
+    aspect-ratio: 1866 / 314;
     display: block;
   }
 
@@ -287,8 +288,9 @@
 
   /* === VÄRDERINGSBLOCK === */
   .values-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
     gap: 24px;
     margin-top: 36px;
   }
@@ -299,6 +301,7 @@
     padding: 28px;
     text-align: center;
     display: block;
+    flex: 0 1 340px;
     text-decoration: none;
     color: inherit;
     cursor: pointer;
@@ -325,7 +328,7 @@
     line-height: 1.5;
   }
   @media (max-width: 720px) {
-    .values-grid { grid-template-columns: 1fr; }
+    .value-card { flex-basis: 100%; }
   }
 
   /* === KARAKTÄRSGRID === */
@@ -727,8 +730,8 @@
   <section class="hero">
     <div class="hero-group-wrap">
       <picture>
-        <source srcset="bilder/bacillerna-i-rad.webp" type="image/webp">
-        <img src="bilder/bacillerna-i-rad.png" alt="Alla bacillerna" loading="eager" fetchpriority="high">
+        <source srcset="bilder/bacillerna-i-rad.webp" type="image/webp" width="1866" height="314">
+        <img src="bilder/bacillerna-i-rad.png" alt="Alla bacillerna" width="1866" height="314" loading="eager" fetchpriority="high">
       </picture>
     </div>
     <div class="hero-eyebrow">Möt</div>
